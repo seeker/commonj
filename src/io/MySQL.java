@@ -56,10 +56,6 @@ public class MySQL{
 	 * Initialize the class, preparing the statements needed for the methods.
 	 */
 	public void init(){
-		addPrepStmt("filterState"		, "SELECT status FROM filter WHERE  id = ?");
-		addPrepStmt("addFilter"			, "INSERT IGNORE INTO filter (id, board, reason, status) VALUES (?,?,?,?)");
-		addPrepStmt("pendingFilter"		, "SELECT board, reason, id FROM filter WHERE status = 1 ORDER BY board, reason ASC");
-		addPrepStmt("updateFilter"		, "UPDATE filter SET status = ? WHERE id = ?");
 		addPrepStmt("addCache"			, "REPLACE INTO cache SET id=?, timestamp=?");
 		addPrepStmt("addThumb"			, "INSERT INTO thumbs (url, filename, thumb) VALUES(?,?,?)");
 		addPrepStmt("getThumb"			, "SELECT thumb FROM thumbs WHERE url = ? ORDER BY filename ASC");
