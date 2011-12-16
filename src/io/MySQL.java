@@ -27,6 +27,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -56,7 +57,7 @@ public class MySQL{
 	 * Initialize the class, preparing the statements needed for the methods.
 	 */
 	public void init(){
-		addPrepStmt("addCache"			, "REPLACE INTO cache SET id=?, timestamp=?");
+		addPrepStmt("addCache"			, "REPLACE INTO cache SET id=?");
 		addPrepStmt("addThumb"			, "INSERT INTO thumbs (url, filename, thumb) VALUES(?,?,?)");
 		addPrepStmt("getThumb"			, "SELECT thumb FROM thumbs WHERE url = ? ORDER BY filename ASC");
 		addPrepStmt("sizeCache"			, "SELECT count(*) FROM cache");
@@ -209,7 +210,7 @@ public class MySQL{
 		PreparedStatement ps = getPrepStmt("addCache");
 		try {
 			ps.setString(1, id);
-			ps.setLong(2, Calendar.getInstance().getTimeInMillis());
+			ps.setTimestamp(2, new Timestamp(Calendar.getInstance().getTimeInMillis()));
 			int res = ps.executeUpdate();
 	
 			if(res > 1)
@@ -471,7 +472,7 @@ public class MySQL{
 		PreparedStatement ps = getPrepStmt("prune");
 
 		try {
-			ps.setLong(1, maxAge);
+			ps.setTimestamp(1,new Timestamp(maxAge));
 			ps.executeUpdate();
 		} catch (SQLException e) {
 			logger.warning("MySql known prune failed: "+e.getMessage());
