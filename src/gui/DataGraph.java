@@ -48,8 +48,10 @@ public class DataGraph extends JPanel {
 		this.columWidth = cWidth;
 		this.updateInterval = interval;
 
-		for (int i=0; i<noOfColums; i++){
-			graphData.add(0);
+		synchronized (graphData) {
+			for (int i=0; i<noOfColums; i++){
+				graphData.add(0);
+			}
 		}
 	}
 
@@ -88,8 +90,10 @@ public class DataGraph extends JPanel {
 
 		@Override
 		public void run(){
-			graphData.removeLast();
-			graphData.addFirst(currentCount.getAndSet(0));
+			synchronized (graphData) {
+				graphData.removeLast();
+				graphData.addFirst(currentCount.getAndSet(0));
+			}
 			paintComponent(getGraphics());
 		}
 	}
