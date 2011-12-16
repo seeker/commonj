@@ -29,7 +29,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Properties;
@@ -210,7 +209,6 @@ public class MySQL{
 		PreparedStatement ps = getPrepStmt("addCache");
 		try {
 			ps.setString(1, id);
-			ps.setTimestamp(2, new Timestamp(Calendar.getInstance().getTimeInMillis()));
 			int res = ps.executeUpdate();
 	
 			if(res > 1)
