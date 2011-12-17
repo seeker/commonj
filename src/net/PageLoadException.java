@@ -22,7 +22,9 @@ package net;
  */
 
 public class PageLoadException extends Exception{
-	int responseCode = -1;
+	private int responseCode = -1;
+	private String url = null;
+	
 	private static final long serialVersionUID = 1L;
 	
 	public PageLoadException(String message){
@@ -43,8 +45,23 @@ public class PageLoadException extends Exception{
 		this.responseCode = responseCode;
 	}
 	
+	public PageLoadException(String message, int responseCode, String url){
+		super(message);
+		this.responseCode = responseCode;
+		this.url = url;
+	}
+	
+	public PageLoadException(int responseCode, String url){
+		super();
+		this.responseCode = responseCode;
+		this.url = url;
+	}
+	
 	public int getResponseCode(){
 		return responseCode;
 	}
 	
+	public String getUrl(){
+		return url;
+	}
 }
