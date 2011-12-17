@@ -15,7 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package io;
+package net;
 
 /**
  * This exception is thrown if the page could not be loaded.
