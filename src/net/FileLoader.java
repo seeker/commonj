@@ -51,8 +51,9 @@ public abstract class FileLoader {
 	 * Run before a file is added to the list.
 	 * @param url URL that was added
 	 * @param fileName relative path to working directory
+	 * @return if true operation will continue
 	 */
-	protected void beforeImageAdd(URL url,String fileName){} // code to run before adding a file to the list
+	protected boolean beforeImageAdd(URL url,String fileName){return true;} // code to run before adding a file to the list
 	
 	/**
 	 * Run after a file was added to the list.
@@ -62,7 +63,8 @@ public abstract class FileLoader {
 	protected void afterImageAdd(URL url,String fileName){} // code to run after adding a file to the list
 
 	public void add(URL url,String fileName){
-		beforeImageAdd(url, fileName);
+		if(! beforeImageAdd(url, fileName))
+			return;
 		
 		if(downloadList.contains(url)) // is the file already queued? 
 			return;
