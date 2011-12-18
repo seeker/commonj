@@ -67,9 +67,6 @@ public abstract class FileLoader {
 		if(! beforeFileAdd(url, fileName))
 			return;
 		
-		if(downloadList.contains(url)) // is the file already queued? 
-			return;
-		
 		downloadList.add(new DownloadItem(url, fileName));
 		
 		afterFileAdd(url, fileName);
