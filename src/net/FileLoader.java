@@ -19,6 +19,7 @@ package net;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -53,16 +54,16 @@ public abstract class FileLoader {
 	 * @param fileName relative path to working directory
 	 * @return if true operation will continue
 	 */
-	protected boolean beforeFileAdd(URL url,String fileName){return true;} // code to run before adding a file to the list
+	protected boolean beforeFileAdd(String url,String fileName){return true;} // code to run before adding a file to the list
 	
 	/**
 	 * Run after a file was added to the list.
 	 * @param url URL that was added
 	 * @param fileName relative path to working directory
 	 */
-	protected void afterFileAdd(URL url,String fileName){} // code to run after adding a file to the list
+	protected void afterFileAdd(String url,String fileName){} // code to run after adding a file to the list
 
-	public void add(URL url,String fileName){
+	public void add(String url,String fileName){
 		if(! beforeFileAdd(url, fileName))
 			return;
 		
@@ -185,7 +186,11 @@ public abstract class FileLoader {
 					if(di == null) // check if the item is valid
 						continue;
 
-					loadFile(di.getImageUrl(), new File(di.getImageName()));
+					try {
+						loadFile(new URL(di.getImageUrl()), new File(di.getImageName()));
+					} catch (MalformedURLException e) {
+						logger.warning("Could not load URL, " + e.getMessage());
+					}
 					afterProcessItem(di);
 					
 				}catch(InterruptedException ie){interrupt();} //otherwise it will reset it's own interrupt flag

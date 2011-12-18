@@ -17,21 +17,19 @@
  */
 package net;
 
-import java.net.URL;
-
 /**
  * Storage class for an Image.
  */
 public class DownloadItem {
-	private URL imageUrl;
+	private String imageUrl;
 	private String imageName;
 
-	public DownloadItem(URL imageUrl, String imageName) {
+	public DownloadItem(String imageUrl, String imageName) {
 		this.imageUrl = imageUrl;
 		this.imageName = imageName;
 	}
 
-	public URL getImageUrl() {
+	public String getImageUrl() {
 		return imageUrl;
 	}
 
