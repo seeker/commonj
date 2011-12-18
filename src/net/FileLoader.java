@@ -25,7 +25,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
 
 /**
- * Class for downloading images from the Internet.
+ * Class for downloading files from the Internet.
  */
 public abstract class FileLoader {
 	private static Logger logger = Logger.getLogger(FileLoader.class.getName());
@@ -35,16 +35,16 @@ public abstract class FileLoader {
 
 	/**Delay between downloads. This is used to limit the number of connections**/
 	protected int downloadSleep = 1000;
-	protected int imageQueueWorkers;
+	protected int fileQueueWorkers;
 
 	private GetBinary getBinary = new GetBinary();
 
 	private File workingDir;
 
-	public FileLoader(File workingDir, int imageQueueWorkers) {
+	public FileLoader(File workingDir, int fileQueueWorkers) {
 		this.workingDir = workingDir;
-		this.imageQueueWorkers = imageQueueWorkers;
-		setUp(imageQueueWorkers);
+		this.fileQueueWorkers = fileQueueWorkers;
+		setUp(fileQueueWorkers);
 	}
 	
 	/**
@@ -53,17 +53,17 @@ public abstract class FileLoader {
 	 * @param fileName relative path to working directory
 	 * @return if true operation will continue
 	 */
-	protected boolean beforeImageAdd(URL url,String fileName){return true;} // code to run before adding a file to the list
+	protected boolean beforeFileAdd(URL url,String fileName){return true;} // code to run before adding a file to the list
 	
 	/**
 	 * Run after a file was added to the list.
 	 * @param url URL that was added
 	 * @param fileName relative path to working directory
 	 */
-	protected void afterImageAdd(URL url,String fileName){} // code to run after adding a file to the list
+	protected void afterFileAdd(URL url,String fileName){} // code to run after adding a file to the list
 
 	public void add(URL url,String fileName){
-		if(! beforeImageAdd(url, fileName))
+		if(! beforeFileAdd(url, fileName))
 			return;
 		
 		if(downloadList.contains(url)) // is the file already queued? 
@@ -71,7 +71,7 @@ public abstract class FileLoader {
 		
 		downloadList.add(new DownloadItem(url, fileName));
 		
-		afterImageAdd(url, fileName);
+		afterFileAdd(url, fileName);
 	}
 	
 	/**
@@ -137,8 +137,8 @@ public abstract class FileLoader {
 	 */
 	abstract protected void afterFileDownload(byte[] data, File fullpath, URL url);
 	
-	private void setUp(int image){
-		for(int i=0; i <image; i++){
+	private void setUp(int fileWorkers){
+		for(int i=0; i <fileWorkers; i++){
 			workers.add(new DownloadWorker());
 		}
 
@@ -165,7 +165,7 @@ public abstract class FileLoader {
 	
 	/**
 	 * Called after a worker has processed an item from the list.
-	 * @param di the imageitem that was processed
+	 * @param di the DownloadItem that was processed
 	 */
 	protected void afterProcessItem(DownloadItem di){}
 
