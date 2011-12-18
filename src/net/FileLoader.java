@@ -1,5 +1,5 @@
 /*  Copyright (C) 2011  Nicholas Wright
-	
+
 	part of 'Aid', an imageboard downloader.
 
     This program is free software: you can redistribute it and/or modify
@@ -19,7 +19,6 @@ package net;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -47,7 +46,7 @@ public abstract class FileLoader {
 		this.fileQueueWorkers = fileQueueWorkers;
 		setUp(fileQueueWorkers);
 	}
-	
+
 	/**
 	 * Run before a file is added to the list.
 	 * @param url URL that was added
@@ -55,7 +54,7 @@ public abstract class FileLoader {
 	 * @return if true operation will continue
 	 */
 	protected boolean beforeFileAdd(URL url,String fileName){return true;} // code to run before adding a file to the list
-	
+
 	/**
 	 * Run after a file was added to the list.
 	 * @param url URL that was added
@@ -66,12 +65,17 @@ public abstract class FileLoader {
 	public void add(URL url,String fileName){
 		if(! beforeFileAdd(url, fileName))
 			return;
-		
-		downloadList.add(new DownloadItem(url.toString(), fileName));
-		
+
+		DownloadItem toadd = new DownloadItem(url, fileName);
+
+		if(downloadList.contains(toadd))
+			return;
+
+		downloadList.add(toadd);
+
 		afterFileAdd(url, fileName);
 	}
-	
+
 	/**
 	 * Set the delay between file downloads. Used to limit the number of connections.
 	 * @param sleep time between downloads in milliseconds
@@ -83,7 +87,7 @@ public abstract class FileLoader {
 	public void clearQueue(){
 		downloadList.clear();
 	}
-	
+
 	/**
 	 * Called after the queue has been cleared.
 	 */
@@ -110,7 +114,7 @@ public abstract class FileLoader {
 			onIOException(ioe);
 		}
 	}
-	
+
 	/**
 	 * Called when a server could be contacted, but an error code was returned.
 	 * @param ple the PageLoadException that was thrown
@@ -118,7 +122,7 @@ public abstract class FileLoader {
 	protected void onPageLoadException(PageLoadException ple){
 		logger.warning("Unable to load " + ple.getUrl() + " , response is " + ple.getResponseCode());
 	}
-	
+
 	/**
 	 * Called when a page / File could not be loaded due to an IO error.
 	 * @param ioe the IOException that was thrown
@@ -126,7 +130,7 @@ public abstract class FileLoader {
 	protected void onIOException(IOException ioe){
 		logger.warning("Unable to load page " + ioe.getLocalizedMessage());
 	}
-	
+
 	/**
 	 * Called when the file was successfully downloaded.
 	 * @param data the downloaded file
@@ -134,7 +138,7 @@ public abstract class FileLoader {
 	 * @param url the url of the file
 	 */
 	abstract protected void afterFileDownload(byte[] data, File fullpath, URL url);
-	
+
 	private void setUp(int fileWorkers){
 		for(int i=0; i <fileWorkers; i++){
 			workers.add(new DownloadWorker());
@@ -147,7 +151,7 @@ public abstract class FileLoader {
 
 	public void shutdown(){
 		logger.info("ImageLoader shutting down...");
-		
+
 		clearQueue();
 
 		for(Thread t : workers){
@@ -157,10 +161,10 @@ public abstract class FileLoader {
 		for(Thread t : workers){
 			try {t.join();} catch (InterruptedException e) {}
 		}
-		
+
 		logger.info("ImageLoader shutdown complete");
 	}
-	
+
 	/**
 	 * Called after a worker has processed an item from the list.
 	 * @param di the DownloadItem that was processed
@@ -183,13 +187,9 @@ public abstract class FileLoader {
 					if(di == null) // check if the item is valid
 						continue;
 
-					try {
-						loadFile(new URL(di.getImageUrl()), new File(di.getImageName()));
-					} catch (MalformedURLException e) {
-						logger.warning("Could not load URL, " + e.getMessage());
-					}
+					loadFile(di.getImageUrl(), new File(di.getImageName()));
 					afterProcessItem(di);
-					
+
 				}catch(InterruptedException ie){interrupt();} //otherwise it will reset it's own interrupt flag
 			}
 		}
