@@ -181,8 +181,8 @@ public abstract class FileLoader {
 		@Override
 		public void run() {
 			while(! isInterrupted()){
+				DownloadItem di = null;
 				try{
-					DownloadItem di;
 					di = downloadList.take(); // grab some work
 					if(di == null) // check if the item is valid
 						continue;
@@ -190,7 +190,12 @@ public abstract class FileLoader {
 					loadFile(di.getImageUrl(), new File(di.getImageName()));
 					afterProcessItem(di);
 
-				}catch(InterruptedException ie){interrupt();} //otherwise it will reset it's own interrupt flag
+				}catch(InterruptedException ie){
+					interrupt(); //otherwise it will reset it's own interrupt flag
+				}catch(Exception e){
+					logger.severe("Download Worker failed with "+e.getMessage()+"\n"+
+							"Parameters: "+di.getImageUrl()+" "+di.getImageName());
+				}
 			}
 		}
 	}
