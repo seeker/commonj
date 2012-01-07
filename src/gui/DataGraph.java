@@ -46,6 +46,10 @@ public class DataGraph extends JPanel {
 		this.columWidth = cWidth;
 		this.updateInterval = interval;
 
+		initGraphData();
+	}
+	
+	private void initGraphData(){
 		synchronized (graphData) {
 			for (int i=0; i<noOfColums; i++){
 				graphData.add(0);
