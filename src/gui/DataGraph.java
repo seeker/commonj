@@ -34,11 +34,22 @@ public class DataGraph extends JPanel {
 	private int noOfColums = 20;
 	private int columWidth = 2;
 	private Timer updater = null;
-
+	private boolean autoscale;
+	private double scaleFactor = 1;
 
 	LinkedList<Integer> graphData = new LinkedList<Integer>();
 	AtomicInteger currentCount = new AtomicInteger(0);
 
+	public DataGraph(int hight, int width, int cNum, int cWidth, int interval,boolean autoscale){
+		this.setSize(width , hight);
+		this.noOfColums = cNum;
+		this.columWidth = cWidth;
+		this.updateInterval = interval;
+		this.autoscale = autoscale;
+
+		initGraphData();
+	}
+	
 	public DataGraph(int hight, int width, int cNum, int cWidth, int interval){
 		
 		this.setSize(width , hight);
@@ -72,14 +83,28 @@ public class DataGraph extends JPanel {
 	public void paintComponent(Graphics g){
 		super.paintComponent(g);
 		g.setColor(Color.BLUE);
+		
 		synchronized(graphData){
-			
-
 			int i = 0;
 			for(int currval : graphData){
+				currval=(int)(currval/scaleFactor);
 				g.fillRect(i*columWidth, this.getHeight()-currval, columWidth, currval);
 				i++;
 			}
+		}
+	}
+	
+	private void calcScale(){
+		int max = 0;
+		
+		for(int i : graphData){
+			max = Math.max(max, i);
+		}
+		
+		if(max > this.getHeight()){
+			scaleFactor = max / this.getHeight();
+		}else{
+			scaleFactor = 1;
 		}
 	}
 	
@@ -91,6 +116,7 @@ public class DataGraph extends JPanel {
 				graphData.removeLast();
 				graphData.addFirst(currentCount.getAndSet(0));
 			}
+			calcScale();
 			repaint();
 		}
 	}
