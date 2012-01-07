@@ -18,14 +18,12 @@ package gui;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.JPanel;
-
 
 public class DataGraph extends JPanel {
 	/**
@@ -42,7 +40,7 @@ public class DataGraph extends JPanel {
 	AtomicInteger currentCount = new AtomicInteger(0);
 
 	public DataGraph(int hight, int width, int cNum, int cWidth, int interval){
-
+		
 		this.setSize(width , hight);
 		this.noOfColums = cNum;
 		this.columWidth = cWidth;
@@ -55,37 +53,32 @@ public class DataGraph extends JPanel {
 		}
 	}
 
-	public void increment(){
-		currentCount.incrementAndGet();
-	}
-
 	public void add(int delta){
 		currentCount.addAndGet(delta);
 	}
 
 	public void start(){
 		if (updater == null){
-			updater = new Timer("Updater");
+			updater = new Timer("DataGraph updater");
 			updater.scheduleAtFixedRate(new Updater(), updateInterval*1000, updateInterval*1000);
 		}
-
 	}
 
 	@Override
 	public void paintComponent(Graphics g){
-		super.paintComponents(g);
+		super.paintComponent(g);
 		g.setColor(Color.BLUE);
 		synchronized(graphData){
-			Iterator<Integer> ite = graphData.listIterator();
+			
 
 			int i = 0;
-			while(ite.hasNext()){
-				int currval =ite.next();
+			for(int currval : graphData){
 				g.fillRect(i*columWidth, this.getHeight()-currval, columWidth, currval);
 				i++;
 			}
 		}
 	}
+	
 	class Updater extends TimerTask{
 
 		@Override
@@ -94,7 +87,7 @@ public class DataGraph extends JPanel {
 				graphData.removeLast();
 				graphData.addFirst(currentCount.getAndSet(0));
 			}
-			paintComponent(getGraphics());
+			repaint();
 		}
 	}
 }
