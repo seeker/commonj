@@ -110,6 +110,7 @@ public class FileWalker{
 	}
 
 	public LinkedList<File> fileWalk(){
+		resultList.clear();
 		for(File f : dirToSearch){
 			try {
 				if(noSub && folderOnly){
@@ -123,12 +124,8 @@ public class FileWalker{
 				e.printStackTrace(); // should not reach this...
 			}
 		}
+		dirToSearch.clear();
 		return new LinkedList<File>(resultList);
-	}
-
-	public void clearAll(){
-		this.resultList.clear();
-		this.dirToSearch.clear();
 	}
 
 	class FetchFiles extends SimpleFileVisitor<Path>{
