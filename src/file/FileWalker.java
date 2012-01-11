@@ -70,13 +70,9 @@ public class FileWalker{
 		addPath(conv);
 	}
 
-	public void addPath(List<String> dirs){
+	public void addPath(List<File> dirs){
 		File[] conv = new File[dirs.size()];
-		int i=0;
-		for (String s : dirs){ //string to File
-			conv[i]=(new File(s));
-			i++;
-		}
+		dirs.toArray(conv);
 		addPath(conv);
 	}
 
@@ -105,7 +101,7 @@ public class FileWalker{
 
 	public List<String> fileWalkStringList(){
 		LinkedList<File> files = fileWalk();
-		ArrayList<String> list = new ArrayList<String>(100);
+		List<String> list = new ArrayList<String>(100);
 		Iterator<File> ite = files.iterator();
 		while(ite.hasNext()){
 			list.add(ite.next().toString());
