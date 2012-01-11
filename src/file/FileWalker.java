@@ -50,8 +50,10 @@ public class FileWalker{
 
 	public void addPath(File[] file){  //main add Method
 		for (File f : file){ 
-			if(!dirToSearch.contains(f));
-			dirToSearch.add(f);
+			if(!dirToSearch.contains(f)){
+				dirToSearch.add(f);
+			}
+			
 		}
 	}
 
