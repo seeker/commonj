@@ -7,20 +7,18 @@ import static org.junit.matchers.JUnitMatchers.hasItem;
 import static org.junit.matchers.JUnitMatchers.hasItems;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.util.LinkedList;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 
 
 
 public class FileWalkerTest {
 
-	@Rule
-	public TemporaryFolder rootFolder = new TemporaryFolder();
+	public File rootFolder;
 	public File files[] = new File[4];
 	public File folders[] = new File[3];
 
@@ -29,34 +27,35 @@ public class FileWalkerTest {
 	public void setUp() throws Exception {	
 		/*
 		 * rootFolder
-		 * :	files[1].txt
+		 * :	one.txt
 		 * :
-		 * +----folders[0]
-		 * :	files[2].txt
+		 * +----subFolderOne
+		 * :		two.txt
 		 * :
-		 * :
-		 * \----folders[1]
-		 * 		: files[3].jpg
+		 * \----subFoldertwo
+		 * 		: 	three.jpg
 		 * 		:
-		 * 		\----folders[2]
-		 * 				file_04.txt
+		 * 		\----subSubFolderOne
+		 * 				four.txt
 		 */
-		folders[0] = rootFolder.newFolder("subFolderOne");
-		folders[1] = rootFolder.newFolder("subFoldertwo");
+		rootFolder = Files.createTempDirectory("FileWalkerTest").toFile();
+		folders[0] = new File(rootFolder,"subFolderOne");
+		folders[1] = new File(rootFolder,"subFoldertwo");
 		folders[2] = new File(folders[1],"subSubFolderOne");
-		folders[2].mkdir();
+		
+		for(File f : folders){
+			f.mkdirs();
+		}
 
-		files[0] = rootFolder.newFile("one.txt");
-
+		files[0] = new File(rootFolder,"one.txt");
 		files[1] = new File(folders[0],"two.txt");
-		files[1].createNewFile();
-
 		files[2] = new File(folders[1],"three.jpg");
-		files[2].createNewFile();
-
 		files[3] = new File(folders[2], "four.txt");
-		files[3].createNewFile();
 
+		for(File f : files){
+			f.createNewFile();
+		}
+		
 		fw = new FileWalker();
 		
 	}
@@ -86,7 +85,7 @@ public class FileWalkerTest {
 	 * Read only Files in the root folder.
 	 */
 	public void testNoSub() {
-		fw.addPath(rootFolder.getRoot());
+		fw.addPath(rootFolder);
 		fw.setnoSub(true);
 		LinkedList<File> results = fw.fileWalk();
 		
@@ -99,7 +98,7 @@ public class FileWalkerTest {
 	 * Read all files.
 	 */
 	public void testFullWalk() {
-		fw.addPath(rootFolder.getRoot());
+		fw.addPath(rootFolder);
 		fw.setnoSub(false);
 		LinkedList<File> results = fw.fileWalk();
 		assertThat(results.size(), is(4));
@@ -112,7 +111,7 @@ public class FileWalkerTest {
 	 * Read only files with .jpg , .gif or .png extension.
 	 */
 	public void testFilterWalk() {
-		fw.addPath(rootFolder.getRoot());
+		fw.addPath(rootFolder);
 		fw.setnoSub(false);
 		fw.setImagesOnly(true);
 		LinkedList<File> results = fw.fileWalk();
@@ -126,7 +125,7 @@ public class FileWalkerTest {
 	 * same as testFilterWalk(), but without sub-directories.
 	 */
 	public void testFilterWalk_noSub() {
-		fw.addPath(rootFolder.getRoot());
+		fw.addPath(rootFolder);
 		fw.setnoSub(true);
 		fw.setImagesOnly(true);
 		LinkedList<File> results = fw.fileWalk();
@@ -152,13 +151,13 @@ public class FileWalkerTest {
 	 * Find all directories
 	 */
 	public void testFileWalkDirectories() {
-		fw.addPath(rootFolder.getRoot());
+		fw.addPath(rootFolder);
 		fw.setfolderOnly(true);
 		LinkedList<File> results = fw.fileWalk();
 		
 		assertThat(results.size(), is(4));
 		assertThat(results, hasItems(folders));
-		assertThat(results, hasItem(rootFolder.getRoot()));
+		assertThat(results, hasItem(rootFolder));
 	}
 	
 	@Test
