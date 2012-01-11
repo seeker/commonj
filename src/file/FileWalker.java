@@ -58,7 +58,6 @@ public class FileWalker{
 	public void addPath(String string) {
 		File[] f = {new File(string)}; // make a 1 element array
 		addPath(f);
-
 	}
 
 	public void addPath(String[] dirs){
@@ -70,7 +69,7 @@ public class FileWalker{
 		}
 		addPath(conv);
 	}
-	
+
 	public void addPath(List<String> dirs){
 		File[] conv = new File[dirs.size()];
 		int i=0;
@@ -113,17 +112,17 @@ public class FileWalker{
 		}
 		return list;
 	}
-	
+
 	public LinkedList<File> fileWalk(){
 		for(File f : dirToSearch){
 			try {
-				if(noSub && folderOnly)
+				if(noSub && folderOnly){
 					Files.walkFileTree( f.toPath(), EnumSet.noneOf(FileVisitOption.class),2, new FetchFiles());
-				else if(noSub && !folderOnly)
+				}else if(noSub && !folderOnly){
 					Files.walkFileTree( f.toPath(), EnumSet.noneOf(FileVisitOption.class),1, new FetchFiles());
-				else
+				}else{
 					Files.walkFileTree( f.toPath(), new FetchFiles());
-
+				}
 			} catch (IOException e) {
 				e.printStackTrace(); // should not reach this...
 			}
@@ -143,8 +142,9 @@ public class FileWalker{
 				if(imageOnly){
 					String toTest = path.toString().toLowerCase();
 
-					if (toTest.endsWith(".jpg") || toTest.endsWith(".png") || toTest.endsWith(".gif"))
+					if (toTest.endsWith(".jpg") || toTest.endsWith(".png") || toTest.endsWith(".gif")){
 						resultList.add(path.toFile());	
+					}
 				}else{
 					resultList.add(path.toFile());	
 				}
@@ -154,8 +154,9 @@ public class FileWalker{
 
 		@Override
 		public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-			if(folderOnly && attrs.isDirectory())
+			if(folderOnly && attrs.isDirectory()){
 				resultList.add(dir.toFile());
+			}
 
 			return FileVisitResult.CONTINUE;
 		}
