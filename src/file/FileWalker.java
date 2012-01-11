@@ -16,7 +16,6 @@
 package file;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.FileVisitOption;
 import java.nio.file.FileVisitResult;
@@ -71,6 +70,16 @@ public class FileWalker{
 		}
 		addPath(conv);
 	}
+	
+	public void addPath(List<String> dirs){
+		File[] conv = new File[dirs.size()];
+		int i=0;
+		for (String s : dirs){ //string to File
+			conv[i]=(new File(s));
+			i++;
+		}
+		addPath(conv);
+	}
 
 	public void setnoSub(boolean set){
 		this.noSub = set;
@@ -104,26 +113,7 @@ public class FileWalker{
 		}
 		return list;
 	}
-	/**
-	 * Returns the Files in the given directory.
-	 * @param dir Directory to search
-	 * @param useImageFilter if true, will only return files with jpg, gif or png
-	 * @return a list of files
-	 */
-	public LinkedList<File> fileFind(File dir, boolean useImageFilter){
-		resultList.clear();
-		FilenameFilter filter = null;
-		if(useImageFilter)
-			filter = new ImageFileFilter();
-		
-		for(File f : dir.listFiles(filter)){
-			if(f.isFile()){
-				resultList.add(f);
-			}
-		}
-		return new LinkedList<File>(resultList);
-	}
-
+	
 	public LinkedList<File> fileWalk(){
 		for(File f : dirToSearch){
 			try {
@@ -176,22 +166,5 @@ public class FileWalker{
 			return FileVisitResult.CONTINUE;
 		}
 
-	}
-	/**
-	 * FileFilter class that will return true on jpg,png and gif
-	 * @author Nicholas Wright
-	 *
-	 */
-	class ImageFileFilter implements FilenameFilter
-	{
-		public boolean accept( File f, String s )
-		{
-			String toTest = s.toLowerCase();
-
-			if (toTest.endsWith(".jpg") || toTest.endsWith(".png") || toTest.endsWith(".gif"))
-				return true;
-			else
-				return false;
-		}
 	}
 }
