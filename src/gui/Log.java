@@ -18,6 +18,7 @@ package gui;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.logging.Logger;
 
 import javax.swing.JTextArea;
 /**
@@ -28,6 +29,7 @@ import javax.swing.JTextArea;
 public class Log {
 	static private JTextArea logArea;
 	static private int logNr = 0;
+	static private final Logger logger = Logger.getLogger(Log.class.getName());
 
 	public static void setLogArea(JTextArea logArea){
 		Log.logArea = logArea;
@@ -51,6 +53,10 @@ public class Log {
 	 * @param add message to add to log
 	 */
 	public static void add(String add){
+		if(logArea == null){
+			logger.warning("No output textfield set for GUI log");
+			return;
+		}
 		Calendar cal = new GregorianCalendar();
 		DateFormat df;
 		df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
