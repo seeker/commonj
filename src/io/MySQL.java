@@ -157,7 +157,7 @@ public class MySQL{
 			toAdd = cn.prepareStatement(stmt,param1,param2);
 			prepStmts.put(id, toAdd);
 		} catch (SQLException e) {
-			logger.severe(e.getMessage()+
+			logger.severe("Prepared Statement could not be created,\n"+e.getMessage()+
 					"\n"+id
 					+"\n"+stmt);
 		}
@@ -169,7 +169,7 @@ public class MySQL{
 			toAdd = cn.prepareStatement(stmt,param1);
 			prepStmts.put(id, toAdd);
 		} catch (SQLException e) {
-			logger.severe(e.getMessage()+
+			logger.severe("Prepared Statement could not be created,\n"+e.getMessage()+
 					"\n"+id
 					+"\n"+stmt);
 		} catch (NullPointerException npe) {
@@ -219,7 +219,7 @@ public class MySQL{
 				return false; // entry is new
 	
 		} catch (SQLException e) {
-			logger.warning("MySql filter update failed: "+e.getMessage());
+			logger.warning(SQL_OP_ERR+e.getMessage());
 		}
 		return true;
 	}
@@ -239,7 +239,7 @@ public class MySQL{
 			ps.executeUpdate();
 	
 		} catch (SQLException e) {
-			logger.warning("Unable to add thumbnail: "+e.getMessage());
+			logger.warning(SQL_OP_ERR+e.getMessage());
 		}finally{
 			try {
 				if(blob != null)
@@ -289,7 +289,7 @@ public class MySQL{
 			rs.close();
 			return i;
 		} catch (SQLException e) {
-			logger.warning("Pending filter lookup failed: "+e.getMessage());
+			logger.warning(SQL_OP_ERR+e.getMessage());
 		}
 		return -1;
 	}
@@ -319,7 +319,7 @@ public class MySQL{
 			return images;
 
 		} catch (SQLException e) {
-			logger.warning("thumbGet failed with "+e.getMessage());
+			logger.warning(SQL_OP_ERR+e.getMessage());
 		} catch (IOException e) {
 			logger.severe(e.getMessage());
 		}
@@ -351,7 +351,7 @@ public class MySQL{
 			int size = rs.getInt(1);
 			return size;
 		} catch (SQLException e) {
-			logger.warning("MySql size lookup failed: "+e.getMessage());
+			logger.warning(SQL_OP_ERR+e.getMessage());
 		}
 
 		return -1;
@@ -386,7 +386,7 @@ public class MySQL{
 			rs.close();
 			return isKnown;
 		} catch (SQLException e) {
-			logger.warning("MySql known lookup failed: "+e.getMessage());
+			logger.warning(SQL_OP_ERR+e.getMessage());
 		}
 		return true;
 	}
@@ -404,7 +404,7 @@ public class MySQL{
 			rs.close();
 			return b; 
 		} catch (SQLException e) {
-			logger.warning("MySql Archive lookup failed: "+e.getMessage());
+			logger.warning(SQL_OP_ERR+e.getMessage());
 		}
 
 		return true;
@@ -423,7 +423,7 @@ public class MySQL{
 			rs.close();
 			return b; 
 		} catch (SQLException e) {
-			logger.warning("MySql DNW lookup failed: "+e.getMessage());
+			logger.warning(SQL_OP_ERR+e.getMessage());
 		}
 
 		return true;
@@ -442,7 +442,7 @@ public class MySQL{
 			rs.close();
 			return b; 
 		} catch (SQLException e) {
-			logger.warning("MySql exists lookup failed: "+e.getMessage());
+			logger.warning(SQL_OP_ERR+e.getMessage());
 		}
 		return true;
 	}
@@ -460,7 +460,7 @@ public class MySQL{
 			rs.close();
 			return b;
 		} catch (SQLException e) {
-			logger.warning("MySql block lookup failed: "+e.getMessage());
+			logger.warning(SQL_OP_ERR+e.getMessage());
 		}
 	
 		return false;
@@ -475,7 +475,7 @@ public class MySQL{
 			ps.setTimestamp(1,new Timestamp(maxAge));
 			ps.executeUpdate();
 		} catch (SQLException e) {
-			logger.warning("MySql known prune failed: "+e.getMessage());
+			logger.warning(SQL_OP_ERR+e.getMessage());
 		}
 	}
 
@@ -513,7 +513,7 @@ public class MySQL{
 			ps.setString(1, id);
 			ps.executeUpdate();
 		} catch (Exception e) {
-			logger.warning("MySql delete failed: "+e.getMessage());
+			logger.warning(SQL_OP_ERR+e.getMessage());
 		}
 	}
 
@@ -524,7 +524,7 @@ public class MySQL{
 			req.execute(sqlStatment);
 			req.close();
 		} catch (SQLException e) {
-			logger.warning("failed to execute statement id: "+sqlStatment+"\n"+e.getMessage());
+			logger.warning("Failed to execute statement id: "+sqlStatment+"\n"+e.getMessage());
 			e.printStackTrace();
 		}
 	}
