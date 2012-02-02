@@ -278,22 +278,7 @@ public class MySQL{
 	 */
 	public int getPending(){
 		reconnect();
-		String command = "pending";
-		ResultSet rs = null;
-		PreparedStatement ps = getPrepStmt(command);
-	
-		try {
-			rs = ps.executeQuery();
-			rs.next();
-			int i = rs.getInt(1);
-			rs.close();
-			return i;
-		} catch (SQLException e) {
-			logger.warning(SQL_OP_ERR+e.getMessage());
-		} finally{
-			closeResultSet(rs, command);
-		}
-		return -1;
+		return simpleIntQuery("pending");
 	}
 
 	public ArrayList<Image> getThumb(String url){
@@ -335,32 +320,21 @@ public class MySQL{
 	public int size(String table){
 		reconnect();
 
-		ResultSet rs;
-		PreparedStatement ps = null;
+		String command;
 		
 		switch(table){
 		case "filter":
-			ps = getPrepStmt("sizeFilter");
+			command = "sizeFilter";
 			break;
 			
 		case "cache":
-			ps = getPrepStmt("sizeCache");
+			command = "sizeCache";
 			break;
 		default:
 			throw new InvalidParameterException("Table "+ table +" not supported");
 		}
 
-		try {
-			rs = ps.executeQuery();
-
-			rs.next();
-			int size = rs.getInt(1);
-			return size;
-		} catch (SQLException e) {
-			logger.warning(SQL_OP_ERR+e.getMessage());
-		}
-
-		return -1;
+		return simpleIntQuery(command);
 	}
 
 	/**
@@ -419,6 +393,25 @@ public class MySQL{
 		}
 		
 		return defaultReturn;
+	}
+	
+	private int simpleIntQuery(String command){
+		ResultSet rs = null;
+		PreparedStatement ps = getPrepStmt(command);
+		
+		try {
+			rs = ps.executeQuery();
+
+			rs.next();
+			int size = rs.getInt(1);
+			return size;
+		} catch (SQLException e) {
+			logger.warning(SQL_OP_ERR+e.getMessage());
+		} finally{
+			closeResultSet(rs, command);
+		}
+		
+		return -1;
 	}
 
 	public void pruneCache(long maxAge){
