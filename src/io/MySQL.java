@@ -301,9 +301,10 @@ public class MySQL{
 		Blob blob = null;
 		ArrayList<Image> images = new ArrayList<Image>();
 		InputStream is;
+		String command = "getThumb";
 
 		ResultSet rs = null;
-		PreparedStatement ps = getPrepStmt("getThumb");
+		PreparedStatement ps = getPrepStmt(command);
 
 		try {
 			ps.setString(1, url);
@@ -325,12 +326,7 @@ public class MySQL{
 			logger.severe(e.getMessage());
 		}finally{
 			if(rs != null){
-				try {
-					rs.close();
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				closeResultSet(rs, command);
 			}
 		}
 		return null;
