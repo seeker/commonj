@@ -317,24 +317,9 @@ public class MySQL{
 		return null;
 	}
 
-	public int size(String table){
+	public int size(MySQLtables table){
 		reconnect();
-
-		String command;
-		
-		switch(table){
-		case "filter":
-			command = "sizeFilter";
-			break;
-			
-		case "cache":
-			command = "sizeCache";
-			break;
-		default:
-			throw new InvalidParameterException("Table "+ table +" not supported");
-		}
-
-		return simpleIntQuery(command);
+		return simpleIntQuery("size"+table.toString());
 	}
 
 	/**
@@ -399,6 +384,11 @@ public class MySQL{
 		ResultSet rs = null;
 		PreparedStatement ps = getPrepStmt(command);
 		
+		if(ps == null){
+			logger.warning("Could not carry out query for command \""+command+"\"");
+			return -1;
+		}
+		
 		try {
 			rs = ps.executeQuery();
 
@@ -427,36 +417,15 @@ public class MySQL{
 		}
 	}
 
-	public void delete(String table, String id){
+	public void delete(MySQLtables table, String id){
 		reconnect();
 
-		PreparedStatement ps = null;
-
-		switch(table){
-		case "hash": 	
-			ps = getPrepStmt("deleteHash");
-			break;
-		
-		case "dnw" : 	
-			ps = getPrepStmt("deleteDnw");
-			break;
-			
-		case "filter":	
-			ps = getPrepStmt("deleteFilter");
-			break;
-			
-		case "block": 
-			ps = getPrepStmt("deleteBlock");
-			break;
-			
-		case "archive":
-			ps = getPrepStmt("deleteArchive");
-			break;
-		
-		default:
-			throw new InvalidParameterException("Table "+ table +" not supported");
+		PreparedStatement ps = getPrepStmt("delete"+table.toString());
+		if(ps == null){
+			logger.warning("Could not delete entry "+ id +" for table "+table.toString());
+			return;
 		}
-
+		
 		try {
 			ps.setString(1, id);
 			ps.executeUpdate();
