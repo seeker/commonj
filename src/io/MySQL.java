@@ -545,36 +545,11 @@ public class MySQL{
 			String path = fullPath.substring(0,split).toLowerCase(); // D:\foo\
 			int[] pathId = new int[2];
 	
-			pathG.setString(1, path);
-			rs = pathG.executeQuery();
+			rs = pathLookupQuery(pathG, path);
+			pathId[0] = pathAddQuery(pathA, rs, path);
 	
-			if(rs.next())
-				pathId[0] = rs.getInt(1);
-			else{
-				pathA.setString(1, path);
-				pathA.execute();
-	
-				rs = pathA.getGeneratedKeys();
-				rs.next();
-				pathId[0] = rs.getInt(1); 
-			}
-			rs.close();
-	
-			nameG.setString(1, filename);
-			rs = nameG.executeQuery();
-	
-			if(rs.next())
-				pathId[1] = rs.getInt(1);
-			else{
-				nameA.setString(1, filename);
-				nameA.execute();
-	
-				rs = nameA.getGeneratedKeys();
-				rs.next();
-				pathId[1] = rs.getInt(1); 
-			}
-	
-			rs.close();
+			rs = pathLookupQuery(nameG, filename);
+			pathId[1] = pathAddQuery(nameA, rs, filename);
 	
 			return pathId;
 		} catch (SQLException e) {
@@ -582,5 +557,39 @@ public class MySQL{
 		}
 	
 		return null;
+	}
+	
+	private ResultSet pathLookupQuery(PreparedStatement ps, String path) throws SQLException{
+		ps.setString(1, path);
+		return ps.executeQuery();
+	}
+	
+	private int pathAddQuery(PreparedStatement ps, ResultSet rs, String path) throws SQLException{
+		int pathValue;
+		try{
+			if(rs.next())
+				pathValue = rs.getInt(1);
+			else{
+				ps.setString(1, path);
+				ps.execute();
+
+				rs = ps.getGeneratedKeys();
+				rs.next();
+				pathValue = rs.getInt(1); 
+			}
+		}catch (SQLException e){
+			throw e;
+		}finally{
+			// to make sure the connection is closed properly
+			try{
+				if(rs != null){
+					rs.close();
+				}
+			}catch(SQLException e2){
+				logger.warning(RS_CLOSE_ERR+e2.getMessage());
+			}
+		}
+
+		return pathValue;
 	}
 }
