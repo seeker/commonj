@@ -278,9 +278,9 @@ public class MySQL{
 	 */
 	public int getPending(){
 		reconnect();
-	
-		ResultSet rs;
-		PreparedStatement ps = getPrepStmt("pending");
+		String command = "pending";
+		ResultSet rs = null;
+		PreparedStatement ps = getPrepStmt(command);
 	
 		try {
 			rs = ps.executeQuery();
@@ -290,6 +290,8 @@ public class MySQL{
 			return i;
 		} catch (SQLException e) {
 			logger.warning(SQL_OP_ERR+e.getMessage());
+		} finally{
+			closeResultSet(rs, command);
 		}
 		return -1;
 	}
@@ -300,7 +302,7 @@ public class MySQL{
 		ArrayList<Image> images = new ArrayList<Image>();
 		InputStream is;
 
-		ResultSet rs;
+		ResultSet rs = null;
 		PreparedStatement ps = getPrepStmt("getThumb");
 
 		try {
@@ -315,13 +317,21 @@ public class MySQL{
 				blob.free();
 			}
 
-			rs.close();
 			return images;
 
 		} catch (SQLException e) {
 			logger.warning(SQL_OP_ERR+e.getMessage());
 		} catch (IOException e) {
 			logger.severe(e.getMessage());
+		}finally{
+			if(rs != null){
+				try {
+					rs.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 		}
 		return null;
 	}
@@ -432,35 +442,39 @@ public class MySQL{
 	public boolean isHashed(String hash){
 		reconnect();
 	
-		ResultSet rs;
-		PreparedStatement ps = getPrepStmt("isHashed");
+		ResultSet rs = null;
+		String command = "isHashed";
+		PreparedStatement ps = getPrepStmt(command);
 	
 		try {
 			ps.setString(1, hash);
 			rs = ps.executeQuery();
 			boolean b =rs.first();
-			rs.close();
 			return b; 
 		} catch (SQLException e) {
 			logger.warning(SQL_OP_ERR+e.getMessage());
+		} finally{
+			closeResultSet(rs, command);
 		}
 		return true;
 	}
 
 	public boolean isBlacklisted(String hash){
 		reconnect();
+		String command = "isBlacklisted";
 	
-		ResultSet rs;
-		PreparedStatement ps = getPrepStmt("isBlacklisted");
+		ResultSet rs = null;
+		PreparedStatement ps = getPrepStmt(command);
 	
 		try {
 			ps.setString(1, hash);
 			rs = ps.executeQuery();
-			boolean b = rs.first();
-			rs.close();
+			boolean b = rs.first(); //TODO solvable with next?
 			return b;
 		} catch (SQLException e) {
 			logger.warning(SQL_OP_ERR+e.getMessage());
+		} finally{
+			closeResultSet(rs, command);
 		}
 	
 		return false;
@@ -533,23 +547,17 @@ public class MySQL{
 	
 		ResultSet rs;
 	
-		PreparedStatement pathA = getPrepStmt("addDirectory");
-		PreparedStatement pathG = getPrepStmt("getDirectory");
-		PreparedStatement nameA = getPrepStmt("addFilename");
-		PreparedStatement nameG = getPrepStmt("getFilename");
-	
-	
 		try{
 			int split = fullPath.lastIndexOf("\\")+1;
 			String filename = fullPath.substring(split).toLowerCase(); // bar.txt
 			String path = fullPath.substring(0,split).toLowerCase(); // D:\foo\
 			int[] pathId = new int[2];
 	
-			rs = pathLookupQuery(pathG, path);
-			pathId[0] = pathAddQuery(pathA, rs, path);
+			rs = pathLookupQuery("getDirectory", path);
+			pathId[0] = pathAddQuery("addDirectory", rs, path);
 	
-			rs = pathLookupQuery(nameG, filename);
-			pathId[1] = pathAddQuery(nameA, rs, filename);
+			rs = pathLookupQuery("getFilename", filename);
+			pathId[1] = pathAddQuery("addFilename", rs, filename);
 	
 			return pathId;
 		} catch (SQLException e) {
@@ -559,13 +567,15 @@ public class MySQL{
 		return null;
 	}
 	
-	private ResultSet pathLookupQuery(PreparedStatement ps, String path) throws SQLException{
+	private ResultSet pathLookupQuery(String command, String path) throws SQLException{
+		PreparedStatement ps = getPrepStmt(command);
 		ps.setString(1, path);
 		return ps.executeQuery();
 	}
 	
-	private int pathAddQuery(PreparedStatement ps, ResultSet rs, String path) throws SQLException{
+	private int pathAddQuery(String command, ResultSet rs, String path) throws SQLException{
 		int pathValue;
+		PreparedStatement ps = getPrepStmt(command);
 		try{
 			if(rs.next())
 				pathValue = rs.getInt(1);
@@ -580,16 +590,19 @@ public class MySQL{
 		}catch (SQLException e){
 			throw e;
 		}finally{
-			// to make sure the connection is closed properly
-			try{
-				if(rs != null){
-					rs.close();
-				}
-			}catch(SQLException e2){
-				logger.warning(RS_CLOSE_ERR+e2.getMessage());
-			}
+			closeResultSet(rs, command);
 		}
 
 		return pathValue;
+	}
+	
+	private void closeResultSet(ResultSet rs, String command){
+		if(rs != null){
+			try{
+				rs.close();
+			}catch (SQLException e){
+				logger.warning(RS_CLOSE_ERR+e.getMessage()+" for command \""+command+"\"");
+			}
+		}
 	}
 }
