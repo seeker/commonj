@@ -44,6 +44,8 @@ public class MySQL{
 	Connection cn = null;
 	Properties mySqlProps;
 	int retries = 0;
+	protected final String RS_CLOSE_ERR = "Could not close ResultSet: ";
+	protected final String SQL_OP_ERR = "MySQL operation failed: ";
 	private static int MAX_RETRY = 3; // reconnect attempts
 	private static int RETRY_WAIT = 5000;	// time to wait between reconnect attempts, in milliseconds
 	private static int VALID_CHECK_TIME_OUT = 10; // time to wait for a response when validating connection, in seconds
