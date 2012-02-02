@@ -385,99 +385,44 @@ public class MySQL{
 	 */
 	public boolean isCached(String uniqueID){
 		reconnect();
-
-		ResultSet rs;
-		PreparedStatement ps = getPrepStmt("isCached");
-
-		try {
-			ps.setString(1, uniqueID);
-			rs = ps.executeQuery();
-			Boolean isKnown = rs.next();
-			rs.close();
-			return isKnown;
-		} catch (SQLException e) {
-			logger.warning(SQL_OP_ERR+e.getMessage());
-		}
-		return true;
+		return simpleBooleanQuery("isCached", uniqueID, true);
 	}
 
 	public boolean isArchived(String hash){
 		reconnect();
-
-		ResultSet rs;
-		PreparedStatement ps = getPrepStmt("isArchive");
-
-		try {
-			ps.setString(1, hash);
-			rs = ps.executeQuery();
-			boolean b = rs.first();
-			rs.close();
-			return b; 
-		} catch (SQLException e) {
-			logger.warning(SQL_OP_ERR+e.getMessage());
-		}
-
-		return true;
+		return simpleBooleanQuery("isArchive", hash, true);
 	}
 
 	public boolean isDnw(String hash){
 		reconnect();
-
-		ResultSet rs;
-		PreparedStatement ps = getPrepStmt("isDnw");
-
-		try {
-			ps.setString(1, hash);
-			rs = ps.executeQuery();
-			boolean b = rs.first();
-			rs.close();
-			return b; 
-		} catch (SQLException e) {
-			logger.warning(SQL_OP_ERR+e.getMessage());
-		}
-
-		return true;
+		return simpleBooleanQuery("isDnw", hash, true);
 	}
 
 	public boolean isHashed(String hash){
 		reconnect();
-	
-		ResultSet rs = null;
-		String command = "isHashed";
-		PreparedStatement ps = getPrepStmt(command);
-	
-		try {
-			ps.setString(1, hash);
-			rs = ps.executeQuery();
-			boolean b =rs.first();
-			return b; 
-		} catch (SQLException e) {
-			logger.warning(SQL_OP_ERR+e.getMessage());
-		} finally{
-			closeResultSet(rs, command);
-		}
-		return true;
+		return simpleBooleanQuery("isHashed", hash, true);
 	}
 
 	public boolean isBlacklisted(String hash){
 		reconnect();
-		String command = "isBlacklisted";
+		return simpleBooleanQuery("isBlacklisted", hash, false);
+	}
 	
+	private boolean simpleBooleanQuery(String command, String key, Boolean defaultReturn){
 		ResultSet rs = null;
 		PreparedStatement ps = getPrepStmt(command);
-	
 		try {
-			ps.setString(1, hash);
+			ps.setString(1, key);
 			rs = ps.executeQuery();
-			boolean b = rs.first(); //TODO solvable with next?
+			boolean b = rs.next();
 			return b;
 		} catch (SQLException e) {
 			logger.warning(SQL_OP_ERR+e.getMessage());
 		} finally{
 			closeResultSet(rs, command);
 		}
-	
-		return false;
+		
+		return defaultReturn;
 	}
 
 	public void pruneCache(long maxAge){
