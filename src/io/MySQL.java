@@ -79,6 +79,7 @@ public class MySQL{
 		addPrepStmt("getDirectory"		, "SELECT id FROM dirlist WHERE dirpath = ?");
 		addPrepStmt("addFilename"		, "INSERT INTO filelist (filename) VALUES (?)",PreparedStatement.RETURN_GENERATED_KEYS);
 		addPrepStmt("getFilename"		, "SELECT id FROM filelist WHERE filename = ?");
+		addPrepStmt("getSetting"		, "SELECT param	FROM settings WHERE name = ?");
 	}
 	
 	private void generateStatements(){
@@ -398,8 +399,8 @@ public class MySQL{
 			rs = ps.executeQuery();
 
 			rs.next();
-			int size = rs.getInt(1);
-			return size;
+			int intValue = rs.getInt(1);
+			return intValue;
 		} catch (SQLException e) {
 			logger.warning(SQL_OP_ERR+e.getMessage());
 		} finally{
@@ -407,6 +408,30 @@ public class MySQL{
 		}
 		
 		return -1;
+	}
+	
+	private String simpleStringQuery(String command){
+		ResultSet rs = null;
+		PreparedStatement ps = getPrepStmt(command);
+		
+		if(ps == null){
+			logger.warning("Could not carry out query for command \""+command+"\"");
+			return null;
+		}
+		
+		try {
+			rs = ps.executeQuery();
+
+			rs.next();
+			String string = rs.getString(1);
+			return string;
+		} catch (SQLException e) {
+			logger.warning(SQL_OP_ERR+e.getMessage());
+		} finally{
+			closeResultSet(rs, command);
+		}
+		
+		return null;
 	}
 
 	public void pruneCache(long maxAge){
@@ -449,6 +474,12 @@ public class MySQL{
 			logger.warning("Failed to execute statement id: "+sqlStatment+"\n"+e.getMessage());
 			e.printStackTrace();
 		}
+	}
+	
+	public String getSetting(DBsettings settingName){
+		reconnect();
+		String command = "getSetting";
+		return simpleStringQuery(command);
 	}
 
 	private int[] addPath(String fullPath){
