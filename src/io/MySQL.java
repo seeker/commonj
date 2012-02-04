@@ -19,7 +19,6 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.security.InvalidParameterException;
 import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -58,11 +57,11 @@ public class MySQL{
 	 * Initialize the class, preparing the statements needed for the methods.
 	 */
 	public void init(){
+		generateStatements();
+		
 		addPrepStmt("addCache"			, "REPLACE INTO cache SET id=?");
 		addPrepStmt("addThumb"			, "INSERT INTO thumbs (url, filename, thumb) VALUES(?,?,?)");
 		addPrepStmt("getThumb"			, "SELECT thumb FROM thumbs WHERE url = ? ORDER BY filename ASC");
-		addPrepStmt("sizeCache"			, "SELECT count(*) FROM cache");
-		addPrepStmt("sizeFilter"		, "SELECT count(*) FROM filter");
 		addPrepStmt("pending"			, "SELECT count(*) FROM filter WHERE status = 1");
 		addPrepStmt("isCached"			, "SELECT timestamp FROM `cache` WHERE `id` = ?");
 		addPrepStmt("isArchive"			, "SELECT * FROM `archive` WHERE `hash` = ?");
@@ -80,6 +79,12 @@ public class MySQL{
 		addPrepStmt("getDirectory"		, "SELECT id FROM dirlist WHERE dirpath = ?");
 		addPrepStmt("addFilename"		, "INSERT INTO filelist (filename) VALUES (?)",PreparedStatement.RETURN_GENERATED_KEYS);
 		addPrepStmt("getFilename"		, "SELECT id FROM filelist WHERE filename = ?");
+	}
+	
+	private void generateStatements(){
+		for(MySQLtables table : MySQLtables.values()){
+			addPrepStmt("size"+table.toString(), "SELECT count(*) FROM "+table.toString());
+		}
 	}
 
 	public void reconnect(){
