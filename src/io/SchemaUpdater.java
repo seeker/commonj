@@ -32,8 +32,6 @@ public class SchemaUpdater {
 			// note: missing breaks are intentional, to create cascade
 			switch(versionFromRemote){
 				case 1:
-					// initial version, do nothing
-				case 2:
 					// update from version 1 to 2
 					sql.sendStatement(UpdateQuery.getString("UPDATE_1_TO_2"));
 				default:

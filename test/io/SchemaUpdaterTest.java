@@ -17,7 +17,7 @@ public class SchemaUpdaterTest {
 	public void setUp() throws Exception {
 		sql = mock(MySQL.class);
 		local = new Properties();
-		local.put(DBsettings.SchemaVersion.toString(), "3");
+		local.put(DBsettings.SchemaVersion.toString(), "2");
 	}
 
 	@After
@@ -58,14 +58,14 @@ public class SchemaUpdaterTest {
 	
 	@Test
 	public void testNoUpdate() throws SchemaUpdateException {
-		when(sql.getSetting(DBsettings.SchemaVersion)).thenReturn("3");
+		when(sql.getSetting(DBsettings.SchemaVersion)).thenReturn("2");
 		SchemaUpdater.update(sql, local);
 		verify(sql,times(0)).sendStatement(anyString());
 	}
 	
 	@Test(expected=SchemaUpdateException.class)
 	public void testRemoteIsNewer() throws SchemaUpdateException {
-		when(sql.getSetting(DBsettings.SchemaVersion)).thenReturn("4");
+		when(sql.getSetting(DBsettings.SchemaVersion)).thenReturn("3");
 		SchemaUpdater.update(sql, local);
 	}
 
