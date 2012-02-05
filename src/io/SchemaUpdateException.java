@@ -1,17 +1,23 @@
 package io;
 
-import java.sql.SQLException;
 
-public class SchemaUpdateException extends SQLException {
+public class SchemaUpdateException extends Exception {
 	private static final long serialVersionUID = 1L;
-	String message;
-	
-	public SchemaUpdateException(String message){
-		this.message = message;
+
+	public SchemaUpdateException() {
+		super();
+		// TODO Auto-generated constructor stub
 	}
 
-	@Override
-	public String getMessage() {
-		return message;
+	public SchemaUpdateException(String reason, Throwable cause) {
+		super(reason, cause);
+	}
+
+	public SchemaUpdateException(String reason) {
+		super(reason);
+	}
+
+	public SchemaUpdateException(Throwable cause) {
+		super(cause);
 	}
 }

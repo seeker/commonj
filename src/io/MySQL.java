@@ -157,6 +157,29 @@ public class MySQL{
 		}
 	}
 
+	public boolean batchExecute(String[] statements){
+		reconnect();
+		Statement req = null;
+		
+		try {
+			for(String sql : statements){
+				req = cn.createStatement();
+				req.execute(sql);
+			}
+		} catch (SQLException e) {
+			logger.warning(SQL_OP_ERR+e.getMessage());
+			try {
+				if(req != null)
+					req.close();
+			} catch (SQLException e1) {
+				logger.warning("Unable to close statement");
+			}
+			return false;
+		}
+		
+		return true;
+	}
+
 	public void addPrepStmt(String id,String stmt,int param1, int param2){
 		PreparedStatement toAdd = null;
 		try {

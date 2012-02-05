@@ -33,13 +33,22 @@ public class SchemaUpdater {
 			switch(versionFromRemote){
 				case 1:
 					// update from version 1 to 2
-					sql.sendStatement(UpdateQuery.getString("UPDATE_1_TO_2"));
+					if(! sql.batchExecute(UPDATE_1_TO_2))
+						throw new SchemaUpdateException("Batch command UPDATE_1_TO_2 failed");
 				default:
 			}
-		} catch (NumberFormatException e) {
+		} catch (NumberFormatException  e) {
 			throw new SchemaUpdateException(e.getMessage());
 		} finally {
 			sql.disconnect();
 		}
 	}
+	
+	private final static String[] UPDATE_1_TO_2 ={
+			"ALTER TABLE `archive` CHANGE COLUMN `hash` `id` VARCHAR(64) NOT NULL COLLATE 'ascii_general_ci' FIRST",
+			"ALTER TABLE `hash` CHANGE COLUMN `hash` `id` VARCHAR(64) NOT NULL COLLATE 'ascii_general_ci' FIRST",
+			"ALTER TABLE `block` CHANGE COLUMN `hash` `id` VARCHAR(64) NOT NULL COLLATE 'ascii_general_ci' FIRST",
+			"ALTER TABLE `dnw` CHANGE COLUMN `hash` `id` VARCHAR(64) NOT NULL COLLATE 'ascii_general_ci' FIRST",
+			"UPDATE settings SET param='2' WHERE name ='SchemaVersion'"
+	};
 }
