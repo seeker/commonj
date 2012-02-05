@@ -479,7 +479,23 @@ public class MySQL{
 	public String getSetting(DBsettings settingName){
 		reconnect();
 		String command = "getSetting";
-		return simpleStringQuery(command);
+		ResultSet rs = null;
+		PreparedStatement ps = getPrepStmt(command);
+		
+		try {
+			ps.setString(1, settingName.toString());
+			rs = ps.executeQuery();
+
+			rs.next();
+			String string = rs.getString(1);
+			return string;
+		} catch (SQLException e) {
+			logger.warning(SQL_OP_ERR+e.getMessage());
+		} finally{
+			closeResultSet(rs, command);
+		}
+		
+		return null;
 	}
 
 	private int[] addPath(String fullPath){
