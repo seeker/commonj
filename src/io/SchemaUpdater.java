@@ -3,7 +3,6 @@ package io;
 import java.util.Properties;
 
 public class SchemaUpdater {
-	private static String UPDATE_1_TO_2 = "put update code here";
 	public static void update(ConnectionPool connPool, Properties settings) throws SchemaUpdateException{
 		try {
 			MySQL sql = connPool.getResource();
@@ -37,7 +36,7 @@ public class SchemaUpdater {
 					// initial version, do nothing
 				case 2:
 					// update from version 1 to 2
-					sql.sendStatement(UPDATE_1_TO_2);
+					sql.sendStatement(UpdateQuery.getString("UPDATE_1_TO_2"));
 				default:
 			}
 		} catch (InterruptedException | ResourceCreationException | NumberFormatException e) {
