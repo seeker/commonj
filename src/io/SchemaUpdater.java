@@ -3,9 +3,8 @@ package io;
 import java.util.Properties;
 
 public class SchemaUpdater {
-	public static void update(ConnectionPool connPool, Properties settings) throws SchemaUpdateException{
+	public static void update(MySQL sql, Properties settings) throws SchemaUpdateException{
 		try {
-			MySQL sql = connPool.getResource();
 			String s;
 			 s = sql.getSetting(DBsettings.SchemaVersion);
 			
@@ -39,8 +38,10 @@ public class SchemaUpdater {
 					sql.sendStatement(UpdateQuery.getString("UPDATE_1_TO_2"));
 				default:
 			}
-		} catch (InterruptedException | ResourceCreationException | NumberFormatException e) {
+		} catch (NumberFormatException e) {
 			throw new SchemaUpdateException(e.getMessage());
+		} finally {
+			sql.disconnect();
 		}
 	}
 }
