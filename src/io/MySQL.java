@@ -55,7 +55,7 @@ public class MySQL{
 	/**
 	 * Initialize the class, preparing the statements needed for the methods.
 	 */
-	public static void init(){
+	private static void init(){
 		generateStatements();
 		
 		addPrepStmt("addCache"			, "REPLACE INTO cache SET id=?");
@@ -85,7 +85,7 @@ public class MySQL{
 		}
 	}
 
-	private Connection getConnection(){
+	protected Connection getConnection(){
 		try {
 			return connPool.getConnection();
 		} catch (SQLException e) {
@@ -95,7 +95,7 @@ public class MySQL{
 		return null;
 	}
 
-	private static void addPrepStmt(String id, String stmt){
+	protected static void addPrepStmt(String id, String stmt){
 		try {
 			if(prepStmts.containsKey(id))
 				throw new IllegalArgumentException("Key is already present");
@@ -158,7 +158,7 @@ public class MySQL{
 //		}
 //	}
 
-	private PreparedStatement getPrepStmt(String command){
+	protected PreparedStatement getPrepStmt(String command){
 		if(prepStmts.containsKey(command)){
 			Connection cn = getConnection();
 			
@@ -175,7 +175,7 @@ public class MySQL{
 		}
 	}
 	
-	private void silentClose(Connection cn, PreparedStatement ps, ResultSet rs){
+	protected void silentClose(Connection cn, PreparedStatement ps, ResultSet rs){
 		if(rs != null)
 			try{rs.close();}catch(SQLException e){}
 		if(ps != null)
