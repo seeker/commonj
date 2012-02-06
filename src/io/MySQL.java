@@ -184,15 +184,33 @@ public class MySQL{
 			try{cn.close();}catch(SQLException e){}
 	}
 	
+	protected void closeAll(PreparedStatement ps){
+		Connection cn = null;
+		ResultSet rs = null;
+		
+		if(ps == null)
+			return;
+		
+		try{cn = ps.getConnection();}catch(SQLException e){}
+		try{rs = ps.getResultSet();}catch(SQLException e){}
+		
+		if(rs != null)
+			try{rs.close();}catch(SQLException e){}
+		if(ps != null)
+			try{ps.close();}catch(SQLException e){}
+		if(cn != null)
+			try{cn.close();}catch(SQLException e){}
+	}
+	
 
-//	public void prepStmtUpdate(String string) throws SQLException{
-//		prepStmts.get(string).executeUpdate();
-//	}
-//
-//	public ResultSet prepStmtQuery(String string) throws SQLException{
-//		ResultSet res =  prepStmts.get(string).executeQuery();
-//		return res;
-//	}
+	protected void prepStmtUpdate(String command) throws SQLException{
+		getPrepStmt(command).executeUpdate();
+	}
+
+	protected ResultSet prepStmtQuery(String string) throws SQLException{
+		ResultSet res =  getPrepStmt(string).executeQuery();
+		return res;
+	}
 
 	
 
@@ -219,7 +237,7 @@ public class MySQL{
 		} catch (SQLException e) {
 			logger.warning(SQL_OP_ERR+e.getMessage());
 		} finally {
-			silentClose(null, ps, null);
+			closeAll(ps);
 		}
 		return true;
 	}
@@ -247,6 +265,7 @@ public class MySQL{
 			} catch (SQLException e) {
 				logger.severe(e.getMessage());
 			}
+			closeAll(ps);
 			silentClose(cn, ps, null);
 		}
 	}
@@ -271,7 +290,7 @@ public class MySQL{
 		} catch(SQLException e){
 			logger.warning(SQL_OP_ERR+e.getMessage());
 		} finally {
-			silentClose(null, ps, null);
+			closeAll(ps);
 		}
 
 		return false;
@@ -314,6 +333,7 @@ public class MySQL{
 		} catch (IOException e) {
 			logger.severe(e.getMessage());
 		}finally{
+			closeAll(ps);
 			silentClose(null, ps, rs);
 		}
 		return null;
@@ -370,7 +390,7 @@ public class MySQL{
 		} catch (SQLException e) {
 			logger.warning(SQL_OP_ERR+e.getMessage());
 		} finally{
-			silentClose(null, ps, rs);
+			closeAll(ps);
 		}
 		
 		return defaultReturn;
@@ -394,7 +414,7 @@ public class MySQL{
 		} catch (SQLException e) {
 			logger.warning(SQL_OP_ERR+e.getMessage());
 		} finally{
-			silentClose(null, ps, rs);
+			closeAll(ps);
 		}
 		
 		return -1;
@@ -418,6 +438,7 @@ public class MySQL{
 		} catch (SQLException e) {
 			logger.warning(SQL_OP_ERR+e.getMessage());
 		} finally{
+			closeAll(ps);
 			closeResultSet(rs, command);
 		}
 		
@@ -433,7 +454,7 @@ public class MySQL{
 		} catch (SQLException e) {
 			logger.warning(SQL_OP_ERR+e.getMessage());
 		} finally {
-			silentClose(null, ps, null);
+			closeAll(ps);
 		}
 	}
 
@@ -450,7 +471,7 @@ public class MySQL{
 		} catch (Exception e) {
 			logger.warning(SQL_OP_ERR+e.getMessage());
 		} finally {
-			silentClose(null, ps, null);
+			closeAll(ps);
 		}
 	}
 
@@ -486,6 +507,7 @@ public class MySQL{
 		} catch (SQLException e) {
 			logger.warning(SQL_OP_ERR+e.getMessage());
 		} finally{
+			closeAll(ps);
 			silentClose(null, ps, rs);
 		}
 		
@@ -535,7 +557,7 @@ public class MySQL{
 		}catch (SQLException e){
 			throw e;
 		}finally{
-			silentClose(null, ps, rs);
+			closeAll(ps);
 		}
 
 		return pathValue;
@@ -557,7 +579,7 @@ public class MySQL{
 		}catch (SQLException e){
 			throw e;
 		}finally{
-			silentClose(null, ps, rs);
+			closeAll(ps);
 		}
 
 		return pathValue;
