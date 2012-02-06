@@ -38,19 +38,14 @@ import javax.imageio.ImageIO;
  * Class for database communication.
  */
 public class MySQL{
-	HashMap<String, PreparedStatement> prepStmts = new HashMap<String, PreparedStatement>();
+	HashMap<String, String> prepStmts = new HashMap<String, String>();
 	protected static Logger logger = Logger.getLogger(MySQL.class.getName());
-	Connection cn = null;
-	Properties mySqlProps;
-	int retries = 0;
 	protected final String RS_CLOSE_ERR = "Could not close ResultSet: ";
 	protected final String SQL_OP_ERR = "MySQL operation failed: ";
-	private static int MAX_RETRY = 3; // reconnect attempts
-	private static int RETRY_WAIT = 5000;	// time to wait between reconnect attempts, in milliseconds
-	private static int VALID_CHECK_TIME_OUT = 10; // time to wait for a response when validating connection, in seconds
+	protected final ConnectionPool connPool;
 
-	public MySQL(Properties mySqlProps){
-		this.mySqlProps = mySqlProps;
+	public MySQL(ConnectionPool connPool){
+		this.connPool = connPool;
 	}
 
 	/**
@@ -75,9 +70,7 @@ public class MySQL{
 		addPrepStmt("deleteBlock"		, "DELETE FROM block WHERE hash = ?");
 		addPrepStmt("deleteArchive"		, "DELETE FROM archive WHERE hash = ?");
 		addPrepStmt("isBlacklisted"		, "SELECT * FROM `block` WHERE `hash` = ?");
-		addPrepStmt("addDirectory"		, "INSERT INTO dirlist (dirpath) VALUES (?)",PreparedStatement.RETURN_GENERATED_KEYS);
 		addPrepStmt("getDirectory"		, "SELECT id FROM dirlist WHERE dirpath = ?");
-		addPrepStmt("addFilename"		, "INSERT INTO filelist (filename) VALUES (?)",PreparedStatement.RETURN_GENERATED_KEYS);
 		addPrepStmt("getFilename"		, "SELECT id FROM filelist WHERE filename = ?");
 		addPrepStmt("getSetting"		, "SELECT param	FROM settings WHERE name = ?");
 	}
@@ -88,68 +81,21 @@ public class MySQL{
 		}
 	}
 
-	public void reconnect(){
-		if(isValid())
-			return;
-	
-		try{
-			Class.forName( "com.mysql.jdbc.Driver" );
-			if(mySqlProps != null){
-				Class.forName( "com.mysql.jdbc.Driver" );
-				cn = DriverManager.getConnection(mySqlProps.getProperty("url"),mySqlProps);
-				logger.info("connection to server established");
-				retries=0;
-			}else{
-				logger.warning("could not connect, connection details missing");
-			}
-		}catch(Exception e){
-			if((e.getMessage().contains("link")) && (retries < MAX_RETRY)){
-				retries++;
-				try{Thread.sleep(RETRY_WAIT);}catch(InterruptedException ie){}
-				logger.info("connect failed, retrying...");
-				reconnect();
-			}else{
-				retries = MAX_RETRY; // Cancel loop
-				logger.severe(e.getMessage());
-			}
+	private Connection getConnection(){
+		try {
+			return connPool.getConnection();
+		} catch (SQLException e) {
+			logger.warning("Failed to get database connection");
 		}
+		
+		return null;
 	}
 
-	public boolean isValid (){
-		if (cn == null){
-			return false;
-		}else{
-			try {
-				return cn.isValid(VALID_CHECK_TIME_OUT);
-			} catch (SQLException e) {
-				logger.severe(e.getMessage());
-				return false;
-			}
-		}
-	}
-
-	public void disconnect(){
-		Iterator<PreparedStatement> ite = prepStmts.values().iterator();
-	
-		while(ite.hasNext()){
-			PreparedStatement ps = ite.next();
-			try { if( null != ps ) ps.close(); } catch( Exception ex ) {}
-		}
-	}
-
-	public void addPrepStmt(String id, String stmt){
-		reconnect();
-
-		PreparedStatement toAdd = null;
+	private void addPrepStmt(String id, String stmt){
 		try {
 			if(prepStmts.containsKey(id))
 				throw new IllegalArgumentException("Key is already present");
-			toAdd = cn.prepareStatement(stmt);
-			prepStmts.put(id, toAdd);
-		} catch (SQLException e) {
-			logger.severe("Prepared Statement could not be created,\n"+e.getMessage()+
-					"\n"+id
-					+"\n"+stmt);
+			prepStmts.put(id, stmt);
 		} catch (NullPointerException npe){
 			logger.severe("Prepared Statement could not be created, invalid connection");
 		} catch (IllegalArgumentException iae){
@@ -158,7 +104,7 @@ public class MySQL{
 	}
 
 	public boolean batchExecute(String[] statements){
-		reconnect();
+		Connection cn = getConnection();
 		Statement req = null;
 		
 		try {
@@ -175,54 +121,74 @@ public class MySQL{
 				logger.warning("Unable to close statement");
 			}
 			return false;
+		} finally {
+			silentClose(cn, null, null);
 		}
 		
 		return true;
 	}
 
-	public void addPrepStmt(String id,String stmt,int param1, int param2){
-		PreparedStatement toAdd = null;
-		try {
-			toAdd = cn.prepareStatement(stmt,param1,param2);
-			prepStmts.put(id, toAdd);
-		} catch (SQLException e) {
-			logger.severe("Prepared Statement could not be created,\n"+e.getMessage()+
-					"\n"+id
-					+"\n"+stmt);
-		}
-	}
+//	public void addPrepStmt(String id,String stmt,int param1, int param2){
+//		PreparedStatement toAdd = null;
+//		try {
+//			toAdd = cn.prepareStatement(stmt,param1,param2);
+//			prepStmts.put(id, toAdd);
+//		} catch (SQLException e) {
+//			logger.severe("Prepared Statement could not be created,\n"+e.getMessage()+
+//					"\n"+id
+//					+"\n"+stmt);
+//		}
+//	}
+//
+//	public void addPrepStmt(String id,String stmt,int param1){
+//		PreparedStatement toAdd = null;
+//		try {
+//			toAdd = cn.prepareStatement(stmt,param1);
+//			prepStmts.put(id, toAdd);
+//		} catch (SQLException e) {
+//			logger.severe("Prepared Statement could not be created,\n"+e.getMessage()+
+//					"\n"+id
+//					+"\n"+stmt);
+//		} catch (NullPointerException npe) {
+//			logger.severe("Could not add Prepared Statment, invalid connection");
+//		}
+//	}
 
-	public void addPrepStmt(String id,String stmt,int param1){
-		PreparedStatement toAdd = null;
-		try {
-			toAdd = cn.prepareStatement(stmt,param1);
-			prepStmts.put(id, toAdd);
-		} catch (SQLException e) {
-			logger.severe("Prepared Statement could not be created,\n"+e.getMessage()+
-					"\n"+id
-					+"\n"+stmt);
-		} catch (NullPointerException npe) {
-			logger.severe("Could not add Prepared Statment, invalid connection");
-		}
-	}
-
-	public PreparedStatement getPrepStmt(String command){
+	private PreparedStatement getPrepStmt(String command){
 		if(prepStmts.containsKey(command)){
-			return prepStmts.get(command);
+			Connection cn = getConnection();
+			
+			PreparedStatement prepStmt = null;
+			try {
+				prepStmt = cn.prepareStatement(prepStmts.get(command));
+			} catch (SQLException e) {
+				logger.warning("Failed to create prepared statement for command \""+command+"\"");
+			}
+			return prepStmt;
 		}else{
 			logger.warning("Prepared statment command \""+command+"\" not found.\nHas this object been initialized?");
 			return null;
 		}
 	}
-
-	public void prepStmtUpdate(String string) throws SQLException{
-		prepStmts.get(string).executeUpdate();
+	
+	private void silentClose(Connection cn, PreparedStatement ps, ResultSet rs){
+		if(rs != null)
+			try{rs.close();}catch(SQLException e){}
+		if(ps != null)
+			try{ps.close();}catch(SQLException e){}
+		if(cn != null)
+			try{cn.close();}catch(SQLException e){}
 	}
+	
 
-	public ResultSet prepStmtQuery(String string) throws SQLException{
-		ResultSet res =  prepStmts.get(string).executeQuery();
-		return res;
-	}
+//	public void prepStmtUpdate(String string) throws SQLException{
+//		prepStmts.get(string).executeUpdate();
+//	}
+//
+//	public ResultSet prepStmtQuery(String string) throws SQLException{
+//		ResultSet res =  prepStmts.get(string).executeQuery();
+//		return res;
+//	}
 
 	
 
@@ -235,7 +201,6 @@ public class MySQL{
 	 * Retruns true on error.
 	 */
 	public boolean addCache(URL url){
-		reconnect();
 		String id = url.toString();
 		PreparedStatement ps = getPrepStmt("addCache");
 		try {
@@ -249,12 +214,14 @@ public class MySQL{
 	
 		} catch (SQLException e) {
 			logger.warning(SQL_OP_ERR+e.getMessage());
+		} finally {
+			silentClose(null, ps, null);
 		}
 		return true;
 	}
 
 	public void addThumb(String url,String filename, byte[] data){
-		reconnect();
+		Connection cn = getConnection();
 		Blob blob = null;
 	
 		PreparedStatement ps = getPrepStmt("addThumb");
@@ -276,28 +243,34 @@ public class MySQL{
 			} catch (SQLException e) {
 				logger.severe(e.getMessage());
 			}
+			silentClose(cn, ps, null);
 		}
 	}
 
-	public void addHash(String hash, String path, long size) throws SQLException{
-		reconnect();
-	
+	public boolean addHash(String hash, String path, long size) {
 		PreparedStatement ps = getPrepStmt("addHash");
-	
-		int[] pathId = addPath(path);
-	
-		if (pathId == null){
-			logger.warning("Invalid path data");
-			pathId = new int[2];
-			pathId[0] = 0;
-			pathId[1] = 1;
+
+		try{
+			int[] pathId = addPath(path);
+
+			if (pathId == null){
+				logger.warning("Invalid path data");
+				return false;
+			}
+
+			ps.setString(1, hash);
+			ps.setInt(2, pathId[0]);
+			ps.setInt(3, pathId[1]);
+			ps.setLong(4, size);
+			ps.execute();
+			return true;
+		} catch(SQLException e){
+			logger.warning(SQL_OP_ERR+e.getMessage());
+		} finally {
+			silentClose(null, ps, null);
 		}
-	
-		ps.setString(1, hash);
-		ps.setInt(2, pathId[0]);
-		ps.setInt(3, pathId[1]);
-		ps.setLong(4, size);
-		ps.execute();
+
+		return false;
 	}
 
 
@@ -306,12 +279,10 @@ public class MySQL{
 	 * @return Number of pending items.
 	 */
 	public int getPending(){
-		reconnect();
 		return simpleIntQuery("pending");
 	}
 
 	public ArrayList<Image> getThumb(String url){
-		reconnect();
 		Blob blob = null;
 		ArrayList<Image> images = new ArrayList<Image>();
 		InputStream is;
@@ -339,15 +310,12 @@ public class MySQL{
 		} catch (IOException e) {
 			logger.severe(e.getMessage());
 		}finally{
-			if(rs != null){
-				closeResultSet(rs, command);
-			}
+			silentClose(null, ps, rs);
 		}
 		return null;
 	}
 
 	public int size(MySQLtables table){
-		reconnect();
 		return simpleIntQuery("size"+table.toString());
 	}
 
@@ -368,27 +336,22 @@ public class MySQL{
 	 * Returns true on errors.
 	 */
 	public boolean isCached(String uniqueID){
-		reconnect();
 		return simpleBooleanQuery("isCached", uniqueID, true);
 	}
 
 	public boolean isArchived(String hash){
-		reconnect();
 		return simpleBooleanQuery("isArchive", hash, true);
 	}
 
 	public boolean isDnw(String hash){
-		reconnect();
 		return simpleBooleanQuery("isDnw", hash, true);
 	}
 
 	public boolean isHashed(String hash){
-		reconnect();
 		return simpleBooleanQuery("isHashed", hash, true);
 	}
 
 	public boolean isBlacklisted(String hash){
-		reconnect();
 		return simpleBooleanQuery("isBlacklisted", hash, false);
 	}
 	
@@ -403,7 +366,7 @@ public class MySQL{
 		} catch (SQLException e) {
 			logger.warning(SQL_OP_ERR+e.getMessage());
 		} finally{
-			closeResultSet(rs, command);
+			silentClose(null, ps, rs);
 		}
 		
 		return defaultReturn;
@@ -427,7 +390,7 @@ public class MySQL{
 		} catch (SQLException e) {
 			logger.warning(SQL_OP_ERR+e.getMessage());
 		} finally{
-			closeResultSet(rs, command);
+			silentClose(null, ps, rs);
 		}
 		
 		return -1;
@@ -458,8 +421,6 @@ public class MySQL{
 	}
 
 	public void pruneCache(long maxAge){
-		reconnect();
-
 		PreparedStatement ps = getPrepStmt("prune");
 
 		try {
@@ -467,12 +428,12 @@ public class MySQL{
 			ps.executeUpdate();
 		} catch (SQLException e) {
 			logger.warning(SQL_OP_ERR+e.getMessage());
+		} finally {
+			silentClose(null, ps, null);
 		}
 	}
 
 	public void delete(MySQLtables table, String id){
-		reconnect();
-
 		PreparedStatement ps = getPrepStmt("delete"+table.toString());
 		if(ps == null){
 			logger.warning("Could not delete entry "+ id +" for table "+table.toString());
@@ -484,23 +445,29 @@ public class MySQL{
 			ps.executeUpdate();
 		} catch (Exception e) {
 			logger.warning(SQL_OP_ERR+e.getMessage());
+		} finally {
+			silentClose(null, ps, null);
 		}
 	}
 
 	public void sendStatement(String sqlStatment){
-		reconnect();
+		Connection cn = getConnection();
+		Statement req = null;
 		try {
-			Statement req = cn.createStatement();
+			req = cn.createStatement();
 			req.execute(sqlStatment);
 			req.close();
 		} catch (SQLException e) {
 			logger.warning("Failed to execute statement id: "+sqlStatment+"\n"+e.getMessage());
-			e.printStackTrace();
+		} finally {
+			if(req != null)
+				try{req.close();} catch (SQLException e){}
+
+			silentClose(cn, null, null);
 		}
 	}
-	
+
 	public String getSetting(DBsettings settingName){
-		reconnect();
 		String command = "getSetting";
 		ResultSet rs = null;
 		PreparedStatement ps = getPrepStmt(command);
@@ -515,49 +482,67 @@ public class MySQL{
 		} catch (SQLException e) {
 			logger.warning(SQL_OP_ERR+e.getMessage());
 		} finally{
-			closeResultSet(rs, command);
+			silentClose(null, ps, rs);
 		}
 		
 		return null;
 	}
 
 	private int[] addPath(String fullPath){
-	
-		ResultSet rs;
-	
+		int pathValue;
+		
+		Connection cn = null;
 		try{
+			cn = getConnection();
+			PreparedStatement addDir = cn.prepareStatement("INSERT INTO dirlist (dirpath) VALUES (?)",PreparedStatement.RETURN_GENERATED_KEYS);
+			PreparedStatement addFile = cn.prepareStatement("INSERT INTO filelist (filename) VALUES (?)",PreparedStatement.RETURN_GENERATED_KEYS);
+			
 			int split = fullPath.lastIndexOf("\\")+1;
 			String filename = fullPath.substring(split).toLowerCase(); // bar.txt
 			String path = fullPath.substring(0,split).toLowerCase(); // D:\foo\
 			int[] pathId = new int[2];
 	
-			rs = pathLookupQuery("getDirectory", path);
-			pathId[0] = pathAddQuery("addDirectory", rs, path);
-	
-			rs = pathLookupQuery("getFilename", filename);
-			pathId[1] = pathAddQuery("addFilename", rs, filename);
+			pathValue = pathLookupQuery("getDirectory", path);
+			pathId[0] = pathAddQuery(addDir, pathValue, path);
+			
+			pathValue = pathLookupQuery("getFilename", filename);
+			pathId[1] = pathAddQuery(addFile, pathValue, filename);
 	
 			return pathId;
 		} catch (SQLException e) {
 			logger.severe(e.getMessage());
+		} finally {
+			silentClose(cn, null, null);
 		}
 	
 		return null;
 	}
 	
-	private ResultSet pathLookupQuery(String command, String path) throws SQLException{
+	private int pathLookupQuery(String command, String path) throws SQLException{
 		PreparedStatement ps = getPrepStmt(command);
 		ps.setString(1, path);
-		return ps.executeQuery();
+		ResultSet rs = ps.executeQuery();
+		int pathValue = -1;
+
+		try{
+			if(rs.next()){
+				pathValue = rs.getInt(1);
+			}
+		}catch (SQLException e){
+			throw e;
+		}finally{
+			silentClose(null, ps, rs);
+		}
+
+		return pathValue;
 	}
 	
-	private int pathAddQuery(String command, ResultSet rs, String path) throws SQLException{
-		int pathValue;
-		PreparedStatement ps = getPrepStmt(command);
+	private int pathAddQuery(PreparedStatement ps, int pathLookUp, String path) throws SQLException{
+		int pathValue = -1;
+		ResultSet rs = null;
+
 		try{
-			if(rs.next())
-				pathValue = rs.getInt(1);
-			else{
+			if(pathLookUp == -1){
 				ps.setString(1, path);
 				ps.execute();
 
@@ -568,7 +553,7 @@ public class MySQL{
 		}catch (SQLException e){
 			throw e;
 		}finally{
-			closeResultSet(rs, command);
+			silentClose(null, ps, rs);
 		}
 
 		return pathValue;

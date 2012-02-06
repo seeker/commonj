@@ -39,8 +39,6 @@ public class SchemaUpdater {
 			}
 		} catch (NumberFormatException  e) {
 			throw new SchemaUpdateException(e.getMessage());
-		} finally {
-			sql.disconnect();
 		}
 	}
 	
