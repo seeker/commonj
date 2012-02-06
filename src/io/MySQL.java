@@ -38,7 +38,7 @@ import javax.imageio.ImageIO;
  * Class for database communication.
  */
 public class MySQL{
-	HashMap<String, String> prepStmts = new HashMap<String, String>();
+	private static final HashMap<String, String> prepStmts = new HashMap<String, String>();
 	protected static Logger logger = Logger.getLogger(MySQL.class.getName());
 	protected final String RS_CLOSE_ERR = "Could not close ResultSet: ";
 	protected final String SQL_OP_ERR = "MySQL operation failed: ";
@@ -47,11 +47,15 @@ public class MySQL{
 	public MySQL(ConnectionPool connPool){
 		this.connPool = connPool;
 	}
+	
+	static{
+		init();
+	}
 
 	/**
 	 * Initialize the class, preparing the statements needed for the methods.
 	 */
-	public void init(){
+	public static void init(){
 		generateStatements();
 		
 		addPrepStmt("addCache"			, "REPLACE INTO cache SET id=?");
@@ -75,7 +79,7 @@ public class MySQL{
 		addPrepStmt("getSetting"		, "SELECT param	FROM settings WHERE name = ?");
 	}
 	
-	private void generateStatements(){
+	private static void generateStatements(){
 		for(MySQLtables table : MySQLtables.values()){
 			addPrepStmt("size"+table.toString(), "SELECT count(*) FROM "+table.toString());
 		}
@@ -91,7 +95,7 @@ public class MySQL{
 		return null;
 	}
 
-	private void addPrepStmt(String id, String stmt){
+	private static void addPrepStmt(String id, String stmt){
 		try {
 			if(prepStmts.containsKey(id))
 				throw new IllegalArgumentException("Key is already present");
