@@ -49,6 +49,8 @@ public class BoneConnectionPool implements ConnectionPool {
 		config.setUsername(dbProps.getProperty("user"));
 		config.setPassword(dbProps.getProperty("password"));
 		config.setJdbcUrl(dbProps.getProperty("url"));
+	//	config.setCloseConnectionWatch(true); //DEBUG
+		config.setStatementsCacheSize(1024);
 		config.setDriverProperties(dbProps);
 		
 		config.setMinConnectionsPerPartition(1);
