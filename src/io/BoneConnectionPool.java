@@ -42,7 +42,12 @@ public class BoneConnectionPool implements ConnectionPool {
 	
 	public void startPool() throws Exception{
 		Class.forName( "com.mysql.jdbc.Driver" );
-		config = new BoneCPConfig(dbProps);
+		config = new BoneCPConfig();
+		config.setUsername(dbProps.getProperty("user"));
+		config.setPassword(dbProps.getProperty("password"));
+		config.setJdbcUrl(dbProps.getProperty("url"));
+		config.setDriverProperties(dbProps);
+		
 		config.setMinConnectionsPerPartition(1);
 		config.setMaxConnectionsPerPartition(maxResources);
 		config.setPartitionCount(1);
