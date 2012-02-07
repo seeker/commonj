@@ -563,6 +563,8 @@ public class MySQL{
 				rs = ps.getGeneratedKeys();
 				rs.next();
 				pathValue = rs.getInt(1); 
+			} else {
+				pathValue = pathLookUp;
 			}
 		}catch (SQLException e){
 			throw e;
