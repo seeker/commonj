@@ -201,18 +201,6 @@ public class MySQL{
 		if(cn != null)
 			try{cn.close();}catch(SQLException e){}
 	}
-	
-
-	protected void prepStmtUpdate(String command) throws SQLException{
-		getPrepStmt(command).executeUpdate();
-	}
-
-	protected ResultSet prepStmtQuery(String string) throws SQLException{
-		ResultSet res =  getPrepStmt(string).executeQuery();
-		return res;
-	}
-
-	
 
 	/**
 	 * Add the current URL to the cache, or update it's Timestamp if it
