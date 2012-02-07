@@ -63,17 +63,17 @@ public class MySQL{
 		addPrepStmt("getThumb"			, "SELECT thumb FROM thumbs WHERE url = ? ORDER BY filename ASC");
 		addPrepStmt("pending"			, "SELECT count(*) FROM filter WHERE status = 1");
 		addPrepStmt("isCached"			, "SELECT timestamp FROM `cache` WHERE `id` = ?");
-		addPrepStmt("isArchive"			, "SELECT * FROM `archive` WHERE `hash` = ?");
-		addPrepStmt("isDnw"				, "SELECT * FROM `dnw` WHERE `hash` = ?");
+		addPrepStmt("isArchive"			, "SELECT * FROM `archive` WHERE `id` = ?");
+		addPrepStmt("isDnw"				, "SELECT * FROM `dnw` WHERE `id` = ?");
 		addPrepStmt("prune"				, "DELETE FROM `cache` WHERE `timestamp` < ?");
-		addPrepStmt("isHashed"			, "SELECT hash FROM `hash` WHERE `hash` = ?");
-		addPrepStmt("addHash"			, "INSERT INTO hash (hash, dir, filename, size) VALUES (?,?,?,?)");
-		addPrepStmt("deleteHash"		, "DELETE FROM hash WHERE hash = ?");
+		addPrepStmt("isHashed"			, "SELECT id FROM `hash` WHERE `id` = ?");
+		addPrepStmt("addHash"			, "INSERT INTO hash (id, dir, filename, size) VALUES (?,?,?,?)");
+		addPrepStmt("deleteHash"		, "DELETE FROM hash WHERE id = ?");
 		addPrepStmt("deleteFilter"		, "DELETE FROM filter WHERE id = ?");
-		addPrepStmt("deleteDnw"			, "DELETE FROM dnw WHERE hash = ?");
-		addPrepStmt("deleteBlock"		, "DELETE FROM block WHERE hash = ?");
-		addPrepStmt("deleteArchive"		, "DELETE FROM archive WHERE hash = ?");
-		addPrepStmt("isBlacklisted"		, "SELECT * FROM `block` WHERE `hash` = ?");
+		addPrepStmt("deleteDnw"			, "DELETE FROM dnw WHERE id = ?");
+		addPrepStmt("deleteBlock"		, "DELETE FROM block WHERE id = ?");
+		addPrepStmt("deleteArchive"		, "DELETE FROM archive WHERE id = ?");
+		addPrepStmt("isBlacklisted"		, "SELECT * FROM `block` WHERE `id` = ?");
 		addPrepStmt("getDirectory"		, "SELECT id FROM dirlist WHERE dirpath = ?");
 		addPrepStmt("getFilename"		, "SELECT id FROM filelist WHERE filename = ?");
 		addPrepStmt("getSetting"		, "SELECT param	FROM settings WHERE name = ?");
@@ -376,7 +376,7 @@ public class MySQL{
 			boolean b = rs.next();
 			return b;
 		} catch (SQLException e) {
-			logger.warning(SQL_OP_ERR+e.getMessage());
+			logger.warning(SQL_OP_ERR+command+": "+e.getMessage());
 		} finally{
 			closeAll(ps);
 		}
@@ -400,7 +400,7 @@ public class MySQL{
 			int intValue = rs.getInt(1);
 			return intValue;
 		} catch (SQLException e) {
-			logger.warning(SQL_OP_ERR+e.getMessage());
+			logger.warning(SQL_OP_ERR+command+": "+e.getMessage());
 		} finally{
 			closeAll(ps);
 		}
@@ -424,7 +424,7 @@ public class MySQL{
 			String string = rs.getString(1);
 			return string;
 		} catch (SQLException e) {
-			logger.warning(SQL_OP_ERR+e.getMessage());
+			logger.warning(SQL_OP_ERR+command+": "+e.getMessage());
 		} finally{
 			closeAll(ps);
 			closeResultSet(rs, command);
