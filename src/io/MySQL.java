@@ -501,10 +501,12 @@ public class MySQL{
 		int pathValue;
 		
 		Connection cn = null;
+		PreparedStatement addDir = null;
+		PreparedStatement addFile = null;
 		try{
 			cn = getConnection();
-			PreparedStatement addDir = cn.prepareStatement("INSERT INTO dirlist (dirpath) VALUES (?)",PreparedStatement.RETURN_GENERATED_KEYS);
-			PreparedStatement addFile = cn.prepareStatement("INSERT INTO filelist (filename) VALUES (?)",PreparedStatement.RETURN_GENERATED_KEYS);
+			addDir = cn.prepareStatement("INSERT INTO dirlist (dirpath) VALUES (?)",PreparedStatement.RETURN_GENERATED_KEYS);
+			addFile = cn.prepareStatement("INSERT INTO filelist (filename) VALUES (?)",PreparedStatement.RETURN_GENERATED_KEYS);
 			
 			int split = fullPath.lastIndexOf("\\")+1;
 			String filename = fullPath.substring(split).toLowerCase(); // bar.txt
@@ -521,7 +523,8 @@ public class MySQL{
 		} catch (SQLException e) {
 			logger.severe(e.getMessage());
 		} finally {
-			silentClose(cn, null, null);
+			silentClose(null, addDir, null);
+			silentClose(cn, addFile, null);
 		}
 	
 		return null;
@@ -563,8 +566,6 @@ public class MySQL{
 			}
 		}catch (SQLException e){
 			throw e;
-		}finally{
-			closeAll(ps);
 		}
 
 		return pathValue;
