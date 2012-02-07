@@ -115,15 +115,10 @@ public class MySQL{
 			for(String sql : statements){
 				req = cn.createStatement();
 				req.execute(sql);
+				req.close();
 			}
 		} catch (SQLException e) {
 			logger.warning(SQL_OP_ERR+e.getMessage());
-			try {
-				if(req != null)
-					req.close();
-			} catch (SQLException e1) {
-				logger.warning("Unable to close statement");
-			}
 			return false;
 		} finally {
 			silentClose(cn, null, null);
