@@ -77,6 +77,7 @@ public class MySQL{
 		addPrepStmt("getDirectory"		, "SELECT id FROM dirlist WHERE dirpath = ?");
 		addPrepStmt("getFilename"		, "SELECT id FROM filelist WHERE filename = ?");
 		addPrepStmt("getSetting"		, "SELECT param	FROM settings WHERE name = ?");
+		addPrepStmt("getPath"			, "SELECT CONCAT(dirlist.dirpath,filelist.filename) FROM (select dir, filename FROM hash WHERE id =? AS a JOIN filelist ON a.filename=filelist.id Join dirlist on a.dir=dirlist.id");
 	}
 	
 	private static void generateStatements(){
@@ -494,6 +495,31 @@ public class MySQL{
 			silentClose(null, ps, rs);
 		}
 		
+		return null;
+	}
+	
+	/**
+	 * Get path associated with the given hash value.
+	 * 
+	 * @param hash hash value to lookup
+	 * @return path as a String or null if not found
+	 */
+	public String getPath(String hash){
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		
+		try{
+			ps = getPrepStmt("getPath");
+			rs = ps.executeQuery();
+			
+			if(rs.next()){
+				return rs.getString(1);
+			}
+		} catch(SQLException e){
+			logger.warning(SQL_OP_ERR+e.getMessage());
+		} finally {
+			closeAll(ps);
+		}
 		return null;
 	}
 
