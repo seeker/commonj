@@ -86,6 +86,7 @@ public abstract class FileLoader {
 
 	public void clearQueue(){
 		downloadList.clear();
+		afterClearQueue();
 	}
 
 	/**
