@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011  Nicholas Wright
+/*  Copyright (C) 2012  Nicholas Wright
 	
 	part of 'Aid', an imageboard downloader.
 
