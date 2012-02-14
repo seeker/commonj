@@ -77,7 +77,7 @@ public class MySQL{
 		addPrepStmt("getDirectory"		, "SELECT id FROM dirlist WHERE dirpath = ?");
 		addPrepStmt("getFilename"		, "SELECT id FROM filelist WHERE filename = ?");
 		addPrepStmt("getSetting"		, "SELECT param	FROM settings WHERE name = ?");
-		addPrepStmt("getPath"			, "SELECT CONCAT(dirlist.dirpath,filelist.filename) FROM (select dir, filename FROM hash WHERE id =? AS a JOIN filelist ON a.filename=filelist.id Join dirlist on a.dir=dirlist.id");
+		addPrepStmt("getPath"			, "SELECT CONCAT(dirlist.dirpath,filelist.filename) FROM (select dir, filename FROM hash WHERE id =?) AS a JOIN filelist ON a.filename=filelist.id Join dirlist on a.dir=dirlist.id");
 	}
 	
 	private static void generateStatements(){
