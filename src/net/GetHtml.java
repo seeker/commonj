@@ -37,7 +37,7 @@ public class GetHtml {
 		return getResponse(new URL(url));
 	}
 
-	public int getResponse(URL url) throws Exception{
+	public int getResponse(URL url){
 		/*
 		URLConnection thread = url.openConnection(); 
 		return thread.getHeaderField(0);
