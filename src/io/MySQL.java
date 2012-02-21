@@ -58,7 +58,7 @@ public class MySQL{
 	private static void init(){
 		generateStatements();
 		
-		addPrepStmt("addCache"			, "REPLACE INTO cache SET id=?");
+		addPrepStmt("addCache"			, "INSERT INTO cache (id) VALUES (?) ON DUPLICATE KEY UPDATE timestamp = NOW()");
 		addPrepStmt("addThumb"			, "INSERT INTO thumbs (url, filename, thumb) VALUES(?,?,?)");
 		addPrepStmt("getThumb"			, "SELECT thumb FROM thumbs WHERE url = ? ORDER BY filename ASC");
 		addPrepStmt("pending"			, "SELECT count(*) FROM filter WHERE status = 1");
