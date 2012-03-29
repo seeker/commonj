@@ -1,12 +1,15 @@
 package com.github.dozedoff.commonj.file;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.matchers.JUnitMatchers.hasItems;
 
 import java.io.IOException;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -148,9 +151,41 @@ public class FileUtilTest {
 
 	@Test
 	public void testRemoveDriveLetter(){
-		Path path = FileUtil.removeDriveLetter(Paths.get("D:\\test\\me\\now\\squirrel.jpg"));
+		Path pathToTest = buildAbsolutePath("test", "me", "now", "squirrel.jpg");
+		Path path = FileUtil.removeDriveLetter(pathToTest);
 		
-		assertThat(path, is(Paths.get("\\test\\me\\now\\squirrel.jpg")));
+		assertThat(path, is(buildRelativePath("test", "me", "now", "squirrel.jpg")));
+	}
+	
+	private Path buildAbsolutePath(String... elements) {
+		Path absolutePath = null;
+		Iterable<Path> roots = FileSystems.getDefault().getRootDirectories();
+		Path root = null;
+
+		for(Path p : roots){
+			root = p;
+			break;
+		}
+		
+		// guard
+		if(root == null){
+			fail("No root directory found");
+		}		
+		
+		absolutePath = root;
+		
+		Path relativePath = buildRelativePath(elements);
+		absolutePath = absolutePath.resolve(relativePath);
+		
+		return absolutePath;
+	}
+	
+	private Path buildRelativePath(String... elements) {
+		Path relativePath = null;
+		
+		relativePath = Paths.get("", elements);
+		
+		return relativePath;
 	}
 	
 	@Test
@@ -170,16 +205,20 @@ public class FileUtilTest {
 	
 	@Test
 	public void testRemoveDriveLetterDirOnly(){
-		Path path = FileUtil.removeDriveLetter(Paths.get("D:\\test\\me\\now\\"));
+		Path pathToTest = buildAbsolutePath("test", "me", "now");
+		Path path = FileUtil.removeDriveLetter(pathToTest);
 		
-		assertThat(path, is(Paths.get("\\test\\me\\now\\")));
+		Path validPath = buildRelativePath("test", "me", "now");
+		assertThat(path, is(validPath));
 	} 
 	
 	@Test
 	public void testRemoveDriveLetterString(){
-		String path = FileUtil.removeDriveLetter("D:\\test\\me\\now\\squirrel.jpg");
+		Path pathToTest = buildAbsolutePath("test", "me", "now", "squirrel.jpg");
+		String path = FileUtil.removeDriveLetter(pathToTest.toString());
 		
-		assertThat(path, is("\\test\\me\\now\\squirrel.jpg"));
+		Path validPath = buildRelativePath("test", "me", "now", "squirrel.jpg");
+		assertThat(path, is(validPath.toString()));
 	}
 	
 	@Test
@@ -199,8 +238,10 @@ public class FileUtilTest {
 	
 	@Test
 	public void testRemoveDriveLetterStringDirOnly(){
-		String path = FileUtil.removeDriveLetter("D:\\test\\me\\now\\");
+		Path pathToTest = buildAbsolutePath("test", "me", "now");
+		String path = FileUtil.removeDriveLetter(pathToTest).toString();
 		
-		assertThat(path, is("\\test\\me\\now\\"));
+		String validPath = buildRelativePath("test", "me", "now").toString();
+		assertThat(path, is(validPath));
 	}
 }
