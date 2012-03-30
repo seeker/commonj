@@ -15,9 +15,10 @@
  */
 package net;
 
-import static org.junit.Assert.assertTrue;
-
+import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.*;
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -27,41 +28,69 @@ import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class GetHtmlTest {
-static String refData = "<html><head><title>Test Page</title></head><body><p>Test Page</p></body></html>";
-String testString = null;
-static Server server;
+	GetHtml getHtml;
+	static String refData = "<html><head><title>Test Page</title></head><body><p>Test Page</p></body></html>";
+	static String refData2 = "<!DOCTYPE html><html><head><title>Bestellformular</title></head><body><h1>Bestellung</h1><fieldset><legend>Kundendaten</legend></fieldset><fieldset><legend>Artikel</legend></fieldset></body></html>";
+	String testString = null;
+	static Server server;
 
-@BeforeClass
-public static void startServer() throws Exception{
-	server  = new Server(80);
-	server.setHandler(new TestHandler());
-	server.start();
-}
-
-@AfterClass
-public static void stopServer() throws Exception{
-	server.stop();
-}
-
-static class TestHandler extends AbstractHandler{
-	@Override
-	public void handle(String arg0, Request baseRequest, HttpServletRequest arg2,
-			HttpServletResponse response) throws IOException, ServletException {
-		response.setContentType("text/html;charset=utf-8");
-        response.setStatus(HttpServletResponse.SC_OK);
-        baseRequest.setHandled(true);
-        response.getWriter().println(refData);
+	@BeforeClass
+	public static void startServer() throws Exception{
+		server  = new Server(80);
+		server.setHandler(new TestHandler());
+		server.start();
 	}
-}
-	@Test(timeout=2000)
+
+	@AfterClass
+	public static void stopServer() throws Exception{
+		server.stop();
+	}
+
+	@Before
+	public void setUp(){
+		getHtml = new GetHtml();
+	}
+
+	@Test(timeout=1000)
 	public void testGetString() throws Exception {
-		GetHtml getHtml = new GetHtml();
-		
 		testString = getHtml.get("http://localhost/");
-		assertTrue(testString.equals(refData));
+		assertThat(testString,is(refData));
+	}
+
+	@Test(timeout=1000)
+	public void testReUse() throws Exception{
+		assertThat(getHtml.get("http://localhost/"), is(refData));;
+		assertThat(getHtml.get("http://localhost/2"), is(refData2));
+		assertThat(getHtml.get("http://localhost/"), is(refData));
+	}
+	
+	@Test(timeout=12000, expected=SocketTimeoutException.class)
+	public void testConnectionTimeout() throws Exception{
+		getHtml.setMaxRetry(1);
+		server.stop();
+		getHtml.get("http://localhost/");
+	}
+
+	static class TestHandler extends AbstractHandler{
+		@Override
+		public void handle(String arg0, Request baseRequest, HttpServletRequest request,
+				HttpServletResponse response) throws IOException, ServletException {
+
+			response.setContentType("text/html;charset=utf-8");
+			response.setStatus(HttpServletResponse.SC_OK);
+			baseRequest.setHandled(true);
+
+			System.out.println(request.getRequestURI());
+			if(request.getRequestURI().equals("/2")){
+				response.getWriter().println(refData2);
+			}else{
+				response.getWriter().println(refData);
+			}
+		}
 	}
 }

@@ -27,14 +27,22 @@ import java.util.logging.Logger;
 /**
  * Class for loading HTML data from the Internet.
  */
-//FIXME a bug is causing this class to retain old HTML data
 public class GetHtml {
 	private String classString ="";
 	private int failCount;
 	private static Logger logger = Logger.getLogger(GetHtml.class.getName());
+	private int maxRetry = 3;
 
 	public int getResponse(String url)throws Exception{
 		return getResponse(new URL(url));
+	}
+	
+	public int getMaxRetry() {
+		return maxRetry;
+	}
+
+	public void setMaxRetry(int maxRetry) {
+		this.maxRetry = maxRetry;
 	}
 
 	public int getResponse(URL url){
@@ -108,32 +116,28 @@ public class GetHtml {
 
 
 		}catch(SocketException se){
-			if (failCount < 20){
+			if (failCount < maxRetry){
 				try {Thread.sleep(5000);} catch (InterruptedException e) {}
 				failCount++;
 				httpCon.disconnect();
 				try{Thread.sleep(20);}catch(InterruptedException ignore){}
 				return get(url);
-			}
-			else{	
-				logger.warning("GetHtml failed, Reason: "+se.getMessage());
+			}else{	
 				httpCon.disconnect();
 				try{Thread.sleep(20);}catch(InterruptedException ignore){}
-				return "ERROR";	//TODO fix method of handling errors - this is ugly
+				throw new SocketException();
 			}
 		}catch(SocketTimeoutException te){
-			if (failCount < 20){
+			if (failCount < maxRetry){
 				try {Thread.sleep(5000);} catch (InterruptedException e) {}
 				failCount++;
 				httpCon.disconnect();
 				try{Thread.sleep(20);}catch(InterruptedException ignore){}
 				return get(url);
-			}
-			else{	
-				logger.warning("GetHtml failed, Reason: "+te.getMessage());
+			}else{	
 				httpCon.disconnect();
 				try{Thread.sleep(20);}catch(InterruptedException ignore){}
-				return "ERROR";
+				throw new SocketTimeoutException();
 			}
 		}finally{
 			if(in != null)
@@ -144,7 +148,14 @@ public class GetHtml {
 				try{Thread.sleep(20);}catch(InterruptedException ignore){}
 			}
 		}
-
-		return classString;
+		String tmp = classString;
+		reset();
+		
+		return tmp;
+	}
+	
+	private void reset(){
+		classString ="";
+		failCount = 0;
 	}
 }
