@@ -29,7 +29,7 @@ import java.util.logging.Logger;
  * Class for loading HTML data from the Internet.
  */
 public class GetHtml {
-	private String classString ="";
+	private StringBuilder classString = new StringBuilder();
 	private int failCount;
 	private static Logger logger = Logger.getLogger(GetHtml.class.getName());
 	private int maxRetry = 3;
@@ -99,7 +99,7 @@ public class GetHtml {
 					new InputStreamReader(
 							httpCon.getInputStream()));
 			while ((inputLine = in.readLine()) != null)	
-				classString += inputLine;
+				classString.append(inputLine);
 
 
 		}catch(SocketException se){
@@ -116,7 +116,7 @@ public class GetHtml {
 				try{Thread.sleep(20);}catch(InterruptedException ignore){}
 			}
 		}
-		String tmp = classString;
+		String tmp = classString.toString();
 		reset();
 		
 		return tmp;
@@ -151,7 +151,7 @@ public class GetHtml {
 	}
 	
 	private void reset(){
-		classString ="";
+		classString = new StringBuilder();
 		failCount = 0;
 	}
 }
