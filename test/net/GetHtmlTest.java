@@ -62,7 +62,7 @@ public class GetHtmlTest {
 		assertThat(testString,is(refData));
 	}
 
-	@Test(timeout=1000)
+	@Test(timeout=5000)
 	public void testReUse() throws Exception{
 		assertThat(getHtml.get("http://localhost/"), is(refData));;
 		assertThat(getHtml.get("http://localhost/2"), is(refData2));
@@ -85,7 +85,6 @@ public class GetHtmlTest {
 			response.setStatus(HttpServletResponse.SC_OK);
 			baseRequest.setHandled(true);
 
-			System.out.println(request.getRequestURI());
 			if(request.getRequestURI().equals("/2")){
 				response.getWriter().println(refData2);
 			}else{
