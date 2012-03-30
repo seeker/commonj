@@ -93,7 +93,6 @@ public class GetHtml {
 		HttpURLConnection httpCon = null;		
 		BufferedReader in = null;
 		String inputLine = "";
-		failCount = 0;
 
 		try{
 			httpCon = (HttpURLConnection) url.openConnection();
@@ -129,7 +128,6 @@ public class GetHtml {
 			}
 		}catch(SocketTimeoutException te){
 			if (failCount < maxRetry){
-				try {Thread.sleep(5000);} catch (InterruptedException e) {}
 				failCount++;
 				httpCon.disconnect();
 				try{Thread.sleep(20);}catch(InterruptedException ignore){}
