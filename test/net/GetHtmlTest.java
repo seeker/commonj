@@ -76,6 +76,13 @@ public class GetHtmlTest {
 		getHtml.setMaxRetry(0);
 		getHtml.get("http://localhost/wait");
 	}
+	
+	@Test(timeout=10000, expected=SocketException.class)
+	public void testConnectionFail() throws Exception{
+		getHtml.setMaxRetry(0);
+		server.stop();
+		getHtml.get("http://localhost/");
+	}
 
 	static class TestHandler extends AbstractHandler{
 		@Override
