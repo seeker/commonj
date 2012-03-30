@@ -38,51 +38,50 @@ public class GetHtmlTest {
 	String testString = null;
 	static Server server;
 
-@BeforeClass
-public static void startServer() throws Exception{
-	server  = new Server(80);
-	server.setHandler(new TestHandler());
-	server.start();
-}
-
-@AfterClass
-public static void stopServer() throws Exception{
-	server.stop();
-}
-
-@Before
-public void setUp(){
-	getHtml = new GetHtml();
-}
-
-static class TestHandler extends AbstractHandler{
-	@Override
-	public void handle(String arg0, Request baseRequest, HttpServletRequest request,
-		HttpServletResponse response) throws IOException, ServletException {
-		
-		response.setContentType("text/html;charset=utf-8");
-        response.setStatus(HttpServletResponse.SC_OK);
-        baseRequest.setHandled(true);
-        
-        if(request.getRequestURI().equals("http://localhost/2")){
-        	response.getWriter().println(refData2);
-        }else{
-        	response.getWriter().println(refData);
-        }
+	@BeforeClass
+	public static void startServer() throws Exception{
+		server  = new Server(80);
+		server.setHandler(new TestHandler());
+		server.start();
 	}
-}
+
+	@AfterClass
+	public static void stopServer() throws Exception{
+		server.stop();
+	}
+
+	@Before
+	public void setUp(){
+		getHtml = new GetHtml();
+	}
+
 	@Test(timeout=1000)
 	public void testGetString() throws Exception {
 		testString = getHtml.get("http://localhost/");
 		assertThat(testString,is(refData));
 	}
-	
+
 	@Test(timeout=1000)
 	public void testReUse() throws Exception{
-		getHtml.get("http://localhost/");
-		testString = getHtml.get("http://localhost/2");
-		assertThat(testString, is(refData2));
-		testString = getHtml.get("http://localhost/");
-		assertThat(testString, is(refData));
+		assertThat(getHtml.get("http://localhost/"), is(refData));;
+		assertThat(getHtml.get("http://localhost/2"), is(refData2));
+		assertThat(getHtml.get("http://localhost/"), is(refData));
+	}
+
+	static class TestHandler extends AbstractHandler{
+		@Override
+		public void handle(String arg0, Request baseRequest, HttpServletRequest request,
+				HttpServletResponse response) throws IOException, ServletException {
+
+			response.setContentType("text/html;charset=utf-8");
+			response.setStatus(HttpServletResponse.SC_OK);
+			baseRequest.setHandled(true);
+
+			if(request.getRequestURI().equals("http://localhost/2")){
+				response.getWriter().println(refData2);
+			}else{
+				response.getWriter().println(refData);
+			}
+		}
 	}
 }
