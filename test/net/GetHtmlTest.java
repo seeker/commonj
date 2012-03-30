@@ -15,8 +15,8 @@
  */
 package net;
 
-import static org.junit.Assert.assertTrue;
-
+import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.*;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
@@ -75,15 +75,15 @@ static class TestHandler extends AbstractHandler{
 	@Test(timeout=1000)
 	public void testGetString() throws Exception {
 		testString = getHtml.get("http://localhost/");
-		assertTrue(testString.equals(refData));
+		assertThat(testString,is(refData));
 	}
 	
 	@Test(timeout=1000)
 	public void testReUse() throws Exception{
 		getHtml.get("http://localhost/");
 		testString = getHtml.get("http://localhost/2");
-		assertTrue(testString.equals(refData2));
+		assertThat(testString, is(refData2));
 		testString = getHtml.get("http://localhost/");
-		assertTrue(testString.equals(refData));
+		assertThat(testString, is(refData));
 	}
 }
