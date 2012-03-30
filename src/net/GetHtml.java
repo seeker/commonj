@@ -31,10 +31,18 @@ public class GetHtml {
 	private String classString ="";
 	private int failCount;
 	private static Logger logger = Logger.getLogger(GetHtml.class.getName());
-	private final int MAX_RETRY = 3;
+	private int maxRetry = 3;
 
 	public int getResponse(String url)throws Exception{
 		return getResponse(new URL(url));
+	}
+	
+	public int getMaxRetry() {
+		return maxRetry;
+	}
+
+	public void setMaxRetry(int maxRetry) {
+		this.maxRetry = maxRetry;
 	}
 
 	public int getResponse(URL url){
@@ -108,7 +116,7 @@ public class GetHtml {
 
 
 		}catch(SocketException se){
-			if (failCount < MAX_RETRY){
+			if (failCount < maxRetry){
 				try {Thread.sleep(5000);} catch (InterruptedException e) {}
 				failCount++;
 				httpCon.disconnect();
@@ -120,7 +128,7 @@ public class GetHtml {
 				throw new SocketException();
 			}
 		}catch(SocketTimeoutException te){
-			if (failCount < MAX_RETRY){
+			if (failCount < maxRetry){
 				try {Thread.sleep(5000);} catch (InterruptedException e) {}
 				failCount++;
 				httpCon.disconnect();
