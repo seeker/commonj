@@ -73,9 +73,8 @@ public class GetHtmlTest {
 	
 	@Test(timeout=12000, expected=SocketTimeoutException.class)
 	public void testConnectionTimeout() throws Exception{
-		getHtml.setMaxRetry(1);
-		server.stop();
-		getHtml.get("http://localhost/");
+		getHtml.setMaxRetry(0);
+		getHtml.get("http://localhost/wait");
 	}
 
 	static class TestHandler extends AbstractHandler{
@@ -89,6 +88,8 @@ public class GetHtmlTest {
 
 			if(request.getRequestURI().equals("/2")){
 				response.getWriter().println(refData2);
+			}else if(request.getRequestURI().equals("/wait")){
+				try {Thread.sleep(12000);} catch (InterruptedException e) {}
 			}else{
 				response.getWriter().println(refData);
 			}
