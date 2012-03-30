@@ -60,7 +60,6 @@ static class TestHandler extends AbstractHandler{
 	public void handle(String arg0, Request baseRequest, HttpServletRequest request,
 		HttpServletResponse response) throws IOException, ServletException {
 		
-		System.out.println(request.getRequestURL());
 		response.setContentType("text/html;charset=utf-8");
         response.setStatus(HttpServletResponse.SC_OK);
         baseRequest.setHandled(true);
