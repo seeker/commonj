@@ -71,7 +71,9 @@ public class GetHtmlTest {
 	
 	@Test(timeout=12000, expected=SocketTimeoutException.class)
 	public void testConnectionTimeout() throws Exception{
-		fail("not done yet");
+		getHtml.setMaxRetry(1);
+		server.stop();
+		getHtml.get("http://localhost/");
 	}
 
 	static class TestHandler extends AbstractHandler{
