@@ -85,10 +85,9 @@ public class GetHtml {
 	 * 
 	 * @param url Adresse der WebPage
 	 * @return WebPage als Text String
-	 * @throws IOException Verbindungsfehler
-	 * @throws PageLoadException WebPage konnte nicht geladen werden
+	 * @throws Exception 
 	 */
-	public String get (URL url) throws IOException, PageLoadException{
+	public String get (URL url) throws Exception{
 
 		HttpURLConnection httpCon = null;		
 		BufferedReader in = null;
@@ -115,28 +114,10 @@ public class GetHtml {
 
 
 		}catch(SocketException se){
-			if (failCount < maxRetry){
-				try {Thread.sleep(5000);} catch (InterruptedException e) {}
-				failCount++;
-				httpCon.disconnect();
-				try{Thread.sleep(20);}catch(InterruptedException ignore){}
-				return get(url);
-			}else{	
-				httpCon.disconnect();
-				try{Thread.sleep(20);}catch(InterruptedException ignore){}
-				throw new SocketException();
-			}
+			try {Thread.sleep(5000);} catch (InterruptedException e) {}
+			return reTry(url, httpCon, new SocketException());
 		}catch(SocketTimeoutException te){
-			if (failCount < maxRetry){
-				failCount++;
-				httpCon.disconnect();
-				try{Thread.sleep(20);}catch(InterruptedException ignore){}
-				return get(url);
-			}else{	
-				httpCon.disconnect();
-				try{Thread.sleep(20);}catch(InterruptedException ignore){}
-				throw new SocketTimeoutException();
-			}
+			return reTry(url, httpCon, new SocketTimeoutException());
 		}finally{
 			if(in != null)
 				in.close();
@@ -150,6 +131,19 @@ public class GetHtml {
 		reset();
 		
 		return tmp;
+	}
+
+	private String reTry(URL url, HttpURLConnection httpCon, Exception ex) throws Exception {
+		if (failCount < maxRetry){
+			failCount++;
+			httpCon.disconnect();
+			try{Thread.sleep(20);}catch(InterruptedException ignore){}
+			return get(url);
+		}else{	
+			httpCon.disconnect();
+			try{Thread.sleep(20);}catch(InterruptedException ignore){}
+			throw ex;
+		}
 	}
 	
 	private void reset(){
