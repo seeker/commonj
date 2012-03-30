@@ -19,6 +19,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.ProtocolException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
@@ -53,13 +54,7 @@ public class GetHtml {
 		int response = 0;
 		HttpURLConnection httpCon = null;		
 		try{
-			httpCon = (HttpURLConnection) url.openConnection(); 
-			httpCon.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:2.0) Gecko/20100101 Firefox/4.0"); // pretend to be a firefox browser
-			httpCon.setRequestMethod("GET");
-			httpCon.setDoOutput(true);
-			httpCon.setReadTimeout(10000);
-
-			httpCon.connect();
+			httpCon = connect(url);
 			response =  httpCon.getResponseCode();
 		}catch(IOException io){
 			logger.warning("Error while getting HTML response code: "+io.getMessage());
@@ -94,13 +89,7 @@ public class GetHtml {
 		String inputLine = "";
 
 		try{
-			httpCon = (HttpURLConnection) url.openConnection();
-			httpCon.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:2.0) Gecko/20100101 Firefox/4.0"); // pretend to be a firefox browser
-			httpCon.setRequestMethod("GET");
-			httpCon.setDoOutput(true);
-			httpCon.setReadTimeout(10000);
-
-			httpCon.connect();
+			httpCon = connect(url);
 			if (httpCon.getResponseCode() != 200){
 				httpCon.disconnect();
 				try{Thread.sleep(20);}catch(InterruptedException ignore){}
@@ -133,15 +122,30 @@ public class GetHtml {
 		return tmp;
 	}
 
+	private HttpURLConnection connect(URL url) throws IOException,
+			ProtocolException {
+		HttpURLConnection httpCon;
+		httpCon = (HttpURLConnection) url.openConnection();
+		httpCon.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:2.0) Gecko/20100101 Firefox/4.0"); // pretend to be a firefox browser
+		httpCon.setRequestMethod("GET");
+		httpCon.setDoOutput(true);
+		httpCon.setReadTimeout(10000);
+
+		httpCon.connect();
+		return httpCon;
+	}
+
 	private String reTry(URL url, HttpURLConnection httpCon, Exception ex) throws Exception {
 		if (failCount < maxRetry){
 			failCount++;
 			httpCon.disconnect();
 			try{Thread.sleep(20);}catch(InterruptedException ignore){}
 			return get(url);
-		}else{	
-			httpCon.disconnect();
-			try{Thread.sleep(20);}catch(InterruptedException ignore){}
+		}else{
+			if(httpCon != null){
+				httpCon.disconnect();
+				try{Thread.sleep(20);}catch(InterruptedException ignore){}
+			}
 			throw ex;
 		}
 	}
