@@ -18,6 +18,7 @@ package net;
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
 import java.io.IOException;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 
 import javax.servlet.ServletException;
@@ -52,8 +53,9 @@ public class GetHtmlTest {
 	}
 
 	@Before
-	public void setUp(){
+	public void setUp() throws Exception{
 		getHtml = new GetHtml();
+		server.start();
 	}
 
 	@Test(timeout=1000)
