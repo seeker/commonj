@@ -14,5 +14,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Mockito"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/BoneCP"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/SLF4J"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Jetty"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
