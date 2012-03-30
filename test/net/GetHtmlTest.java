@@ -18,6 +18,7 @@ package net;
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -67,6 +68,11 @@ public class GetHtmlTest {
 		assertThat(getHtml.get("http://localhost/2"), is(refData2));
 		assertThat(getHtml.get("http://localhost/"), is(refData));
 	}
+	
+	@Test(timeout=12000, expected=SocketTimeoutException.class)
+	public void testConnectionTimeout() throws Exception{
+		fail("not done yet");
+	}
 
 	static class TestHandler extends AbstractHandler{
 		@Override
@@ -77,7 +83,8 @@ public class GetHtmlTest {
 			response.setStatus(HttpServletResponse.SC_OK);
 			baseRequest.setHandled(true);
 
-			if(request.getRequestURI().equals("http://localhost/2")){
+			System.out.println(request.getRequestURI());
+			if(request.getRequestURI().equals("/2")){
 				response.getWriter().println(refData2);
 			}else{
 				response.getWriter().println(refData);
