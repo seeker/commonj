@@ -35,10 +35,11 @@ import org.junit.Test;
 
 public class GetHtmlTest {
 	GetHtml getHtml;
-	static String refData = "<html><head><title>Test Page</title></head><body><p>Test Page</p></body></html>";
-	static String refData2 = "<!DOCTYPE html><html><head><title>Bestellformular</title></head><body><h1>Bestellung</h1><fieldset><legend>Kundendaten</legend></fieldset><fieldset><legend>Artikel</legend></fieldset></body></html>";
+	static String testData = "<html><head><title>Test Page</title></head><body><p>Test Page</p></body></html>";
+	static String testData2 = "<!DOCTYPE html><html><head><title>Bestellformular</title></head><body><h1>Bestellung</h1><fieldset><legend>Kundendaten</legend></fieldset><fieldset><legend>Artikel</legend></fieldset></body></html>";
 	String testString = null;
 	static Server server;
+	String url = "http://localhost/", url2 = "http://localhost/2", urlWait = "http://localhost/wait";
 
 	@BeforeClass
 	public static void startServer() throws Exception{
@@ -60,28 +61,28 @@ public class GetHtmlTest {
 
 	@Test(timeout=1000)
 	public void testGetString() throws Exception {
-		testString = getHtml.get("http://localhost/");
-		assertThat(testString,is(refData));
+		testString = getHtml.get(url);
+		assertThat(testString,is(testData));
 	}
 
 	@Test(timeout=5000)
 	public void testReUse() throws Exception{
-		assertThat(getHtml.get("http://localhost/"), is(refData));;
-		assertThat(getHtml.get("http://localhost/2"), is(refData2));
-		assertThat(getHtml.get("http://localhost/"), is(refData));
+		assertThat(getHtml.get(url), is(testData));
+		assertThat(getHtml.get(url2), is(testData2));
+		assertThat(getHtml.get(url), is(testData));
 	}
 	
 	@Test(timeout=12000, expected=SocketTimeoutException.class)
 	public void testConnectionTimeout() throws Exception{
 		getHtml.setMaxRetry(0);
-		getHtml.get("http://localhost/wait");
+		getHtml.get(urlWait);
 	}
 	
 	@Test(timeout=10000, expected=SocketException.class)
 	public void testConnectionFail() throws Exception{
 		getHtml.setMaxRetry(0);
 		server.stop();
-		getHtml.get("http://localhost/");
+		getHtml.get(url);
 	}
 
 	static class TestHandler extends AbstractHandler{
@@ -94,11 +95,11 @@ public class GetHtmlTest {
 			baseRequest.setHandled(true);
 
 			if(request.getRequestURI().equals("/2")){
-				response.getWriter().println(refData2);
+				response.getWriter().println(testData2);
 			}else if(request.getRequestURI().equals("/wait")){
 				try {Thread.sleep(12000);} catch (InterruptedException e) {}
 			}else{
-				response.getWriter().println(refData);
+				response.getWriter().println(testData);
 			}
 		}
 	}
