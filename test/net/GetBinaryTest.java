@@ -19,12 +19,12 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import net.GetHtmlTest.TestHandler;
 
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
@@ -61,9 +61,9 @@ public class GetBinaryTest {
 	}
 
 	@Test
-	public void testGet() throws IOException {
+	public void testGetViaHttp() throws IOException {
 		testData = generateRandomData(25);
-		byte[] data = getBinary.get(url);
+		byte[] data = getBinary.getViaHttp(url);
 		assertThat(data, is(testData));
 	}
 
@@ -82,9 +82,24 @@ public class GetBinaryTest {
 		fail("Not yet implemented");
 	}
 
-	@Test
-	public void testGetViaHttp() {
-		fail("Not yet implemented");
+	@Test(timeout=5000)
+	public void testReUse() throws Exception{
+		assertThat(getBinary.getViaHttp(url), is(testData));
+		assertThat(getBinary.getViaHttp(url2), is(testData2));
+		assertThat(getBinary.getViaHttp(url), is(testData));
+	}
+	
+	@Test(timeout=12000, expected=SocketTimeoutException.class)
+	public void testConnectionTimeout() throws Exception{
+		getBinary.setMaxRetry(0);
+		getBinary.getViaHttp(urlWait);
+	}
+	
+	@Test(timeout=10000, expected=SocketException.class)
+	public void testConnectionFail() throws Exception{
+		getBinary.setMaxRetry(0);
+		server.stop();
+		getBinary.getViaHttp(url);
 	}
 	
 	static class TestHandler extends AbstractHandler{
