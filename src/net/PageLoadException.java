@@ -15,11 +15,13 @@
  */
 package net;
 
+import java.io.IOException;
+
 /**
  * This exception is thrown if the page could not be loaded.
  */
 
-public class PageLoadException extends Exception{
+public class PageLoadException extends IOException{
 	private int responseCode = -1;
 	private String url = null;
 	

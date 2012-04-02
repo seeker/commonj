@@ -80,9 +80,10 @@ public class GetHtml {
 	 * 
 	 * @param url Adresse der WebPage
 	 * @return WebPage als Text String
-	 * @throws Exception 
+	 * @throws IOException 
+	 * @throws PageLoadException 
 	 */
-	public String get (URL url) throws Exception{
+	public String get (URL url) throws IOException, PageLoadException {
 
 		HttpURLConnection httpCon = null;		
 		BufferedReader in = null;
@@ -135,7 +136,7 @@ public class GetHtml {
 		return httpCon;
 	}
 
-	private String reTry(URL url, HttpURLConnection httpCon, Exception ex) throws Exception {
+	private String reTry(URL url, HttpURLConnection httpCon, IOException ex) throws IOException, PageLoadException  {
 		if (failCount < maxRetry){
 			failCount++;
 			httpCon.disconnect();
