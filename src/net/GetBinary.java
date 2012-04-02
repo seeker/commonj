@@ -18,6 +18,7 @@ package net;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.ProtocolException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
@@ -187,7 +188,7 @@ public class GetBinary {
 			}
 		}catch(SocketException se){
 			logger.warning("SocketException, http response: "+httpCon.getResponseCode());
-			if (failCount <= maxRetry){
+			if (failCount < maxRetry){
 				try{Thread.sleep(5000);}catch(Exception ie){}
 				this.offset = classBuffer.position();
 				httpCon.disconnect();
@@ -197,6 +198,7 @@ public class GetBinary {
 			else{
 				logger.warning("Buffer position at failure: "+classBuffer.position()+"  URL: "+url.toString());
 				httpCon.disconnect();
+				throw new SocketException();
 			}
 		}finally{
 			if(binary != null)
@@ -222,30 +224,30 @@ public class GetBinary {
 	}
 
 	public byte[] getViaHttp(URL url)throws IOException, PageLoadException{
-		this.contentLenght = getLenght(url);
+		Long contentLenght = 0L;
 
 		BufferedInputStream binary = null;
 		HttpURLConnection httpCon = null;
 
 		try{
-			httpCon = (HttpURLConnection) url.openConnection();
-		} catch (IOException e) {
-			throw new IOException("unable to connect to " + url.toString());
-		}
-
-		try{
-			httpCon.setRequestMethod("GET");
-			httpCon.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:2.0) Gecko/20100101 Firefox/4.0"); // pretend to be a firefox browser
-			httpCon.setDoOutput(true);
-			httpCon.setReadTimeout(10000);
-
-			httpCon.connect();
+			httpCon = connect(url);
+			if (httpCon.getResponseCode() != 200){
+				httpCon.disconnect();
+				try{Thread.sleep(20);}catch(InterruptedException ignore){}
+				throw new PageLoadException(String.valueOf(httpCon.getResponseCode()),httpCon.getResponseCode());
+			}
+			
+			try{
+				contentLenght = Long.valueOf(httpCon.getHeaderField("Content-Length"));
+			}catch(NumberFormatException nfe){
+				logger.warning("Could not get content lenght");
+			}
+			
 			binary = new BufferedInputStream(httpCon.getInputStream());
 		}catch(SocketTimeoutException ste){
 			throw new SocketTimeoutException(ste.getMessage()); 
-		}catch(IOException e){
-			if(httpCon.getResponseCode() != 200)
-				throw new PageLoadException(Integer.toString(httpCon.getResponseCode()),httpCon.getResponseCode());
+		}catch(SocketException se){
+			throw new SocketException();
 		}
 
 		int count = 0;
@@ -255,13 +257,16 @@ public class GetBinary {
 				classBuffer.put(c, 0, count);
 			}
 		}catch(SocketException se){ //TODO remove this catch block, it's unused
-			try{Thread.sleep(5000);}catch(Exception ie){}
+//			try{Thread.sleep(5000);}catch(Exception ie){}
 			this.offset = classBuffer.position();
-
-			failCount++;
-			logger.warning("GetBinary failed, reason: "+ se.getLocalizedMessage()+"  -> "+classBuffer.position()+"/"+contentLenght+"  "+url.toString());
-			httpCon.disconnect();
-			return getRange(url,offset,contentLenght-1);
+			if(failCount < maxRetry){
+				failCount++;
+				logger.warning("GetBinary failed, reason: "+ se.getLocalizedMessage()+"  -> "+classBuffer.position()+"/"+contentLenght+"  "+url.toString());
+				httpCon.disconnect();
+				return getRange(url,offset,contentLenght-1);
+			}else{
+				throw new SocketException();
+			}
 		}catch(NullPointerException npe){
 			logger.severe("NullPointerException in GetBinary.getViaHttp");
 			return null;
@@ -280,6 +285,19 @@ public class GetBinary {
 		classBuffer.get(varBuffer);
 		classBuffer.clear();
 		return varBuffer;
+	}
+	
+	private HttpURLConnection connect(URL url) throws IOException,
+	ProtocolException {
+		HttpURLConnection httpCon;
+		httpCon = (HttpURLConnection) url.openConnection();
+		httpCon.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:2.0) Gecko/20100101 Firefox/4.0"); // pretend to be a firefox browser
+		httpCon.setRequestMethod("GET");
+		httpCon.setDoOutput(true);
+		httpCon.setReadTimeout(10000);
+
+		httpCon.connect();
+		return httpCon;
 	}
 
 	public int getMaxRetry() {
