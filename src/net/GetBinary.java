@@ -44,10 +44,24 @@ public class GetBinary {
 		classBuffer = ByteBuffer.allocate(size);
 	}
 	
+	@Deprecated
+	/**
+	 * Use getViaHttp instead.
+	 * @param url
+	 * @return
+	 * @throws IOException
+	 */
 	public byte[] get(String url) throws IOException{
 		return get(new URL(url));
 	}
 
+	@Deprecated
+	/**
+	 * Use getViaHttp instead.
+	 * @param url
+	 * @return
+	 * @throws IOException
+	 */
 	public byte[] get(URL url) throws IOException{
 
 		BufferedInputStream binary = null;
@@ -202,6 +216,10 @@ public class GetBinary {
 		classBuffer.clear();
 		return varBuffer;
 	}
+	
+	public byte[] getViaHttp(String url) throws PageLoadException, IOException{
+		return getViaHttp(new URL(url));
+	}
 
 	public byte[] getViaHttp(URL url)throws IOException, PageLoadException{
 		this.contentLenght = getLenght(url);
@@ -228,8 +246,6 @@ public class GetBinary {
 		}catch(IOException e){
 			if(httpCon.getResponseCode() != 200)
 				throw new PageLoadException(Integer.toString(httpCon.getResponseCode()),httpCon.getResponseCode());
-		}catch(Exception ue){
-			logger.severe("Unhandled Exception "+ ue.getMessage());
 		}
 
 		int count = 0;
@@ -238,7 +254,7 @@ public class GetBinary {
 			while ((count=binary.read(c)) != -1){
 				classBuffer.put(c, 0, count);
 			}
-		}catch(SocketException se){
+		}catch(SocketException se){ //TODO remove this catch block, it's unused
 			try{Thread.sleep(5000);}catch(Exception ie){}
 			this.offset = classBuffer.position();
 
