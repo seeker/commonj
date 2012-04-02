@@ -62,6 +62,7 @@ public class GetBinaryTest {
 
 	@Test
 	public void testGet() throws IOException {
+		testData = generateRandomData(25);
 		byte[] data = getBinary.get(url);
 		assertThat(data, is(testData));
 	}
@@ -103,5 +104,14 @@ public class GetBinaryTest {
 				response.getWriter().println(testData);
 			}
 		}
+	}
+	
+	private byte[] generateRandomData(int numOfBytes){
+		byte[] randomData = new byte[numOfBytes];
+		for(int i = 0; i<numOfBytes; i++){
+			randomData[i] = (byte)(Math.random()*Byte.MAX_VALUE);
+		}
+
+		return randomData;
 	}
 }
