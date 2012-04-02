@@ -112,11 +112,13 @@ public class GetBinaryTest {
 			baseRequest.setHandled(true);
 
 			if(request.getRequestURI().equals("/2")){
-				response.getWriter().println(testData2);
+				response.getOutputStream().write(testData2);
+				response.getOutputStream().close();
 			}else if(request.getRequestURI().equals("/wait")){
 				try {Thread.sleep(12000);} catch (InterruptedException e) {}
 			}else{
-				response.getWriter().println(testData);
+				response.getOutputStream().write(testData);
+				response.getOutputStream().close();
 			}
 		}
 	}
