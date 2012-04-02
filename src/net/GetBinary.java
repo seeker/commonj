@@ -32,6 +32,7 @@ public class GetBinary {
 	long contentLenght = 0;
 	int offset = 0;
 	int failCount = 0;
+	int maxRetry = 3;
 	ByteBuffer classBuffer;
 	Logger logger = Logger.getLogger(GetBinary.class.getName());
 	
@@ -113,7 +114,6 @@ public class GetBinary {
 		return contentLenght;
 	}
 
-
 	public Map<String,List<String>> getHeader(URL url) throws IOException{
 		HttpURLConnection thread = null;
 		try{
@@ -173,7 +173,7 @@ public class GetBinary {
 			}
 		}catch(SocketException se){
 			logger.warning("SocketException, http response: "+httpCon.getResponseCode());
-			if (failCount <= 20){
+			if (failCount <= maxRetry){
 				try{Thread.sleep(5000);}catch(Exception ie){}
 				this.offset = classBuffer.position();
 				httpCon.disconnect();
@@ -264,5 +264,13 @@ public class GetBinary {
 		classBuffer.get(varBuffer);
 		classBuffer.clear();
 		return varBuffer;
+	}
+
+	public int getMaxRetry() {
+		return maxRetry;
+	}
+
+	public void setMaxRetry(int maxRetry) {
+		this.maxRetry = maxRetry;
 	}
 }
