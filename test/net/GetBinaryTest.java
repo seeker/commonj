@@ -19,8 +19,14 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -68,18 +74,25 @@ public class GetBinaryTest {
 	}
 
 	@Test
-	public void testGetLenght() {
+	public void testGetLenght() throws Exception {
+		testData = generateRandomData(25);
+		Long size = getBinary.getLenght(new URL(url));
+		assertThat(size, is((long)testData.length));
+	}
+
+	@Test
+	public void testGetHeader() throws Exception{
+		Map<String, List<String>> header = getBinary.getHeader(new URL(url));
 		fail("Not yet implemented");
 	}
 
 	@Test
-	public void testGetHeader() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGetRange() {
-		fail("Not yet implemented");
+	public void testGetRange() throws Exception{
+		testData = generateRandomData(25);
+		byte[] subSet = Arrays.copyOfRange(testData, 10, 25);
+	
+		byte[] data = getBinary.getRange(new URL(url), 10, 15);
+		assertThat(data, is(subSet));
 	}
 
 	@Test(timeout=5000)
@@ -116,6 +129,19 @@ public class GetBinaryTest {
 				response.getOutputStream().close();
 			}else if(request.getRequestURI().equals("/wait")){
 				try {Thread.sleep(12000);} catch (InterruptedException e) {}
+			}else if(request.getHeader("Range") != null && request.getHeader("Range").contains("bytes")){
+				StringBuilder sb = new StringBuilder();
+				sb.append(request.getHeader("Range"));
+				
+				sb.replace(0, 6, "");
+				String[] marker = sb.toString().split("-"); 
+				
+				int start = Integer.parseInt(marker[0]);
+				int offset = start + Integer.parseInt(marker[1]);
+				
+				byte[] selection = Arrays.copyOfRange(testData, start, offset);
+				response.getOutputStream().write(selection);
+				response.getOutputStream().close();
 			}else{
 				response.getOutputStream().write(testData);
 				response.getOutputStream().close();
