@@ -40,6 +40,17 @@ public class BoneConnectionPool implements ConnectionPool {
 		this.maxResources = maxResources;
 	}
 	
+	public BoneConnectionPool(String url, String username, String password, int maxResources) {
+		this.maxResources = maxResources;
+		Properties props = new Properties();
+		
+		props.setProperty("url", url);
+		props.setProperty("password", password);
+		props.setProperty("user", username);
+		
+		this.dbProps = props;
+	} 
+	
 	public void startPool() throws Exception{
 		Class.forName( "com.mysql.jdbc.Driver" );
 		Class.forName( "com.jolbox.bonecp.BoneCP" );
