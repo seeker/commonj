@@ -15,10 +15,83 @@
  */
 package file;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.*;
+import java.nio.file.SimpleFileVisitor;
+import java.util.LinkedList;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.logging.Logger;
+
+import com.google.common.io.Files;
+
+import hash.HashMaker;
+import io.ConnectionPool;
+
 /**
  * Class for hashing files in a directory.
- *
  */
 public class DirectoryHasher {
+	LinkedBlockingQueue<FileInfo> outputQueue = null;
+	final static Logger logger = Logger.getLogger(DirectoryHasher.class.getName());
+	private HashWorker hashWorker;
+	
+	public DirectoryHasher(LinkedBlockingQueue<FileInfo> outputQueue){
+		this.outputQueue = outputQueue;
+		hashWorker = new HashWorker();
+	}
 
+	public void hashDirectory(String directory) throws Exception{
+		File dir = new File(directory);
+		
+		// check if the directory exists
+		if(! dir.exists()){
+			throw new Exception("Directory does not exist");
+		}
+		
+		hashWorker.setDaemon(true);
+		hashWorker.start();
+		
+		//TODO add filewalker
+		
+		java.nio.file.Files.walkFileTree(dir.toPath(), new DirectoryVisitor());
+	}
+
+	class DirectoryVisitor extends SimpleFileVisitor<Path>{
+		//TODO code me
+		//TODO add option to add file filter
+	}
+
+	/**
+	 * This Tread hashes files and adds them to a queue. 
+	 */
+	class HashWorker extends Thread{
+		LinkedBlockingQueue<FileInfo> inputQueue = new LinkedBlockingQueue<>();
+		LinkedList<FileInfo> workingList = new LinkedList<>();
+		
+		HashMaker hash = new HashMaker();
+		BinaryFileReader bfr = new BinaryFileReader();
+
+		public void addFile(FileInfo file){
+			inputQueue.add(file);
+		}
+		
+		@Override
+		public void run() {
+			while(! isInterrupted()){
+				// grab some work
+				inputQueue.drainTo(workingList);
+				
+				// process items
+				for(FileInfo f : workingList){
+					try {
+						f.hash = hash.hash(bfr.get(f.file));
+						outputQueue.add(f);
+					} catch (IOException e) {
+						logger.warning("Could not hash file: "+e.getMessage());
+					}
+				}
+			}
+		}
+	}
 }
