@@ -38,6 +38,7 @@ import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class GetBinaryTest {
@@ -81,6 +82,7 @@ public class GetBinaryTest {
 	}
 
 	@Test
+	@Ignore
 	public void testGetHeader() throws Exception{
 		Map<String, List<String>> header = getBinary.getHeader(new URL(url));
 		fail("Not yet implemented");
