@@ -8,6 +8,7 @@ import file.FileInfo;
 import hash.DirectoryHasher;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -39,5 +40,9 @@ public class DirectoryHasherTest {
 		Thread.sleep(2000);
 		assertThat(fileQueue.size(), is(2));
 	}
-
+	
+	@Test(expected=IOException.class)
+	public void testInvalidDirectory() throws IOException{
+		dh.hashDirectory(tempDir.toString()+File.pathSeparator+"null");
+	}
 }
