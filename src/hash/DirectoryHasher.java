@@ -16,19 +16,19 @@
 package hash;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.LinkedList;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
 
-import com.google.common.io.Files;
-
 import file.BinaryFileReader;
 import file.FileInfo;
-import io.ConnectionPool;
 
 /**
  * Class for hashing files in a directory.
@@ -45,12 +45,12 @@ public class DirectoryHasher {
 		hashWorker.start();
 	}
 
-	public void hashDirectory(String directory) throws Exception{
+	public void hashDirectory(String directory) throws IOException{
 		File dir = new File(directory);
 		
 		// check if the directory exists
 		if(! dir.exists()){
-			throw new Exception("Directory does not exist");
+			throw new FileNotFoundException("Directory "+ dir.toString()+" does not exist");
 		}
 		
 		logger.info("Starting to walk "+dir.toString());
