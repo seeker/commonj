@@ -102,7 +102,7 @@ public class DirectoryHasher {
 				// process items
 				for(FileInfo f : workingList){
 					try {
-						f.hash = hash.hash(bfr.get(f.file));
+						f.setHash(hash.hash(bfr.get(f.getFile())));
 						outputQueue.add(f);
 					} catch (IOException e) {
 						logger.warning("Could not hash file: "+e.getMessage());
