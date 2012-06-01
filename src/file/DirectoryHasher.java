@@ -16,9 +16,10 @@
 package file;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.*;
-import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.LinkedList;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
@@ -39,6 +40,8 @@ public class DirectoryHasher {
 	public DirectoryHasher(LinkedBlockingQueue<FileInfo> outputQueue){
 		this.outputQueue = outputQueue;
 		hashWorker = new HashWorker();
+		hashWorker.setDaemon(true);
+		hashWorker.start();
 	}
 
 	public void hashDirectory(String directory) throws Exception{
@@ -49,17 +52,30 @@ public class DirectoryHasher {
 			throw new Exception("Directory does not exist");
 		}
 		
-		hashWorker.setDaemon(true);
-		hashWorker.start();
-		
-		//TODO add filewalker
-		
-		java.nio.file.Files.walkFileTree(dir.toPath(), new DirectoryVisitor());
+		logger.info("Starting to walk "+dir.toString());
+		java.nio.file.Files.walkFileTree(dir.toPath(), new DirectoryVisitor(null));
 	}
 
 	class DirectoryVisitor extends SimpleFileVisitor<Path>{
-		//TODO code me
-		//TODO add option to add file filter
+		FilenameFilter filter;
+		
+		public DirectoryVisitor(FilenameFilter filter){
+			this.filter = filter;
+		}
+		
+		@Override
+		public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+			if(filter != null){
+				if(filter.accept(file.getParent().toFile(), file.getFileName().toString())){
+					FileInfo fi = new FileInfo(file.toFile(), null);
+					hashWorker.addFile(fi);
+				}
+			}else{
+				FileInfo fi = new FileInfo(file.toFile(), null);
+				hashWorker.addFile(fi);
+			}
+			return super.visitFile(file, attrs);
+		}
 	}
 
 	/**
@@ -91,6 +107,8 @@ public class DirectoryHasher {
 						logger.warning("Could not hash file: "+e.getMessage());
 					}
 				}
+				
+				workingList.clear();
 			}
 		}
 	}
