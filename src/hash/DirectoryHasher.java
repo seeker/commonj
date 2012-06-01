@@ -13,7 +13,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package file;
+package hash;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -26,7 +26,8 @@ import java.util.logging.Logger;
 
 import com.google.common.io.Files;
 
-import hash.HashMaker;
+import file.BinaryFileReader;
+import file.FileInfo;
 import io.ConnectionPool;
 
 /**

@@ -1,7 +1,11 @@
-package file;
+package hash;
 
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
+
+import file.BinaryFileWriter;
+import file.FileInfo;
+import hash.DirectoryHasher;
 
 import java.io.File;
 import java.nio.file.Files;
