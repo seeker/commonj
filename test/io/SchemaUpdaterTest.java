@@ -70,6 +70,8 @@ public class SchemaUpdaterTest {
 	@Test
 	public void testUpdate() throws SchemaUpdateException {
 		when(sql.getSetting(DBsettings.SchemaVersion)).thenReturn("1");
+		when(sql.batchExecute((String[]) anyVararg())).thenReturn(true);
+		
 		SchemaUpdater.update(sql, local);
 		verify(sql,times(1)).batchExecute((String[]) anyVararg());
 	}
