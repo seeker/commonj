@@ -42,4 +42,16 @@ public class FileInfo {
 	public String getHash() {
 		return hash;
 	}
+
+	public void setFile(File file) {
+		this.file = file;
+	}
+
+	public void setSize(long size) {
+		this.size = size;
+	}
+
+	public void setHash(String hash) {
+		this.hash = hash;
+	}
 }
