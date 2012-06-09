@@ -28,6 +28,10 @@ public class BinaryFileReader {
 		classBuffer  = ByteBuffer.allocate(31457280); //30mb
 	}
 
+	/**
+	 * Set the Buffers initial capacity in bytes.
+	 * @param buffersize size in bytes
+	 */
 	public BinaryFileReader(int buffersize){
 		classBuffer = ByteBuffer.allocate(buffersize);
 	}
@@ -48,7 +52,7 @@ public class BinaryFileReader {
 		classBuffer.clear();
 
 		int count = 0;
-		byte[] c = new byte[8192];			//Datei wird Block um Block in den Speicher übertragen
+		byte[] c = new byte[8192];			//Datei wird Block um Block in den Speicher ï¿½bertragen
 
 		while ((count=binary.read(c)) != -1){
 			classBuffer.put(c, 0, count);
