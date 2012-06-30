@@ -16,6 +16,12 @@
 package file;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
@@ -56,5 +62,46 @@ public class FileUtil {
 		
 		return resultList;
 		
+	}
+	
+	/**
+	 * Move a directory, sub-directories and files to the new location.
+	 * src\a , dst will result in dst\a
+	 * 
+	 * @param source the path of the source directory
+	 * @param destination the path of the destination directory
+	 * @throws IOException
+	 */
+	public static void moveDirectory(Path source, Path destination) throws IOException{
+		Files.walkFileTree(source, new DirectoryMover(source, destination));
+	}
+	
+	static class DirectoryMover extends SimpleFileVisitor<Path>{
+		Path currMoveDir, dstDir, srcDir;
+		
+		public DirectoryMover(Path srcDir, Path dstDir) {
+			this.dstDir = dstDir;
+			this.srcDir = srcDir.getParent();
+		}
+		
+		@Override
+		public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+			File f = new File(dstDir.toFile(),srcDir.relativize(dir).toString());
+			f.mkdirs(); // create new directory with identical name in the destination directory
+			currMoveDir = f.toPath();
+			return super.preVisitDirectory(dir, attrs);
+		}
+		
+		@Override
+		public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+			Files.move(file, currMoveDir.resolve(file.getFileName())); // move files
+			return super.visitFile(file, attrs);
+		}
+		
+		@Override
+		public FileVisitResult postVisitDirectory(Path arg0, IOException arg1) throws IOException {
+			Files.delete(arg0); // delete the source directory when done
+			return super.postVisitDirectory(arg0, arg1);
+		}
 	}
 }
