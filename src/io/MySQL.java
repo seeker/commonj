@@ -44,6 +44,8 @@ public class MySQL{
 	protected final String SQL_OP_ERR = "MySQL operation failed: ";
 	protected final ConnectionPool connPool;
 
+	enum Tables {block, dnw};
+	
 	public MySQL(ConnectionPool connPool){
 		this.connPool = connPool;
 	}
@@ -78,6 +80,8 @@ public class MySQL{
 		addPrepStmt("getFilename"		, "SELECT id FROM filelist WHERE filename = ?");
 		addPrepStmt("getSetting"		, "SELECT param	FROM settings WHERE name = ?");
 		addPrepStmt("getPath"			, "SELECT CONCAT(dirlist.dirpath,filelist.filename) FROM (select dir, filename FROM hash WHERE id =?) AS a JOIN filelist ON a.filename=filelist.id Join dirlist on a.dir=dirlist.id");
+		addPrepStmt("hlUpdateBlock"		, "INSERT IGNORE INTO block (hash) VALUES (?)");
+		addPrepStmt("hlUpdateDnw"		, "INSERT IGNORE INTO dnw (hash) VALUES (?)");
 	}
 	
 	private static void generateStatements(){
@@ -361,6 +365,30 @@ public class MySQL{
 
 	public boolean isBlacklisted(String hash){
 		return simpleBooleanQuery("isBlacklisted", hash, false);
+	}
+	
+	public void update(String id, Tables table){
+		PreparedStatement update = null;
+		String command = null;
+		
+		if(table.equals(Tables.block)){
+			command = "hlUpdateBlock";
+		}else if (table.equals(Tables.dnw)){
+			command = "hlUpdateDnw";
+		}else{
+			logger.severe("Unhandled enum Table: "+table.toString());
+			return;
+		}
+
+		try{
+			update = getPrepStmt(command);
+			update.setString(1, id);
+			update.executeUpdate();
+		}catch (SQLException e){
+			logger.warning(SQL_OP_ERR+command+": "+e.getMessage());
+		}finally{
+			closeAll(update);
+		}
 	}
 	
 	private boolean simpleBooleanQuery(String command, String key, Boolean defaultReturn){
