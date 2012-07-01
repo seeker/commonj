@@ -54,6 +54,20 @@ public class BinaryFileReaderTest {
 		
 		assertArrayEquals(testData, bfr.get(testFile));
 	}
+	
+	@Test
+	public void testGetDataInputStream() throws IOException {
+		assertArrayEquals(testData, bfr.getViaDataInputStream(testFile));
+	}
+	
+	@Test
+	public void testReUseGetDataInputStream() throws IOException {
+		assertArrayEquals(testData, bfr.getViaDataInputStream(testFile));
+		
+		createTestFile(512);
+		
+		assertArrayEquals(testData, bfr.getViaDataInputStream(testFile));
+	}
 
 	private static File createTestFile(int fileSize) throws IOException {
 		testFile = Files.createTempFile("BFRtestfile", null).toFile();
