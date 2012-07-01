@@ -22,7 +22,10 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class BinaryFileReader {
+	int blockLength = 8192;
+	
 	ByteBuffer classBuffer;
+	byte[] c = new byte[blockLength];
 
 	public BinaryFileReader(){
 		classBuffer  = ByteBuffer.allocate(31457280); //30mb
@@ -34,6 +37,11 @@ public class BinaryFileReader {
 	 */
 	public BinaryFileReader(int buffersize){
 		classBuffer = ByteBuffer.allocate(buffersize);
+	}
+	
+	public BinaryFileReader(int buffersize, int blocklength){
+		classBuffer = ByteBuffer.allocate(buffersize);
+		this.blockLength = blocklength;
 	}
 
 	public byte[] get(String path) throws Exception{
@@ -52,7 +60,6 @@ public class BinaryFileReader {
 		classBuffer.clear();
 
 		int count = 0;
-		byte[] c = new byte[8192];			//Datei wird Block um Block in den Speicher �bertragen
 
 		while ((count=binary.read(c)) != -1){
 			classBuffer.put(c, 0, count);
