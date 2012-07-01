@@ -25,6 +25,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.logging.Logger;
 
+import string.Convert;
+
 /**
  * Generates a SHA-2 Hash for binary data, and formats the value into
  * a Hex representation.
@@ -57,7 +59,7 @@ public class HashMaker {
 		}
 		md.reset();
 		rawHash = md.digest(data);
-		key = toHex(rawHash);
+		key = Convert.byteToHex(rawHash);
 
 		return key;
 	}
@@ -97,9 +99,10 @@ public class HashMaker {
 			}
 
 			rawHash = md.digest();
-			key = toHex(rawHash);
+			key = Convert.byteToHex(rawHash);
 		} catch (final IOException ex) {
 			ex.printStackTrace();
+			return null;
 		} finally {
 			if (stream != null) {
 				try {
@@ -112,27 +115,4 @@ public class HashMaker {
 
 		return key;
 	}
-
-	/**
-	 * Converts binary values to Hex.
-	 * @param conv binary value to convert to a string.
-	 * @return string representation of binary value
-	 */
-	private String toHex (byte[] conv){
-		String str ="";
-		String chk = "";
-		int tmp = 0;
-		for (byte b : conv){
-			tmp = b;
-			if (tmp <0)
-				tmp += 256;
-
-			chk = Integer.toHexString(tmp).toUpperCase();
-			if (chk.length() != 2)
-				chk = "0"+chk;
-
-			str += chk;
-		}
-		return str;
-	} 
 }
