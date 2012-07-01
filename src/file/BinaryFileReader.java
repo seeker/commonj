@@ -16,6 +16,7 @@
 package file;
 
 import java.io.BufferedInputStream;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -73,6 +74,21 @@ public class BinaryFileReader {
 		binary.close();
 
 		return varBuffer;
+	}
+	
+	public byte[] getViaDataInputStream(File path) throws IOException{
+
+		DataInputStream dis;
+		byte[] data = new byte[(int)path.length()];
+
+		FileInputStream fileStream = new FileInputStream(path);
+		dis = new DataInputStream(fileStream);
+		
+		dis.readFully(data);
+
+		dis.close();
+
+		return data;
 	}
 
 }
