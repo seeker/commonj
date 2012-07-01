@@ -17,10 +17,12 @@ package hash;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
+import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.logging.Logger;
@@ -35,7 +37,7 @@ public class HashMaker {
 	private static Logger logger = Logger.getLogger(HashMaker.class.getName());
 
 	MessageDigest md = null;
-	String key;
+	String hash;
 	byte[] rawHash;
 
 	/**
@@ -57,11 +59,12 @@ public class HashMaker {
 			logger.severe("No data");
 			return null;
 		}
-		md.reset();
-		rawHash = md.digest(data);
-		key = Convert.byteToHex(rawHash);
 
-		return key;
+		md.update(data);
+		rawHash = md.digest();
+		hash = Convert.byteToHex(rawHash);
+
+		return hash;
 	}
 	
 	public String hashFile(File file) {
@@ -78,41 +81,32 @@ public class HashMaker {
 			return null;
 		}
 
-		key = null;
-
-		FileInputStream stream;
-
-		stream = null;
-
+		hash = null;
+		DigestInputStream dis = null;
+		final long filesize = file.length();
+		
 		try {
-			final FileChannel channel;
-			final MappedByteBuffer buffer;
-			final int fileSize;
-
-			stream = new FileInputStream(file);
-			channel = stream.getChannel();
-			buffer = channel.map(MapMode.READ_ONLY, 0, file.length());
-			fileSize = (int) file.length();
+			dis = new DigestInputStream(new FileInputStream(file), md);
 			
-			for (int i = 0; i < fileSize; i++) {
-				md.update(buffer.get());
+			for(long i = 0; i < filesize; i++){
+				dis.read();
 			}
-
+			
 			rawHash = md.digest();
-			key = Convert.byteToHex(rawHash);
+			hash = Convert.byteToHex(rawHash);
 		} catch (final IOException ex) {
 			ex.printStackTrace();
 			return null;
 		} finally {
-			if (stream != null) {
+			if (dis != null) {
 				try {
-					stream.close();
+					dis.close();
 				} catch (final IOException ex) {
 					ex.printStackTrace();
 				}
 			}
 		}
 
-		return key;
+		return hash;
 	}
 }
