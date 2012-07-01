@@ -37,7 +37,6 @@ public class HashMaker {
 	private static Logger logger = Logger.getLogger(HashMaker.class.getName());
 
 	MessageDigest md = null;
-	String hash;
 	byte[] rawHash;
 
 	/**
@@ -62,9 +61,8 @@ public class HashMaker {
 
 		md.update(data);
 		rawHash = md.digest();
-		hash = Convert.byteToHex(rawHash);
 
-		return hash;
+		return Convert.byteToHex(rawHash);
 	}
 	
 	public String hashFile(File file) {
@@ -76,37 +74,43 @@ public class HashMaker {
 				return null;
 			}
 		}
-		
-		if(file == null){
+
+		if (file == null) {
 			return null;
 		}
 
-		hash = null;
-		DigestInputStream dis = null;
-		final long filesize = file.length();
-		
+		FileInputStream stream;
+
+		stream = null;
+
 		try {
-			dis = new DigestInputStream(new FileInputStream(file), md);
-			
-			for(long i = 0; i < filesize; i++){
-				dis.read();
+			final FileChannel channel;
+			final MappedByteBuffer buffer;
+			final int fileSize;
+
+			stream = new FileInputStream(file);
+			channel = stream.getChannel();
+			buffer = channel.map(MapMode.READ_ONLY, 0, file.length());
+			fileSize = (int) file.length();
+
+			for (int i = 0; i < fileSize; i++) {
+				md.update(buffer.get());
 			}
-			
-			rawHash = md.digest();
-			hash = Convert.byteToHex(rawHash);
 		} catch (final IOException ex) {
 			ex.printStackTrace();
 			return null;
 		} finally {
-			if (dis != null) {
+			if (stream != null) {
 				try {
-					dis.close();
+					stream.close();
 				} catch (final IOException ex) {
 					ex.printStackTrace();
 				}
 			}
 		}
 
-		return hash;
+		rawHash = md.digest();
+
+		return Convert.byteToHex(rawHash);
 	}
 }
