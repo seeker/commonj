@@ -15,6 +15,12 @@
  */
 package hash;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileChannel.MapMode;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.logging.Logger;
@@ -52,6 +58,57 @@ public class HashMaker {
 		md.reset();
 		rawHash = md.digest(data);
 		key = toHex(rawHash);
+
+		return key;
+	}
+	
+	public String hashFile(File file) {
+		if (md == null) {
+			try {
+				md = MessageDigest.getInstance("SHA-256");
+			} catch (NoSuchAlgorithmException e1) {
+				logger.severe(e1.getMessage());
+				return null;
+			}
+		}
+		
+		if(file == null){
+			return null;
+		}
+
+		key = null;
+
+		FileInputStream stream;
+
+		stream = null;
+
+		try {
+			final FileChannel channel;
+			final MappedByteBuffer buffer;
+			final int fileSize;
+
+			stream = new FileInputStream(file);
+			channel = stream.getChannel();
+			buffer = channel.map(MapMode.READ_ONLY, 0, file.length());
+			fileSize = (int) file.length();
+			
+			for (int i = 0; i < fileSize; i++) {
+				md.update(buffer.get());
+			}
+
+			rawHash = md.digest();
+			key = toHex(rawHash);
+		} catch (final IOException ex) {
+			ex.printStackTrace();
+		} finally {
+			if (stream != null) {
+				try {
+					stream.close();
+				} catch (final IOException ex) {
+					ex.printStackTrace();
+				}
+			}
+		}
 
 		return key;
 	}
