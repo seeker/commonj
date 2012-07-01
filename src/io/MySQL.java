@@ -78,8 +78,8 @@ public class MySQL{
 		addPrepStmt("getFilename"		, "SELECT id FROM filelist WHERE filename = ?");
 		addPrepStmt("getSetting"		, "SELECT param	FROM settings WHERE name = ?");
 		addPrepStmt("getPath"			, "SELECT CONCAT(dirlist.dirpath,filelist.filename) FROM (select dir, filename FROM hash WHERE id =?) AS a JOIN filelist ON a.filename=filelist.id Join dirlist on a.dir=dirlist.id");
-		addPrepStmt("hlUpdateBlock"		, "INSERT IGNORE INTO block (hash) VALUES (?)");
-		addPrepStmt("hlUpdateDnw"		, "INSERT IGNORE INTO dnw (hash) VALUES (?)");
+		addPrepStmt("hlUpdateBlock"		, "INSERT IGNORE INTO block (id) VALUES (?)");
+		addPrepStmt("hlUpdateDnw"		, "INSERT IGNORE INTO dnw (id) VALUES (?)");
 	}
 	
 	private static void generateStatements(){
