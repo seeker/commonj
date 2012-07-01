@@ -44,8 +44,6 @@ public class MySQL{
 	protected final String SQL_OP_ERR = "MySQL operation failed: ";
 	protected final ConnectionPool connPool;
 
-	enum Tables {block, dnw};
-	
 	public MySQL(ConnectionPool connPool){
 		this.connPool = connPool;
 	}
@@ -367,13 +365,13 @@ public class MySQL{
 		return simpleBooleanQuery("isBlacklisted", hash, false);
 	}
 	
-	public void update(String id, Tables table){
+	public void update(String id, MySQLtables table){
 		PreparedStatement update = null;
 		String command = null;
 		
-		if(table.equals(Tables.block)){
+		if(table.equals(MySQLtables.Block)){
 			command = "hlUpdateBlock";
-		}else if (table.equals(Tables.dnw)){
+		}else if (table.equals(MySQLtables.Dnw)){
 			command = "hlUpdateDnw";
 		}else{
 			logger.severe("Unhandled enum Table: "+table.toString());
