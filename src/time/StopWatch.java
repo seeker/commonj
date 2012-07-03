@@ -18,8 +18,8 @@ package time;
 import java.util.Calendar;
 
 public class StopWatch {
+	final String format = "%1$2d:%2$2d:%3$2d.%4$3d";
 	boolean isRunning = false;
-	
 	long startTime, stopTime;
 	
 	final long CONST_H = 3600000;
@@ -79,15 +79,6 @@ public class StopWatch {
 		
 		milliSec = remainder;
 		
-		StringBuilder sb = new StringBuilder();
-		sb.append(hours);
-		sb.append(":");
-		sb.append(minutes);
-		sb.append(":");
-		sb.append(seconds);
-		sb.append(".");
-		sb.append(milliSec);
-		
-		return sb.toString();
+		return String.format(format, hours,minutes,seconds,milliSec);
 	}
 }
