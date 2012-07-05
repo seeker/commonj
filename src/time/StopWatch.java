@@ -18,7 +18,7 @@ package time;
 import java.util.Calendar;
 
 public class StopWatch {
-	final String format = "%1$2d:%2$2d:%3$2d.%4$3d";
+	final String format = "%1$02d:%2$02d:%3$02d.%4$03d";
 	boolean isRunning = false;
 	long startTime, stopTime;
 	
