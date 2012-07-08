@@ -75,7 +75,6 @@ public class FileUtilTest {
 		dstDirs.add(dstDir);
 		
 		buildStructure(srcDirs, srcFiles, srcDir);
-		buildStructure(dstDirs, dstFiles, dstDir);
 		
 		createFiles(srcDirs, srcFiles);
 		
@@ -90,6 +89,38 @@ public class FileUtilTest {
 		for(Path p : dstFiles){
 			assertTrue(p.toString(),p.toFile().exists());
 		}
+	}
+	
+	@Test
+	public void testCopyFile() throws IOException{
+		Path baseDir = Files.createTempDirectory("testFileMover");
+		
+		LinkedList<Path> srcDirs, srcFiles;
+		LinkedList<Path> dstDirs;
+		
+		srcDirs = new LinkedList<>();
+		srcFiles = new LinkedList<>();
+		dstDirs = new LinkedList<>();
+		
+		Path srcDir = baseDir.resolve("src").resolve("test");
+		srcDirs.add(srcDir);
+		
+		Path dstDir = baseDir.resolve("dst").resolve("test");
+		dstDirs.add(dstDir);
+		
+		buildStructure(srcDirs, srcFiles, srcDir);
+		
+		createFiles(srcDirs, srcFiles);
+		/*
+		 * ...\srcDir\src\test\dir1\dir2\c.txt
+		 * 
+		 * to
+		 * 
+		 *  ...\dstdir\...\srcDir\src\test\dir1\dir2\c.txt
+		 */
+		
+		FileUtil.moveFileWithStructure(srcFiles.get(2), dstDir);
+		assertTrue(Files.exists(dstDir.resolve(srcFiles.get(2).getRoot().relativize(srcFiles.get(2)))));
 	}
 	
 	private void buildStructure(LinkedList<Path> dirs, LinkedList<Path> files, Path base) {

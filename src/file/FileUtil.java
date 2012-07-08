@@ -76,6 +76,15 @@ public class FileUtil {
 		Files.walkFileTree(source, new DirectoryMover(source, destination));
 	}
 	
+	public static void moveFileWithStructure(Path source, Path dstDirectory) throws IOException{
+		Path relativeSource = source.getRoot().relativize(source);
+		Path destinationPath = dstDirectory.resolve(relativeSource);
+		
+		Files.createDirectories(destinationPath.getParent());
+		
+		Files.move(source, destinationPath);
+	}
+	
 	static class DirectoryMover extends SimpleFileVisitor<Path>{
 		Path currMoveDir, dstDir, srcDir;
 		
