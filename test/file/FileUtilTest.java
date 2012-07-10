@@ -1,5 +1,7 @@
 package file;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.matchers.JUnitMatchers.hasItems;
@@ -7,6 +9,7 @@ import static org.junit.matchers.JUnitMatchers.hasItems;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.LinkedList;
 
 import org.junit.After;
@@ -143,4 +146,61 @@ public class FileUtilTest {
 
 	}
 
+	@Test
+	public void testRemoveDriveLetter(){
+		Path path = FileUtil.removeDriveLetter(Paths.get("D:\\test\\me\\now\\squirrel.jpg"));
+		
+		assertThat(path, is(Paths.get("\\test\\me\\now\\squirrel.jpg")));
+	}
+	
+	@Test
+	public void testRemoveDriveLetterNoDrive(){
+		Path path = FileUtil.removeDriveLetter(Paths.get("\\test\\me\\now\\squirrel.jpg"));
+		
+		assertThat(path, is(Paths.get("\\test\\me\\now\\squirrel.jpg")));
+	}
+	
+	@Test
+	public void testRemoveDriveLetterNull(){
+		Path p = null;
+		Path path = FileUtil.removeDriveLetter(p);
+		
+		assertNull(path);
+	}
+	
+	@Test
+	public void testRemoveDriveLetterDirOnly(){
+		Path path = FileUtil.removeDriveLetter(Paths.get("D:\\test\\me\\now\\"));
+		
+		assertThat(path, is(Paths.get("\\test\\me\\now\\")));
+	} 
+	
+	@Test
+	public void testRemoveDriveLetterString(){
+		String path = FileUtil.removeDriveLetter("D:\\test\\me\\now\\squirrel.jpg");
+		
+		assertThat(path, is("\\test\\me\\now\\squirrel.jpg"));
+	}
+	
+	@Test
+	public void testRemoveDriveLetterNoDriveString(){
+		String path = FileUtil.removeDriveLetter("\\test\\me\\now\\squirrel.jpg");
+		
+		assertThat(path, is("\\test\\me\\now\\squirrel.jpg"));
+	}
+	
+	@Test
+	public void testRemoveDriveLetterNullString(){
+		String s = null;
+		String path = FileUtil.removeDriveLetter(s);
+		
+		assertNull(path);
+	}
+	
+	@Test
+	public void testRemoveDriveLetterStringDirOnly(){
+		String path = FileUtil.removeDriveLetter("D:\\test\\me\\now\\");
+		
+		assertThat(path, is("\\test\\me\\now"));
+	}
 }

@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.LinkedList;
@@ -83,6 +84,44 @@ public class FileUtil {
 		Files.createDirectories(destinationPath.getParent());
 		
 		Files.move(source, destinationPath);
+	}
+	
+	static public String convertDirPathToString(Path directory){
+		if(directory == null){
+			return null;
+		}else if((directory.getRoot() != null) && (directory.getRoot().equals(directory))){
+			return directory.toString().toLowerCase();
+		}else{
+			return directory.toString().toLowerCase()+"\\";
+		}
+	}
+	
+	/**
+	 * Remove the root component from the path, returning a relative path.
+	 * If the path is already relative, it will not be changed.
+	 * C:\temp\   becomes \temp\
+	 * @param path path to remove root from
+	 * @return a relative path
+	 */
+	static public Path removeDriveLetter(Path path){
+		if(path == null){
+			return null;
+		}
+		
+		if(path.isAbsolute()){
+			return Paths.get("\\"+path.getRoot().relativize(path).toString());
+		}else{
+			return path;
+		}
+	}
+	
+	static public String removeDriveLetter(String path){
+		if(path == null){
+			return null;
+		}
+		
+		Path relPath = removeDriveLetter(Paths.get(path));
+		return relPath.toString();
 	}
 	
 	static class DirectoryMover extends SimpleFileVisitor<Path>{
