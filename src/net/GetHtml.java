@@ -23,13 +23,13 @@ import java.net.ProtocolException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.logging.Logger;
 
 /**
  * Class for loading HTML data from the Internet.
  */
 public class GetHtml {
-	private StringBuilder classString = new StringBuilder();
 	private int failCount;
 	private static Logger logger = Logger.getLogger(GetHtml.class.getName());
 	private int maxRetry = 3;
@@ -84,50 +84,59 @@ public class GetHtml {
 	 * @throws PageLoadException 
 	 */
 	public String get (URL url) throws IOException, PageLoadException {
-
-		HttpURLConnection httpCon = null;		
+		return loadHtml(connect(url));
+	}
+	
+	private String loadHtml(HttpURLConnection connection) throws PageLoadException, IOException{
+		StringBuilder classString = new StringBuilder();
 		BufferedReader in = null;
 		String inputLine = "";
 
 		try{
-			httpCon = connect(url);
-			if (httpCon.getResponseCode() != 200){
-				httpCon.disconnect();
+			if (connection.getResponseCode() != 200){
+				connection.disconnect();
 				try{Thread.sleep(20);}catch(InterruptedException ignore){}
-				throw new PageLoadException(String.valueOf(httpCon.getResponseCode()),httpCon.getResponseCode());
+				throw new PageLoadException(String.valueOf(connection.getResponseCode()),connection.getResponseCode());
 			}
 			in = new BufferedReader(
 					new InputStreamReader(
-							httpCon.getInputStream()));
+							connection.getInputStream()));
 			while ((inputLine = in.readLine()) != null)	
 				classString.append(inputLine);
 
 
 		}catch(SocketException se){
 			try {Thread.sleep(5000);} catch (InterruptedException e) {}
-			return reTry(url, httpCon, new SocketException());
+			return reTry(connection.getURL(), connection, new SocketException());
 		}catch(SocketTimeoutException te){
-			return reTry(url, httpCon, new SocketTimeoutException());
+			return reTry(connection.getURL(), connection, new SocketTimeoutException());
 		}finally{
 			if(in != null)
 				in.close();
-			if(httpCon != null){
-				httpCon.disconnect();
+			if(connection != null){
+				connection.disconnect();
 				// give some time to close
 				try{Thread.sleep(20);}catch(InterruptedException ignore){}
 			}
 		}
-		String tmp = classString.toString();
-		reset();
 		
-		return tmp;
+		reset();
+		return classString.toString();
+	}
+	
+	private HttpURLConnection connect(URL url) throws IOException, ProtocolException {
+		return connect(url, null);
 	}
 
-	private HttpURLConnection connect(URL url) throws IOException,
-			ProtocolException {
+	private HttpURLConnection connect(URL url, HashMap<String, String> requestProperties) throws IOException, ProtocolException {
 		HttpURLConnection httpCon;
 		httpCon = (HttpURLConnection) url.openConnection();
 		httpCon.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:2.0) Gecko/20100101 Firefox/4.0"); // pretend to be a firefox browser
+		if(requestProperties != null){
+			for(String key : requestProperties.keySet()){
+				httpCon.setRequestProperty(key, requestProperties.get(key));
+			}
+		}
 		httpCon.setRequestMethod("GET");
 		httpCon.setDoOutput(true);
 		httpCon.setReadTimeout(10000);
@@ -152,7 +161,6 @@ public class GetHtml {
 	}
 	
 	private void reset(){
-		classString = new StringBuilder();
 		failCount = 0;
 	}
 }
