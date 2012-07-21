@@ -16,23 +16,32 @@
 package file;
 
 import java.io.File;
+import java.nio.file.Path;
 
 /**
  * A simple storage class for file information.
  */
 public class FileInfo {
-	File file;
+	Path file;
 	long size;
 	String hash;
 	
 	public FileInfo(File file, String hash) {
 		super();
-		this.file = file;
+		this.file = file.toPath();
 		this.hash = hash;
+	}
+	
+	public FileInfo(File file){
+		this.file = file.toPath();
+	}
+	
+	public FileInfo(Path path){
+		this.file = path;
 	}
 
 	public File getFile() {
-		return file;
+		return file.toFile();
 	}
 
 	public long getSize() {
@@ -44,7 +53,15 @@ public class FileInfo {
 	}
 
 	public void setFile(File file) {
+		this.file = file.toPath();
+	}
+	
+	public void setFile(Path file){
 		this.file = file;
+	}
+	
+	public Path getFilePath(){
+		return file;
 	}
 
 	public void setSize(long size) {
