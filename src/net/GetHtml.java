@@ -23,13 +23,16 @@ import java.net.ProtocolException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
 import java.util.logging.Logger;
 
 /**
  * Class for loading HTML data from the Internet.
  */
 public class GetHtml {
-	private StringBuilder classString = new StringBuilder();
 	private int failCount;
 	private static Logger logger = Logger.getLogger(GetHtml.class.getName());
 	private int maxRetry = 3;
@@ -44,6 +47,27 @@ public class GetHtml {
 
 	public void setMaxRetry(int maxRetry) {
 		this.maxRetry = maxRetry;
+	}
+	
+	public boolean hasBeenModifiedSince(URL url, long timestamp){
+		HttpURLConnection httpCon = null;
+		try{
+			httpCon = prepareHttpConnection(url, null);
+			httpCon.setIfModifiedSince(timestamp);
+			httpCon.connect();
+
+			if(httpCon.getLastModified() >= timestamp){
+				return true;
+			}
+		}catch(IOException io){
+			logger.warning("Error while getting HTML response code: "+io.getMessage());
+		}finally{
+			if(httpCon != null){
+				httpCon.disconnect();
+			}
+		}
+		
+		return false;
 	}
 
 	public int getResponse(URL url){
@@ -61,9 +85,6 @@ public class GetHtml {
 		}finally{
 			if(httpCon != null){
 				httpCon.disconnect();
-
-				// give some time to close
-				try{Thread.sleep(20);}catch(InterruptedException ignore){}
 			}
 		}
 
@@ -84,55 +105,93 @@ public class GetHtml {
 	 * @throws PageLoadException 
 	 */
 	public String get (URL url) throws IOException, PageLoadException {
+		return loadHtml(connect(url));
+	}
+	
+	public String get(String url, long lastModificationTimestamp) throws PageLoadException, ProtocolException, IOException{
+		return get(new URL(url), lastModificationTimestamp);
+	}
+	
+	/**
+	 * Get the HTML for the given URL if the page has been modified at or after the timestamp.
+	 * @param url URL to load the HTML from
+	 * @param lastModificationTimestamp the timestamp of the last modification
+	 * @return HTML if the page has been modified, otherwise null
+	 * @throws PageLoadException
+	 * @throws ProtocolException
+	 * @throws IOException
+	 */
+	public String get(URL url, long lastModificationTimestamp) throws PageLoadException, ProtocolException, IOException{
+		HttpURLConnection connection = prepareHttpConnection(url, null);
+		
+		connection.setIfModifiedSince(lastModificationTimestamp);
+		connection.connect();
 
-		HttpURLConnection httpCon = null;		
+		if(connection.getLastModified() >= lastModificationTimestamp){
+			return null;
+		}
+		
+		return loadHtml(connection);
+	}
+	
+	private String loadHtml(HttpURLConnection connection) throws PageLoadException, IOException{
+		StringBuilder classString = new StringBuilder();
 		BufferedReader in = null;
 		String inputLine = "";
 
 		try{
-			httpCon = connect(url);
-			if (httpCon.getResponseCode() != 200){
-				httpCon.disconnect();
-				try{Thread.sleep(20);}catch(InterruptedException ignore){}
-				throw new PageLoadException(String.valueOf(httpCon.getResponseCode()),httpCon.getResponseCode());
+			if (connection.getResponseCode() != 200){
+				connection.disconnect();
+				throw new PageLoadException(String.valueOf(connection.getResponseCode()),connection.getResponseCode());
 			}
 			in = new BufferedReader(
 					new InputStreamReader(
-							httpCon.getInputStream()));
+							connection.getInputStream()));
 			while ((inputLine = in.readLine()) != null)	
 				classString.append(inputLine);
 
 
 		}catch(SocketException se){
 			try {Thread.sleep(5000);} catch (InterruptedException e) {}
-			return reTry(url, httpCon, new SocketException());
+			return reTry(connection.getURL(), connection, new SocketException());
 		}catch(SocketTimeoutException te){
-			return reTry(url, httpCon, new SocketTimeoutException());
+			return reTry(connection.getURL(), connection, new SocketTimeoutException());
 		}finally{
 			if(in != null)
 				in.close();
-			if(httpCon != null){
-				httpCon.disconnect();
-				// give some time to close
-				try{Thread.sleep(20);}catch(InterruptedException ignore){}
+			if(connection != null){
+				connection.disconnect();
 			}
 		}
-		String tmp = classString.toString();
-		reset();
 		
-		return tmp;
+		reset();
+		return classString.toString();
+	}
+	
+	private HttpURLConnection connect(URL url) throws IOException, ProtocolException {
+		return connect(url, null);
 	}
 
-	private HttpURLConnection connect(URL url) throws IOException,
-			ProtocolException {
+	private HttpURLConnection connect(URL url, HashMap<String, String> requestProperties) throws IOException, ProtocolException {
+		HttpURLConnection httpCon = prepareHttpConnection(url, requestProperties);
+
+		httpCon.connect();
+		return httpCon;
+	}
+	
+	private HttpURLConnection prepareHttpConnection(URL url, HashMap<String, String> requestProperties) throws IOException{
 		HttpURLConnection httpCon;
 		httpCon = (HttpURLConnection) url.openConnection();
 		httpCon.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:2.0) Gecko/20100101 Firefox/4.0"); // pretend to be a firefox browser
+		if(requestProperties != null){
+			for(String key : requestProperties.keySet()){
+				httpCon.setRequestProperty(key, requestProperties.get(key));
+			}
+		}
 		httpCon.setRequestMethod("GET");
 		httpCon.setDoOutput(true);
 		httpCon.setReadTimeout(10000);
-
-		httpCon.connect();
+		
 		return httpCon;
 	}
 
@@ -140,19 +199,18 @@ public class GetHtml {
 		if (failCount < maxRetry){
 			failCount++;
 			httpCon.disconnect();
-			try{Thread.sleep(20);}catch(InterruptedException ignore){}
+			try{Thread.sleep(1000);}catch(InterruptedException ignore){}
 			return get(url);
 		}else{
 			if(httpCon != null){
 				httpCon.disconnect();
-				try{Thread.sleep(20);}catch(InterruptedException ignore){}
+				try{Thread.sleep(1000);}catch(InterruptedException ignore){}
 			}
 			throw ex;
 		}
 	}
 	
 	private void reset(){
-		classString = new StringBuilder();
 		failCount = 0;
 	}
 }
