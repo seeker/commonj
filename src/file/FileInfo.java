@@ -32,6 +32,12 @@ public class FileInfo {
 		this.hash = hash;
 	}
 	
+	public FileInfo(Path file, String hash){
+		super();
+		this.file = file;
+		this.hash = hash;
+	}
+	
 	public FileInfo(File file){
 		this.file = file.toPath();
 	}
