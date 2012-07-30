@@ -19,7 +19,7 @@ package thread;
 
 import java.util.logging.Logger;
 
-class ProcessWatchDog extends Thread{
+public class ProcessWatchDog extends Thread{
 	String processDescription;
 	Process process;
 	long timeout;
