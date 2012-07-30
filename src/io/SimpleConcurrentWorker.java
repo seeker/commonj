@@ -25,10 +25,13 @@ public abstract class SimpleConcurrentWorker<E,T> extends Thread{
 	
 	public SimpleConcurrentWorker() {}
 	
-	public SimpleConcurrentWorker(String threadName){
-		super(threadName);
-	}
 	
+	public SimpleConcurrentWorker(String name, AbstractQueue<E> input, AbstractQueue<T> output) {
+		super(name);
+		this.input = input;
+		this.output = output;
+	}
+
 	@Override
 	public final void run() {
 		work(this.input, this.output);
