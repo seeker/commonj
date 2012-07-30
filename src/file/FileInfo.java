@@ -22,9 +22,9 @@ import java.nio.file.Path;
  * A simple storage class for file information.
  */
 public class FileInfo {
-	Path file;
-	long size;
-	String hash;
+	Path file = null;
+	long size = -1L;
+	String hash = null;
 	
 	public FileInfo(File file, String hash) {
 		super();
@@ -76,5 +76,17 @@ public class FileInfo {
 
 	public void setHash(String hash) {
 		this.hash = hash;
+	}
+	
+	public boolean hasHash() {
+		return hash == null ? false : true;
+	}
+	
+	public boolean hasPath() {
+		return file == null ? false : true;
+	}
+	
+	public boolean hasSize() {
+		return size == -1 ? false : true;
 	}
 }
