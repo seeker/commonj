@@ -17,7 +17,7 @@ public class StreamGobbler extends Thread {
 	String type;
 	final static Logger logger = Logger.getLogger(StreamGobbler.class.getName());
 
-	StreamGobbler(InputStream is, String type) {
+	public StreamGobbler(InputStream is, String type) {
 		this.is = is;
 		this.type = type;
 	}
