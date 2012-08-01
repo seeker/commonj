@@ -29,6 +29,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import filefilter.SimpleImageFilter;
+
 /**
  * This class will search all folders and the respective subfolders for files
  * and return them as a List of File items.
@@ -131,13 +133,15 @@ public class FileWalker{
 	}
 
 	class FetchFiles extends SimpleFileVisitor<Path>{
+		SimpleImageFilter imageFilter = new SimpleImageFilter();
+		
 		@Override
 		public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
 			if(! folderOnly && attrs.isRegularFile()){
 				if(imageOnly){
 					String toTest = path.toString().toLowerCase();
 
-					if (toTest.endsWith(".jpg") || toTest.endsWith(".png") || toTest.endsWith(".gif")){
+					if (imageFilter.accept(null, toTest)){
 						resultList.add(path.toFile());	
 					}
 				}else{
