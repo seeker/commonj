@@ -71,7 +71,7 @@ public class FilteredFileWalkerTest {
 
 	@Test
 	public void testWalkFileTree() throws IOException {
-		LinkedList<Path> foundFiles = FilteredFileWalker.walkFileTree(rootFolder, new SimpleImageFilter());
+		LinkedList<Path> foundFiles = FilteredFileWalker.walkFileTreeWithFilter(rootFolder, new SimpleImageFilter());
 		
 		assertThat(foundFiles, hasItem(files[2]));
 		assertThat(foundFiles.size(), is(1));

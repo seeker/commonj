@@ -15,9 +15,9 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package filefilter;
+package file;
 
-import java.io.FilenameFilter;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Path;
@@ -27,11 +27,11 @@ import java.util.List;
 
 public class FilenameFilterVisitor extends SimpleFileVisitor<Path> {
 	List<Path> resultOutputList;
-	FilenameFilter fileNameFilter;
+	FileFilter fileFilter;
 	
-	public FilenameFilterVisitor(List<Path> resultOutputList, FilenameFilter fileNameFilter) {
+	public FilenameFilterVisitor(List<Path> resultOutputList, FileFilter fileFilter) {
 		this.resultOutputList = resultOutputList;
-		this.fileNameFilter = fileNameFilter;
+		this.fileFilter = fileFilter;
 	}
 	
 	@Override
@@ -44,9 +44,6 @@ public class FilenameFilterVisitor extends SimpleFileVisitor<Path> {
 	}
 	
 	private boolean isAcceptedFile(Path file){
-		Path directory = file.getParent();
-		Path filename = file.getFileName();
-		
-		return fileNameFilter.accept(directory.toFile(), filename.toString());
+		return fileFilter.accept(file.toFile());
 	}
 }

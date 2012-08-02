@@ -1,4 +1,6 @@
 /*  Copyright (C) 2012  Nicholas Wright
+	
+	part of 'AidUtil', a collection of maintenance tools for 'Aid'.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -13,32 +15,25 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package filefilter;
+package file;
 
-import java.io.File;
-import java.io.FileFilter;
+import java.io.IOException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.LinkedList;
 
-public class SimpleImageFilter implements FileFilter {
-	final String[] imageExtensions = {"jpg", "png", "gif"};
+public 	class DirectoryVisitor extends SimpleFileVisitor<Path> {
+	LinkedList<Path> directoryList;
 	
-	@Override
-	public boolean accept(File pathname) {
-		if(! pathname.isFile()){
-			return false;
-		}
-		
-		String filename = pathname.getName();
-		
-		int extensionIndex = filename.lastIndexOf(".") + 1;
-		String fileExtension = filename.substring(extensionIndex).toLowerCase();
-		
-		for(String extension : imageExtensions){
-			if(fileExtension.equals(extension)){
-				return true;
-			}
-		}
-		
-		return false;
+	public DirectoryVisitor(LinkedList<Path> directoryList) {
+		this.directoryList = directoryList;
 	}
 
+	@Override
+	public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+		directoryList.add(dir);
+		return FileVisitResult.CONTINUE;
+	}
 }

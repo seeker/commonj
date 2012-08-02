@@ -16,6 +16,8 @@
 package file;
 
 import java.io.File;
+import java.io.FileFilter;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.FileVisitOption;
 import java.nio.file.FileVisitResult;
@@ -29,6 +31,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import filefilter.DirectoryFilter;
 import filefilter.SimpleImageFilter;
 
 /**
@@ -43,8 +46,10 @@ public class FileWalker{
 	private boolean noSub = false;
 	private boolean folderOnly = false;
 	private boolean imageOnly = false;
+	
+	//TODO move FilteredFileWalker into this class
 
-	///////////////////////////////////////////////////////////////////////////////
+	//TODO replace all addPath(...) methods with walkFileTree(...) methods that accept lists , VarArgs
 	public void addPath(File file){
 		File[] f = {file};
 		addPath(f);
@@ -80,18 +85,73 @@ public class FileWalker{
 		addPath(conv);
 	}
 
+	/**
+	 * Use {@link FileWalker#getCurrentDirectorySubdirectories(Path)} or {@link FileWalker#getCurrentFolderImages(Path)} instead
+	 */
+	@Deprecated
 	public void setnoSub(boolean set){
 		this.noSub = set;
 	}
 
+	/**
+	 * Use {@link FileWalker#getAllDirectories(Path)} or {@link FileWalker#getCurrentDirectorySubdirectories(Path)} instead.
+	 * @param set
+	 */
+	@Deprecated
 	public void setfolderOnly(boolean set){
 		this.folderOnly = set;
 	}
+	
+	public static LinkedList<Path> getAllDirectories(Path startDirectory) throws IOException{
+		LinkedList<Path> directoryList = new LinkedList<>();
+		Files.walkFileTree(startDirectory, new DirectoryVisitor(directoryList));
+		return directoryList;
+	}
+	
+	public static LinkedList<Path> getCurrentDirectorySubdirectories(Path currentDirectory){
+		LinkedList<Path> subDirectories = new LinkedList<>();
+		File[] foundDirectories = currentDirectory.toFile().listFiles(new DirectoryFilter());
+		
+		for(File file : foundDirectories){
+			subDirectories.add(file.toPath());
+		}
+		
+		return subDirectories;
+	}
 
+	/**
+	 * Use {@link FileWalker#getAllImages(Path)} or {@link FileWalker#getCurrentFolderImages(Path)} instead.
+	 */
+	@Deprecated
 	public void setImagesOnly(boolean set){
 		this.imageOnly = set;
 	}
-	///////////////////////////////////////////////////////////////////////////////	
+	
+	public static LinkedList<Path> getAllImages(Path startDirectory) throws IOException{
+		return walkFileTreeWithFilter(startDirectory, new SimpleImageFilter());
+	}
+	
+	public static LinkedList<Path> getCurrentFolderImages(Path currentFolder) throws IOException {
+		LinkedList<Path> imageList = new LinkedList<>();
+		
+		File[] foundImages = currentFolder.toFile().listFiles(new SimpleImageFilter());
+		
+		for(File file : foundImages){
+			imageList.add(file.toPath());
+		}
+		
+		return imageList;
+	}
+	
+	public static LinkedList<Path> walkFileTreeWithFilter(Path startDirectory, FileFilter fileFilter) throws IOException {
+		LinkedList<Path> foundFiles = new LinkedList<>();
+		
+		Files.walkFileTree(startDirectory, new FilenameFilterVisitor(foundFiles, fileFilter));
+		
+		return foundFiles;
+	}
+	
+	
 	public List<File> fileWalkList(){
 		LinkedList<File> files = fileWalk();
 		ArrayList<File> list = new ArrayList<File>(100);
@@ -118,11 +178,11 @@ public class FileWalker{
 		for(File f : dirToSearch){
 			try {
 				if(noSub && folderOnly){
-					Files.walkFileTree( f.toPath(), EnumSet.noneOf(FileVisitOption.class),2, new FetchFiles());
+					Files.walkFileTree( f.toPath(), EnumSet.noneOf(FileVisitOption.class),2, new FileVisitor());
 				}else if(noSub && !folderOnly){
-					Files.walkFileTree( f.toPath(), EnumSet.noneOf(FileVisitOption.class),1, new FetchFiles());
+					Files.walkFileTree( f.toPath(), EnumSet.noneOf(FileVisitOption.class),1, new FileVisitor());
 				}else{
-					Files.walkFileTree( f.toPath(), new FetchFiles());
+					Files.walkFileTree( f.toPath(), new FileVisitor());
 				}
 			} catch (IOException e) {
 				e.printStackTrace(); // should not reach this...
@@ -132,16 +192,15 @@ public class FileWalker{
 		return new LinkedList<File>(resultList);
 	}
 
-	class FetchFiles extends SimpleFileVisitor<Path>{
+	class FileVisitor extends SimpleFileVisitor<Path>{
 		SimpleImageFilter imageFilter = new SimpleImageFilter();
 		
 		@Override
 		public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
 			if(! folderOnly && attrs.isRegularFile()){
 				if(imageOnly){
-					String toTest = path.toString().toLowerCase();
 
-					if (imageFilter.accept(null, toTest)){
+					if (imageFilter.accept(path.toFile())){
 						resultList.add(path.toFile());	
 					}
 				}else{
@@ -165,6 +224,5 @@ public class FileWalker{
 			System.err.println("unable to access "+file.toString());
 			return FileVisitResult.CONTINUE;
 		}
-
 	}
 }

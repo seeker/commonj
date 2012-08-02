@@ -7,13 +7,17 @@ import static org.junit.matchers.JUnitMatchers.hasItem;
 import static org.junit.matchers.JUnitMatchers.hasItems;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import filefilter.SimpleImageFilter;
 
 
 
@@ -219,28 +223,16 @@ public class FileWalkerTest {
 	}
 	
 	@Test
-	/**
-	 * Read only files with .jpg , .gif or .png extension.
-	 */
-	public void testFilterWalk() {
-		fw.addPath(rootFolder);
-		fw.setnoSub(false);
-		fw.setImagesOnly(true);
-		LinkedList<File> results = fw.fileWalk();
+	public void testGetAllImages() throws IOException {
+		LinkedList<Path> results = FileWalker.getAllImages(rootFolder.toPath());
 
 		assertThat(results.size(), is(1));
-		assertTrue(results.get(0).equals(files[2]));
+		assertTrue(results.get(0).equals(files[2].toPath()));
 	}
 	
 	@Test
-	/**
-	 * same as testFilterWalk(), but without sub-directories.
-	 */
-	public void testFilterWalk_noSub() {
-		fw.addPath(rootFolder);
-		fw.setnoSub(true);
-		fw.setImagesOnly(true);
-		LinkedList<File> results = fw.fileWalk();
+	public void testGetCurrentFolderImages() throws IOException {
+		LinkedList<Path> results = FileWalker.getCurrentFolderImages(rootFolder.toPath());
 
 		assertThat(results.size(), is(0)); // should not find any files
 	}
@@ -259,45 +251,25 @@ public class FileWalkerTest {
 	}
 	
 	@Test
-	/**
-	 * Find all directories
-	 */
-	public void testFileWalkDirectories() {
-		fw.addPath(rootFolder);
-		fw.setfolderOnly(true);
-		LinkedList<File> results = fw.fileWalk();
+	public void testGetAllDirectories() throws IOException {
+		LinkedList<Path> results = FileWalker.getAllDirectories(rootFolder.toPath());
+		
+		Path[] foldersPath = new Path[folders.length];
+		
+		for(int i=0; i < folders.length; i++){
+			foldersPath[i] = folders[i].toPath();
+		}
 		
 		assertThat(results.size(), is(4));
-		assertThat(results, hasItems(folders));
-		assertThat(results, hasItem(rootFolder));
+		assertThat(results, hasItems(foldersPath));
+		assertThat(results, hasItem(rootFolder.toPath()));
 	}
 	
 	@Test
-	/**
-	 * Find all directories
-	 */
-	public void testFileWalkDirectoriesSubFolder() {
-		fw.addPath(folders[1]);
-		fw.setfolderOnly(true);
-		LinkedList<File> results = fw.fileWalk();
+	public void testGetCurrentDirectorySubdirectories() {
+		LinkedList<Path> results = FileWalker.getCurrentDirectorySubdirectories(rootFolder.toPath());
 		
 		assertThat(results.size(), is(2));
-		assertThat(results, hasItem(folders[2]));
-		assertThat(results, hasItem(folders[1]));
-	}
-	
-	@Test
-	/**
-	 * Find all directories
-	 */
-	public void testFileWalkDirectoriesNoSub() {
-		fw.addPath(folders[1]);
-		fw.setfolderOnly(true);
-		fw.setnoSub(true);
-		LinkedList<File> results = fw.fileWalk();
-		
-		assertThat(results.size(), is(2));
-		assertThat(results, hasItem(folders[2]));
-		assertThat(results, hasItem(folders[1]));
+		assertThat(results, hasItems(folders[0].toPath(), folders[1].toPath()));
 	}
 }

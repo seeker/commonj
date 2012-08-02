@@ -17,18 +17,14 @@
  */
 package filefilter;
 
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.LinkedList;
+import java.io.File;
+import java.io.FileFilter;
 
-public abstract class FilteredFileWalker {
-	public static LinkedList<Path> walkFileTree(Path startDirectory, FilenameFilter filenameFilter) throws IOException {
-		LinkedList<Path> foundFiles = new LinkedList<>();
-		
-		Files.walkFileTree(startDirectory, new FilenameFilterVisitor(foundFiles, filenameFilter));
-		
-		return foundFiles;
+public class DirectoryFilter implements FileFilter {
+
+	@Override
+	public boolean accept(File pathname) {
+		return pathname.isDirectory();
 	}
+
 }
