@@ -23,9 +23,11 @@ import java.nio.file.FileVisitOption;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -47,15 +49,20 @@ public class FileWalker{
 	private boolean folderOnly = false;
 	private boolean imageOnly = false;
 	
-	//TODO move FilteredFileWalker into this class
-
-	//TODO replace all addPath(...) methods with walkFileTree(...) methods that accept lists , VarArgs
+	/**
+	 * Use {@link FileWalker#walkFileTree(File...)} instead.
+	 */
+	@Deprecated
 	public void addPath(File file){
 		File[] f = {file};
 		addPath(f);
 	}
-
-	public void addPath(File[] file){  //main add Method
+	
+	/**
+	 * Use {@link FileWalker#walkFileTree(File...)} instead.
+	 */
+	@Deprecated
+	public void addPath(File[] file){
 		for (File f : file){ 
 			if(!dirToSearch.contains(f)){
 				dirToSearch.add(f);
@@ -64,11 +71,19 @@ public class FileWalker{
 		}
 	}
 
+	/**
+	 * Use {@link FileWalker#walkFileTree(String...)} instead.
+	 */
+	@Deprecated
 	public void addPath(String string) {
 		File[] f = {new File(string)}; // make a 1 element array
 		addPath(f);
 	}
 
+	/**
+	 * Use {@link FileWalker#walkFileTree(String...)} instead.
+	 */
+	@Deprecated
 	public void addPath(String[] dirs){
 		File[] conv = new File[dirs.length];
 		int i=0;
@@ -79,6 +94,10 @@ public class FileWalker{
 		addPath(conv);
 	}
 
+	/**
+	 * Use {@link FileWalker#walkFileTreeFileList(List)} instead.
+	 */
+	@Deprecated
 	public void addPath(List<File> dirs){
 		File[] conv = new File[dirs.size()];
 		dirs.toArray(conv);
@@ -86,7 +105,7 @@ public class FileWalker{
 	}
 
 	/**
-	 * Use {@link FileWalker#getCurrentDirectorySubdirectories(Path)} or {@link FileWalker#getCurrentFolderImages(Path)} instead
+	 * Use {@link FileWalker#getCurrentDirectorySubdirectories(Path)} or {@link FileWalker#getCurrentFolderImages(Path)} instead.
 	 */
 	@Deprecated
 	public void setnoSub(boolean set){
@@ -95,7 +114,6 @@ public class FileWalker{
 
 	/**
 	 * Use {@link FileWalker#getAllDirectories(Path)} or {@link FileWalker#getCurrentDirectorySubdirectories(Path)} instead.
-	 * @param set
 	 */
 	@Deprecated
 	public void setfolderOnly(boolean set){
@@ -151,7 +169,10 @@ public class FileWalker{
 		return foundFiles;
 	}
 	
-	
+	/**
+	 * Use {@link FileWalker#walkFileTree(Path...)} instead.
+	 */
+	@Deprecated
 	public List<File> fileWalkList(){
 		LinkedList<File> files = fileWalk();
 		ArrayList<File> list = new ArrayList<File>(100);
@@ -163,6 +184,10 @@ public class FileWalker{
 		return list;
 	}
 
+	/**
+	 * No replacement available.
+	 */
+	@Deprecated
 	public List<String> fileWalkStringList(){
 		LinkedList<File> files = fileWalk();
 		List<String> list = new ArrayList<String>(100);
@@ -172,7 +197,65 @@ public class FileWalker{
 		}
 		return list;
 	}
-
+	
+	public static LinkedList<Path> walkFileTree(Path... directories) throws IOException {
+		ArrayList<Path> foundFiles = new ArrayList<Path>();
+		for(Path directory : directories){
+			LinkedList<Path> newFiles = walkFileTreeWithFilter(directory, new filefilter.FileFilter());
+			addWithoutDuplicates(foundFiles, newFiles);
+		}
+		
+		return new LinkedList<>(foundFiles);
+	}
+	
+	public static LinkedList<Path> walkFileTreePathList(List<Path> list) throws IOException {
+		return walkFileTree(list.toArray(new Path[1]));
+	}
+	
+	public static LinkedList<Path> walkFileTree(File... directories) throws IOException {
+		Path[] paths = new Path[directories.length];
+		
+		for(int i=0; i < directories.length; i++){
+			paths[i] = directories[i].toPath();
+		}
+		
+		return walkFileTree(paths);
+	}
+	
+	public static LinkedList<Path> walkFileTreeStringList(List<String> list) throws IOException {
+		return walkFileTree(list.toArray(new String[1]));
+	}
+	
+	public static LinkedList<Path> walkFileTree(String... directories) throws IOException {
+		Path[] paths = new Path[directories.length];
+		
+		for(int i=0; i < directories.length; i++){
+			paths[i] = Paths.get(directories[i]);
+		}
+		
+		return walkFileTree(paths);
+	}
+	
+	public static LinkedList<Path> walkFileTreeFileList(List<File> list) throws IOException {
+		return walkFileTree(list.toArray(new File[1]));
+	}
+	
+	private static void addWithoutDuplicates(ArrayList<Path> foundFiles, LinkedList<Path> newFiles) {
+		foundFiles.ensureCapacity(foundFiles.size() + newFiles.size());
+		
+		for(Path file : newFiles){
+			int index = Collections.binarySearch(foundFiles, file);
+			
+			if(index < 0){
+				foundFiles.add(-index-1, file);
+			}
+		}
+	}
+	
+	/**
+	 * Use walkFileTree methods instead
+	 */
+	@Deprecated
 	public LinkedList<File> fileWalk(){
 		resultList.clear();
 		for(File f : dirToSearch){
