@@ -14,24 +14,27 @@ import java.util.logging.Logger;
  */
 public class StreamGobbler extends Thread {
 	InputStream is;
-	String type;
 	final static Logger logger = Logger.getLogger(StreamGobbler.class.getName());
+	private StringBuilder messageBuffer;
 
-	public StreamGobbler(InputStream is, String type) {
+	public StreamGobbler(InputStream is) {
 		this.is = is;
-		this.type = type;
+	}
+	
+	public String getBuffer() {
+		return messageBuffer.toString();
 	}
 
 	public void run() {
+		messageBuffer = new StringBuilder();
+
 		try {
 			InputStreamReader isr = new InputStreamReader(is);
 			BufferedReader br = new BufferedReader(isr);
 			String line = null;
-			while ((line = br.readLine()) != null)
-				if (type.toLowerCase().equals("error"))
-					logger.warning(type + ">" + line);
-				else
-					logger.info(type + ">" + line);
+			while ((line = br.readLine()) != null){
+				messageBuffer.append(line);
+			}
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		}
