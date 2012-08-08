@@ -7,7 +7,8 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({ 
 	FileTests.class, 
 	HashTests.class, 
-	NetTests.class 
+	NetTests.class,
+	ImageTests.class
 })
 public class AllTestsCommon {
 
