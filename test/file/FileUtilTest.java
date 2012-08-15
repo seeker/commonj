@@ -201,6 +201,6 @@ public class FileUtilTest {
 	public void testRemoveDriveLetterStringDirOnly(){
 		String path = FileUtil.removeDriveLetter("D:\\test\\me\\now\\");
 		
-		assertThat(path, is("\\test\\me\\now"));
+		assertThat(path, is("\\test\\me\\now\\"));
 	}
 }

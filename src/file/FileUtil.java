@@ -115,13 +115,19 @@ public class FileUtil {
 		}
 	}
 	
-	static public String removeDriveLetter(String path){
-		if(path == null){
+	static public String removeDriveLetter(String path) {
+		if (path == null) {
 			return null;
 		}
-		
+
 		Path relPath = removeDriveLetter(Paths.get(path));
-		return relPath.toString();
+		String filename = relPath.getFileName().toString();
+
+		if (filename.contains(".")) {
+			return relPath.toString();
+		} else {
+			return relPath.toString() + "\\";
+		}
 	}
 	
 	static class DirectoryMover extends SimpleFileVisitor<Path>{
