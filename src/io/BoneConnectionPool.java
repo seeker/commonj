@@ -20,8 +20,12 @@ import java.sql.SQLException;
 import java.util.Properties;
 import java.util.logging.Logger;
 
+import javax.sql.DataSource;
+
+import com.j256.ormlite.jdbc.DataSourceConnectionSource;
 import com.jolbox.bonecp.BoneCP;
 import com.jolbox.bonecp.BoneCPConfig;
+import com.jolbox.bonecp.BoneCPDataSource;
 
 /**
  * Connection pool for database connections.
@@ -32,6 +36,7 @@ public class BoneConnectionPool implements ConnectionPool {
 	static final Logger LOGGER = Logger.getLogger(BoneConnectionPool.class.toString());
 	BoneCP connectionPool = null;
 	BoneCPConfig config = null;
+	DataSourceConnectionSource bcpConnSource = null;
 	Properties sqlConfig;
 	int maxResources;
 	
@@ -68,6 +73,8 @@ public class BoneConnectionPool implements ConnectionPool {
 		config.setMaxConnectionsPerPartition(maxResources);
 		config.setPartitionCount(1);
 		connectionPool = new BoneCP(config); // setup the connection pool
+		BoneCPDataSource bcpDataSource = new BoneCPDataSource(config);
+		bcpConnSource = new DataSourceConnectionSource(bcpDataSource, dbProps.getProperty("url"));
 	}
 
 	public void stopPool(){
@@ -83,6 +90,10 @@ public class BoneConnectionPool implements ConnectionPool {
 	 */
 	public Connection getConnection() throws SQLException {
 		return connectionPool.getConnection();
+	}
+	
+	public DataSourceConnectionSource getConnectionSource() throws SQLException {
+		return bcpConnSource;
 	}
 
 	public void returnConnection(Connection cn) {
