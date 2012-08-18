@@ -23,7 +23,7 @@ import java.nio.file.Path;
  */
 public class FileInfo {
 	Path file = null;
-	long size = -1L;
+	long size = 0L;
 	String hash = null;
 	
 	public FileInfo(File file, String hash) {
