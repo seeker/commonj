@@ -1,15 +1,14 @@
 package net;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 
@@ -31,12 +30,13 @@ public class GetBinaryTest {
 	static Server server;
 	static byte[] testData = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20};
 	static byte[] testData2 = {20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1};
-	String url = "http://localhost/", url2 = "http://localhost/2", urlWait = "http://localhost/wait";
 	
+	static final int SERVER_PORT = 5400;
+	String url = "http://localhost:"+SERVER_PORT+"/", url2 = "http://localhost:"+SERVER_PORT+"/2", urlWait = "http://localhost:"+SERVER_PORT+"/wait";
 
 	@BeforeClass
 	public static void startServer() throws Exception{
-		server  = new Server(80);
+		server  = new Server(SERVER_PORT);
 		server.setHandler(new TestHandler());
 		server.start();
 	}
