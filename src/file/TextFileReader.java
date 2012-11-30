@@ -22,43 +22,45 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+
 /**
- * Convenience class for reading text files.
- * Handles file opening, buffering and closing.
+ * Convenience class for reading text files. Handles file opening, buffering and
+ * closing.
  */
 public class TextFileReader {
-	public String read(File path) throws IOException{
-		String readData = "";
-		String read;
-
+	public String read(File path) throws IOException {
 		FileReader fr = new FileReader(path);
-		BufferedReader br = new BufferedReader(fr);
-
-		while((read = br.readLine()) != null)
-			readData += read+"\n";
-		
-		br.close();
+		String readData = readData(fr);
 		fr.close();
 
+		return readData.toString();
+	}
+
+	public String read(InputStream is) throws IOException {
+		Reader reader = new InputStreamReader(is);
+		String readData = readData(reader);
+		reader.close();
+
 		return readData;
 	}
-	
-	public String read(InputStream is) throws IOException{
-		String readData = "";
+
+	private String readData(Reader reader) throws IOException {
+		BufferedReader br = new BufferedReader(reader);
+		StringBuilder readData = new StringBuilder();
 		String read;
-		Reader r = new InputStreamReader(is);
-		BufferedReader br = new BufferedReader(r);
 
-		while((read = br.readLine()) != null)
-			readData += read+"\n";
-		
+		while ((read = br.readLine()) != null) {
+			readData.append(read + "\n");
+		}
+
+		readData.deleteCharAt(readData.length() - 1);
+
 		br.close();
-		r.close();
 
-		return readData;
+		return readData.toString();
 	}
-	
-	public String read(String path) throws IOException{
+
+	public String read(String path) throws IOException {
 		return read(new File(path));
 	}
 }
