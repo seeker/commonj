@@ -5,7 +5,8 @@ import file.*;
 @RunWith(Suite.class)
 @SuiteClasses({ 
 	FileUtilTest.class, 
-	FileWalkerTest.class 
+	FileWalkerTest.class,
+	TextFileReaderTest.class
 })
 public class FileTests {
 
