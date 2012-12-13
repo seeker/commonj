@@ -24,11 +24,13 @@ public class GetHtmlTest {
 	static String testData2 = "<!DOCTYPE html><html><head><title>Bestellformular</title></head><body><h1>Bestellung</h1><fieldset><legend>Kundendaten</legend></fieldset><fieldset><legend>Artikel</legend></fieldset></body></html>";
 	String testString = null;
 	static Server server;
-	String url = "http://localhost/", url2 = "http://localhost/2", urlWait = "http://localhost/wait";
-
+	
+	static final int SERVER_PORT = 5400;
+	String url = "http://localhost:"+SERVER_PORT+"/", url2 = "http://localhost:"+SERVER_PORT+"/2", urlWait = "http://localhost:"+SERVER_PORT+"/wait";
+	
 	@BeforeClass
 	public static void startServer() throws Exception{
-		server  = new Server(80);
+		server  = new Server(SERVER_PORT);
 		server.setHandler(new TestHandler());
 		server.start();
 	}
