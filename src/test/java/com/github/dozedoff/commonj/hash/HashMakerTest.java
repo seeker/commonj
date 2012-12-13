@@ -5,9 +5,12 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 import java.io.File;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.github.dozedoff.commonj.file.FileUtil;
@@ -18,14 +21,18 @@ public class HashMakerTest {
 	byte[] testData2 = {99,21,6,45,12}; // SHA-256: 20FC038E00E13585E68E7EBE50D79CBE7D476A74D8FDE71872627DA6CD8FC8BB
 	byte[] testData3 = {}; 				// SHA-256: E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855
 	
-	Path dataPath = FileUtil.WorkingDir().toPath().resolve("test").resolve("hash");
 	
-	File testFile = dataPath.resolve("test1").toFile();
-	File testFile2 = dataPath.resolve("test2").toFile();
-	File testFile3 = dataPath.resolve("test3").toFile();
+	private static File testFile, testFile2, testFile3;
 	
 	HashMaker hm;
 	
+	@BeforeClass
+	public static void classSetup() throws URISyntaxException {
+		testFile = Paths.get(HashMakerTest.class.getResource("test1").toURI()).toFile();
+		testFile2 = Paths.get(HashMakerTest.class.getResource("test2").toURI()).toFile();
+		testFile3 = Paths.get(HashMakerTest.class.getResource("test3").toURI()).toFile();
+	}
+
 	@Before
 	public void setUp() throws Exception {
 		hm = new HashMaker();
