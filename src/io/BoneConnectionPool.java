@@ -20,8 +20,6 @@ import java.sql.SQLException;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-import javax.sql.DataSource;
-
 import com.j256.ormlite.jdbc.DataSourceConnectionSource;
 import com.jolbox.bonecp.BoneCP;
 import com.jolbox.bonecp.BoneCPConfig;
