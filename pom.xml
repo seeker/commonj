@@ -6,6 +6,7 @@
 	<version>0.0.1</version>
 	<name>commonj</name>
 	<description>Contains common java classes used in other projects</description>
+	<packaging>jar</packaging>
 	<build>
 		<plugins>
 			<plugin>
