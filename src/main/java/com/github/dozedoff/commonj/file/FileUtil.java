@@ -109,7 +109,7 @@ public class FileUtil {
 		}
 		
 		if(path.isAbsolute()){
-			return Paths.get("\\"+path.getRoot().relativize(path).toString());
+			return Paths.get(path.getRoot().relativize(path).toString());
 		}else{
 			return path;
 		}
