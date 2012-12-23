@@ -36,7 +36,8 @@ public class FileUtil {
 	public static List<String> pathTokenList(String path){
 		LinkedList<String> resultList = new LinkedList<String>();
 		
-		Scanner scanner = new Scanner(path).useDelimiter("\\\\");
+		Scanner scanner = new Scanner(path);
+		scanner.useDelimiter("\\\\");
 		//to handle network paths
 		if(path.startsWith("\\\\")){
 			int endPos = path.indexOf("\\", 2);
@@ -60,6 +61,8 @@ public class FileUtil {
 			resultList.add(filename);
 			resultList.add(extension);
 		}
+		
+		scanner.close();
 		
 		return resultList;
 		
