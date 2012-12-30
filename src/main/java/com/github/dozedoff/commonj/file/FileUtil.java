@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Scanner;
 
 public class FileUtil {
+	private static final String[] ILLEGAL_FILENAME_CHARS = {"/", "\\", ":", "?", "\"", "<", ">", "|"};	
 	
 	public static File WorkingDir(){
 		return new File( System.getProperty("user.dir") );
@@ -131,6 +132,22 @@ public class FileUtil {
 		} else {
 			return relPath.toString() + "\\";
 		}
+	}
+	
+	static public boolean hasValidWindowsFilename(File fullpath) {
+		String filename = fullpath.getName();
+
+		if (filename.isEmpty()) {
+			return false;
+		}
+
+		for (String illegalChar : ILLEGAL_FILENAME_CHARS) {
+			if (filename.contains(illegalChar)) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 	
 	static class DirectoryMover extends SimpleFileVisitor<Path>{
