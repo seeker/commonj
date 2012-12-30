@@ -134,6 +134,10 @@ public class FileUtil {
 		}
 	}
 	
+	static public boolean hasValidWindowsFilename(String filename) {
+		return hasValidWindowsFilename(new File(filename));
+	}
+	
 	static public boolean hasValidWindowsFilename(File fullpath) {
 		String filename = fullpath.getName();
 
