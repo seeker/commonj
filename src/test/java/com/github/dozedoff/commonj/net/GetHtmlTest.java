@@ -60,9 +60,10 @@ public class GetHtmlTest {
 		assertThat(getHtml.get(url), is(testData));
 	}
 	
-	@Test(timeout=12000, expected=SocketTimeoutException.class)
+	@Test(timeout=1200, expected=SocketTimeoutException.class)
 	public void testConnectionTimeout() throws Exception{
 		getHtml.setMaxRetry(0);
+		getHtml.setReadTimeout(1000);
 		getHtml.get(urlWait);
 	}
 	
@@ -85,7 +86,7 @@ public class GetHtmlTest {
 			if(request.getRequestURI().equals("/2")){
 				response.getWriter().println(testData2);
 			}else if(request.getRequestURI().equals("/wait")){
-				try {Thread.sleep(12000);} catch (InterruptedException e) {}
+				try {Thread.sleep(3000);} catch (InterruptedException e) {}
 			}else{
 				response.getWriter().println(testData);
 			}

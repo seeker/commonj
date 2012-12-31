@@ -34,6 +34,7 @@ public class GetHtml {
 	private int failCount;
 	private static Logger logger = LoggerFactory.getLogger(GetHtml.class);
 	private int maxRetry = 3;
+	private int readTimeoutInMilli = 10000;
 
 	public int getResponse(String url)throws Exception{
 		return getResponse(new URL(url));
@@ -132,6 +133,15 @@ public class GetHtml {
 		return loadHtml(connection);
 	}
 	
+	public boolean setReadTimeout(int milliSeconds) {
+		if (milliSeconds >= 0) {
+			this.readTimeoutInMilli = milliSeconds;
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
 	private String loadHtml(HttpURLConnection connection) throws PageLoadException, IOException{
 		StringBuilder classString = new StringBuilder();
 		BufferedReader in = null;
@@ -188,7 +198,7 @@ public class GetHtml {
 		}
 		httpCon.setRequestMethod("GET");
 		httpCon.setDoOutput(true);
-		httpCon.setReadTimeout(10000);
+		httpCon.setReadTimeout(readTimeoutInMilli);
 		
 		return httpCon;
 	}
@@ -197,12 +207,12 @@ public class GetHtml {
 		if (failCount < maxRetry){
 			failCount++;
 			httpCon.disconnect();
-			try{Thread.sleep(1000);}catch(InterruptedException ignore){}
+			try{Thread.sleep(20);}catch(InterruptedException ignore){}
 			return get(url);
 		}else{
 			if(httpCon != null){
 				httpCon.disconnect();
-				try{Thread.sleep(1000);}catch(InterruptedException ignore){}
+				try{Thread.sleep(20);}catch(InterruptedException ignore){}
 			}
 			throw ex;
 		}
