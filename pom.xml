@@ -37,6 +37,7 @@
 			<groupId>org.hamcrest</groupId>
 			<artifactId>hamcrest-integration</artifactId>
 			<version>1.3</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.mortbay.jetty</groupId>
@@ -48,16 +49,12 @@
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-server</artifactId>
 			<version>8.1.0.RC5</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.jolbox</groupId>
 			<artifactId>bonecp</artifactId>
 			<version>0.7.1.RELEASE</version>
-		</dependency>
-		<dependency>
-			<groupId>com.j256</groupId>
-			<artifactId>ormlite</artifactId>
-			<version>3.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.j256.ormlite</groupId>
@@ -78,7 +75,7 @@
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 			<version>3.0.1</version>
-			<scope>provided</scope>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
