@@ -9,8 +9,6 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -69,7 +67,6 @@ public class GetBinaryTest {
 	@Test
 	@Ignore
 	public void testGetHeader() throws Exception{
-		Map<String, List<String>> header = getBinary.getHeader(new URL(url));
 		fail("Not yet implemented");
 	}
 
@@ -89,9 +86,10 @@ public class GetBinaryTest {
 		assertThat(getBinary.getViaHttp(url), is(testData));
 	}
 	
-	@Test(timeout=12000, expected=SocketTimeoutException.class)
+	@Test(timeout=1200, expected=SocketTimeoutException.class)
 	public void testConnectionTimeout() throws Exception{
 		getBinary.setMaxRetry(0);
+		getBinary.setReadTimeout(1000);
 		getBinary.getViaHttp(urlWait);
 	}
 	

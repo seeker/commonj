@@ -31,12 +31,13 @@ import org.slf4j.LoggerFactory;
  * Class for downloading binary data from the Internet.
  */
 public class GetBinary {
-	long contentLenght = 0;
-	int offset = 0;
-	int failCount = 0;
-	int maxRetry = 3;
-	ByteBuffer classBuffer;
-	Logger logger = LoggerFactory.getLogger(GetBinary.class);
+	private long contentLenght = 0;
+	private int offset = 0;
+	private int failCount = 0;
+	private int maxRetry = 3;
+	private int readTimeoutInMilli = 10000;
+	private ByteBuffer classBuffer;
+	private final static Logger logger = LoggerFactory.getLogger(GetBinary.class);
 	
 	public GetBinary(){
 		classBuffer = ByteBuffer.allocate(15728640); //15mb
@@ -161,7 +162,7 @@ public class GetBinary {
 			httpCon.setRequestMethod("GET");
 			httpCon.setDoOutput(true);
 			httpCon.setRequestProperty("Range", "bytes=" + start + "-"+ l);
-			httpCon.setReadTimeout(10000);
+			httpCon.setReadTimeout(readTimeoutInMilli);
 
 			httpCon.connect();
 			binary = new BufferedInputStream(httpCon.getInputStream());
@@ -295,7 +296,7 @@ public class GetBinary {
 		httpCon.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:2.0) Gecko/20100101 Firefox/4.0"); // pretend to be a firefox browser
 		httpCon.setRequestMethod("GET");
 		httpCon.setDoOutput(true);
-		httpCon.setReadTimeout(10000);
+		httpCon.setReadTimeout(readTimeoutInMilli);
 
 		httpCon.connect();
 		return httpCon;
@@ -307,5 +308,14 @@ public class GetBinary {
 
 	public void setMaxRetry(int maxRetry) {
 		this.maxRetry = maxRetry;
+	}
+	
+	public boolean setReadTimeout(int milliSeconds) {
+		if (milliSeconds >= 0) {
+			this.readTimeoutInMilli = milliSeconds;
+			return true;
+		} else {
+			return false;
+		}
 	}
 }
