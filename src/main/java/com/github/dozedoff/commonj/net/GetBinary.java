@@ -97,8 +97,6 @@ public class GetBinary {
 				binary.close();
 			if(thread != null)
 				thread.disconnect();
-			// give some time to close
-			try{Thread.sleep(20);}catch(InterruptedException ignore){}
 		}
 	}
 
@@ -125,8 +123,6 @@ public class GetBinary {
 		}finally{
 			if(thread != null)
 				thread.disconnect();
-			// give some time to close
-			try{Thread.sleep(20);}catch(InterruptedException ignore){}
 		}
 		return contentLenght;
 	}
@@ -142,8 +138,6 @@ public class GetBinary {
 		}finally{
 			if(thread != null){
 				thread.disconnect();
-				// give some time to close
-				try{Thread.sleep(20);}catch(InterruptedException ignore){}
 			}
 		}
 	}
@@ -169,15 +163,11 @@ public class GetBinary {
 		}catch(SocketTimeoutException ste){
 			if(httpCon != null){
 				httpCon.disconnect();
-				// give some time to close
-				try{Thread.sleep(20);}catch(InterruptedException ignore){}
 			}
 			throw new SocketTimeoutException(ste.getMessage());
 		}catch(IOException e){
 			if(httpCon != null){
 				httpCon.disconnect();
-				// give some time to close
-				try{Thread.sleep(20);}catch(InterruptedException ignore){}
 			}
 			throw new PageLoadException(Integer.toString(httpCon.getResponseCode()),httpCon.getResponseCode());
 		}
@@ -207,8 +197,6 @@ public class GetBinary {
 				binary.close();
 			if(httpCon != null){
 				httpCon.disconnect();
-				// give some time to close
-				try{Thread.sleep(20);}catch(InterruptedException ignore){}
 			}
 		}
 		if (failCount != 0)
@@ -235,7 +223,6 @@ public class GetBinary {
 			httpCon = connect(url);
 			if (httpCon.getResponseCode() != 200){
 				httpCon.disconnect();
-				try{Thread.sleep(20);}catch(InterruptedException ignore){}
 				throw new PageLoadException(String.valueOf(httpCon.getResponseCode()),httpCon.getResponseCode());
 			}
 			
@@ -277,8 +264,6 @@ public class GetBinary {
 				binary.close();
 			if(httpCon != null){
 				httpCon.disconnect();
-				// give some time to close
-				try{Thread.sleep(20);}catch(InterruptedException ignore){}
 			}
 		}
 

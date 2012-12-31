@@ -207,12 +207,10 @@ public class GetHtml {
 		if (failCount < maxRetry){
 			failCount++;
 			httpCon.disconnect();
-			try{Thread.sleep(20);}catch(InterruptedException ignore){}
 			return get(url);
 		}else{
 			if(httpCon != null){
 				httpCon.disconnect();
-				try{Thread.sleep(20);}catch(InterruptedException ignore){}
 			}
 			throw ex;
 		}
