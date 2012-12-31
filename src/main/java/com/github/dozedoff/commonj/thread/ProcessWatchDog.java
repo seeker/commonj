@@ -15,13 +15,14 @@
  */
 package com.github.dozedoff.commonj.thread;
 
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ProcessWatchDog extends Thread{
 	String processDescription;
 	Process process;
 	long timeout;
-	final static Logger logger = Logger.getLogger(ProcessWatchDog.class.getName());
+	final static Logger logger = LoggerFactory.getLogger(ProcessWatchDog.class);
 	
 	public ProcessWatchDog(String processDescription, Process process, long timeout) {
 		this.process = process;
@@ -37,7 +38,7 @@ public class ProcessWatchDog extends Thread{
 			return; // all is well
 		}
 		
-		logger.severe("Process timed out. Description: " + processDescription);
+		logger.error("Process timed out. Description: " + processDescription);
 		process.destroy();
 	}
 }

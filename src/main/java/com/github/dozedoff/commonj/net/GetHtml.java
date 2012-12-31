@@ -23,18 +23,16 @@ import java.net.ProtocolException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class for loading HTML data from the Internet.
  */
 public class GetHtml {
 	private int failCount;
-	private static Logger logger = Logger.getLogger(GetHtml.class.getName());
+	private static Logger logger = LoggerFactory.getLogger(GetHtml.class);
 	private int maxRetry = 3;
 
 	public int getResponse(String url)throws Exception{
@@ -60,7 +58,7 @@ public class GetHtml {
 				return true;
 			}
 		}catch(IOException io){
-			logger.warning("Error while getting HTML response code: "+io.getMessage());
+			logger.warn("Error while getting HTML response code: "+io.getMessage());
 		}finally{
 			if(httpCon != null){
 				httpCon.disconnect();
@@ -81,7 +79,7 @@ public class GetHtml {
 			httpCon = connect(url);
 			response =  httpCon.getResponseCode();
 		}catch(IOException io){
-			logger.warning("Error while getting HTML response code: "+io.getMessage());
+			logger.warn("Error while getting HTML response code: "+io.getMessage());
 		}finally{
 			if(httpCon != null){
 				httpCon.disconnect();

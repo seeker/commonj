@@ -20,13 +20,14 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class for downloading files from the Internet.
  */
 public abstract class FileLoader {
-	private static Logger logger = Logger.getLogger(FileLoader.class.getName());
+	private static Logger logger = LoggerFactory.getLogger(FileLoader.class);
 
 	protected LinkedBlockingQueue<DownloadItem> downloadList = new LinkedBlockingQueue<DownloadItem>();
 	private LinkedList<Thread> workers = new LinkedList<>();
@@ -119,7 +120,7 @@ public abstract class FileLoader {
 	 * @param ple the PageLoadException that was thrown
 	 */
 	protected void onPageLoadException(PageLoadException ple){
-		logger.warning("Unable to load " + ple.getUrl() + " , response is " + ple.getResponseCode());
+		logger.warn("Unable to load " + ple.getUrl() + " , response is " + ple.getResponseCode());
 	}
 
 	/**
@@ -127,7 +128,7 @@ public abstract class FileLoader {
 	 * @param ioe the IOException that was thrown
 	 */
 	protected void onIOException(IOException ioe){
-		logger.warning("Unable to load page " + ioe.getLocalizedMessage());
+		logger.warn("Unable to load page " + ioe.getLocalizedMessage());
 	}
 
 	/**
@@ -192,7 +193,7 @@ public abstract class FileLoader {
 				}catch(InterruptedException ie){
 					interrupt(); //otherwise it will reset it's own interrupt flag
 				}catch(Exception e){
-					logger.severe("Download Worker failed with "+e.getMessage()+"\n"+
+					logger.error("Download Worker failed with "+e.getMessage()+"\n"+
 							"Parameters: "+di.getImageUrl()+" "+di.getImageName());
 				}
 			}

@@ -18,7 +18,8 @@ package com.github.dozedoff.commonj.gui;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.JTextArea;
 /**
@@ -29,7 +30,7 @@ import javax.swing.JTextArea;
 public class Log {
 	static private JTextArea logArea;
 	static private int logNr = 0;
-	static private final Logger logger = Logger.getLogger(Log.class.getName());
+	static private final Logger logger = LoggerFactory.getLogger(Log.class);
 
 	public static void setLogArea(JTextArea logArea){
 		Log.logArea = logArea;
@@ -54,7 +55,7 @@ public class Log {
 	 */
 	public static void add(String add){
 		if(logArea == null){
-			logger.warning("No output textfield set for GUI log");
+			logger.warn("No output textfield set for GUI log");
 			return;
 		}
 		Calendar cal = new GregorianCalendar();

@@ -25,7 +25,8 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.LinkedList;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.github.dozedoff.commonj.file.BinaryFileReader;
 import com.github.dozedoff.commonj.file.FileInfo;
@@ -36,7 +37,7 @@ import com.github.dozedoff.commonj.file.FileInfo;
  */
 public class DirectoryHasher {
 	LinkedBlockingQueue<FileInfo> outputQueue = null;
-	final static Logger logger = Logger.getLogger(DirectoryHasher.class.getName());
+	final static Logger logger = LoggerFactory.getLogger(DirectoryHasher.class);
 	private HashWorker hashWorker;
 	
 	public DirectoryHasher(LinkedBlockingQueue<FileInfo> outputQueue){
@@ -106,7 +107,7 @@ public class DirectoryHasher {
 						f.setHash(hash.hash(bfr.get(f.getFile())));
 						outputQueue.add(f);
 					} catch (IOException e) {
-						logger.warning("Could not hash file: "+e.getMessage());
+						logger.warn("Could not hash file: "+e.getMessage());
 					}
 				}
 				

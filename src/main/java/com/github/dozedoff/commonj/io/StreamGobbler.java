@@ -4,7 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class for consuming data provided by inputstreams.
@@ -14,7 +15,7 @@ import java.util.logging.Logger;
  */
 public class StreamGobbler extends Thread {
 	InputStream is;
-	final static Logger logger = Logger.getLogger(StreamGobbler.class.getName());
+	final static Logger logger = LoggerFactory.getLogger(StreamGobbler.class);
 	private StringBuilder messageBuffer;
 
 	public StreamGobbler(InputStream is) {

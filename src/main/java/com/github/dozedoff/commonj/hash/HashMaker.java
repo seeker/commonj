@@ -17,15 +17,14 @@ package com.github.dozedoff.commonj.hash;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
-import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.github.dozedoff.commonj.string.Convert;
 
@@ -35,7 +34,7 @@ import com.github.dozedoff.commonj.string.Convert;
  * a Hex representation.
  */
 public class HashMaker {
-	private static Logger logger = Logger.getLogger(HashMaker.class.getName());
+	private static Logger logger = LoggerFactory.getLogger(HashMaker.class);
 
 	MessageDigest md = null;
 	byte[] rawHash;
@@ -50,13 +49,13 @@ public class HashMaker {
 			try {
 				md = MessageDigest.getInstance("SHA-256");
 			} catch (NoSuchAlgorithmException e1) {
-				logger.severe(e1.getMessage());
+				logger.error(e1.getMessage());
 				return null;
 			}
 		}
 		
 		if(data == null){
-			logger.severe("No data");
+			logger.error("No data");
 			return null;
 		}
 
@@ -71,7 +70,7 @@ public class HashMaker {
 			try {
 				md = MessageDigest.getInstance("SHA-256");
 			} catch (NoSuchAlgorithmException e1) {
-				logger.severe(e1.getMessage());
+				logger.error(e1.getMessage());
 				return null;
 			}
 		}

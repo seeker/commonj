@@ -18,7 +18,8 @@ package com.github.dozedoff.commonj.io;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.j256.ormlite.jdbc.DataSourceConnectionSource;
 import com.jolbox.bonecp.BoneCP;
@@ -31,7 +32,7 @@ import com.jolbox.bonecp.BoneCPDataSource;
 public class BoneConnectionPool implements ConnectionPool {
 	private Properties dbProps;
 
-	static final Logger LOGGER = Logger.getLogger(BoneConnectionPool.class.toString());
+	static final Logger LOGGER = LoggerFactory.getLogger(BoneConnectionPool.class);
 	BoneCP connectionPool = null;
 	BoneCPConfig config = null;
 	DataSourceConnectionSource bcpConnSource = null;
@@ -97,7 +98,7 @@ public class BoneConnectionPool implements ConnectionPool {
 		try {
 			cn.close();
 		} catch (SQLException e) {
-			LOGGER.warning("Error trying to close connection: "+e.getMessage());
+			LOGGER.warn("Error trying to close connection: "+e.getMessage());
 		}
 	}
 }

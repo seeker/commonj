@@ -25,7 +25,8 @@ import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Class for downloading binary data from the Internet.
  */
@@ -35,7 +36,7 @@ public class GetBinary {
 	int failCount = 0;
 	int maxRetry = 3;
 	ByteBuffer classBuffer;
-	Logger logger = Logger.getLogger(GetBinary.class.getName());
+	Logger logger = LoggerFactory.getLogger(GetBinary.class);
 	
 	public GetBinary(){
 		classBuffer = ByteBuffer.allocate(15728640); //15mb
@@ -119,7 +120,7 @@ public class GetBinary {
 		} catch (IOException e) {
 			throw new IOException("unable to connect to " + url.toString());
 		} catch(ClassCastException cce){
-			logger.warning(cce.getMessage()+", "+url.toString());
+			logger.warn(cce.getMessage()+", "+url.toString());
 		}finally{
 			if(thread != null)
 				thread.disconnect();
@@ -187,7 +188,7 @@ public class GetBinary {
 				classBuffer.put(c, 0, count);
 			}
 		}catch(SocketException se){
-			logger.warning("SocketException, http response: "+httpCon.getResponseCode());
+			logger.warn("SocketException, http response: "+httpCon.getResponseCode());
 			if (failCount < maxRetry){
 				try{Thread.sleep(5000);}catch(Exception ie){}
 				this.offset = classBuffer.position();
@@ -196,7 +197,7 @@ public class GetBinary {
 				return getRange(url,offset,contentLenght-1);
 			}
 			else{
-				logger.warning("Buffer position at failure: "+classBuffer.position()+"  URL: "+url.toString());
+				logger.warn("Buffer position at failure: "+classBuffer.position()+"  URL: "+url.toString());
 				httpCon.disconnect();
 				throw new SocketException();
 			}
@@ -240,7 +241,7 @@ public class GetBinary {
 			try{
 				contentLenght = Long.valueOf(httpCon.getHeaderField("Content-Length"));
 			}catch(NumberFormatException nfe){
-				logger.warning("Could not get content lenght");
+				logger.warn("Could not get content lenght");
 			}
 			
 			binary = new BufferedInputStream(httpCon.getInputStream());
@@ -261,14 +262,14 @@ public class GetBinary {
 			this.offset = classBuffer.position();
 			if(failCount < maxRetry){
 				failCount++;
-				logger.warning("GetBinary failed, reason: "+ se.getLocalizedMessage()+"  -> "+classBuffer.position()+"/"+contentLenght+"  "+url.toString());
+				logger.warn("GetBinary failed, reason: "+ se.getLocalizedMessage()+"  -> "+classBuffer.position()+"/"+contentLenght+"  "+url.toString());
 				httpCon.disconnect();
 				return getRange(url,offset,contentLenght-1);
 			}else{
 				throw new SocketException();
 			}
 		}catch(NullPointerException npe){
-			logger.severe("NullPointerException in GetBinary.getViaHttp");
+			logger.error("NullPointerException in GetBinary.getViaHttp");
 			return null;
 		}finally{
 			if(binary != null)
