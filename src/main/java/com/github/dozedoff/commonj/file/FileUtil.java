@@ -154,6 +154,17 @@ public class FileUtil {
 		return true;
 	}
 	
+	static public String sanitizeFilenameForWindows(String filename) {
+
+		String sanitized = filename;
+
+		for (String ic : ILLEGAL_FILENAME_CHARS) {
+			sanitized = sanitized.replace(ic, "_");
+		}
+
+		return sanitized;
+	}
+	
 	static class DirectoryMover extends SimpleFileVisitor<Path>{
 		Path currMoveDir, dstDir, srcDir;
 		
