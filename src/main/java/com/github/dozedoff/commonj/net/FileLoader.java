@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  * Class for downloading files from the Internet.
  */
 public abstract class FileLoader {
-	private static Logger logger = LoggerFactory.getLogger(FileLoader.class);
+	private static final Logger logger = LoggerFactory.getLogger(FileLoader.class);
 
 	protected LinkedBlockingQueue<DownloadItem> downloadList = new LinkedBlockingQueue<DownloadItem>();
 	private LinkedList<Thread> workers = new LinkedList<>();
@@ -85,6 +85,7 @@ public abstract class FileLoader {
 
 	public void clearQueue(){
 		downloadList.clear();
+		logger.info("Download queue cleared");
 		afterClearQueue();
 	}
 
@@ -120,7 +121,7 @@ public abstract class FileLoader {
 	 * @param ple the PageLoadException that was thrown
 	 */
 	protected void onPageLoadException(PageLoadException ple){
-		logger.warn("Unable to load " + ple.getUrl() + " , response is " + ple.getResponseCode());
+		logger.warn("Unable to load {} , response is {}", ple.getUrl(), ple.getResponseCode());
 	}
 
 	/**
@@ -128,7 +129,7 @@ public abstract class FileLoader {
 	 * @param ioe the IOException that was thrown
 	 */
 	protected void onIOException(IOException ioe){
-		logger.warn("Unable to load page " + ioe.getLocalizedMessage());
+		logger.warn("Unable to load page {}", ioe.getLocalizedMessage());
 	}
 
 	/**
@@ -140,29 +141,35 @@ public abstract class FileLoader {
 	abstract protected void afterFileDownload(byte[] data, File fullpath, URL url);
 
 	private void setUp(int fileWorkers){
+		logger.info("Setting up FileLoader with {} workers", fileWorkers);
+		logger.debug("Creating worker threads");
 		for(int i=0; i <fileWorkers; i++){
 			workers.add(new DownloadWorker());
 		}
 
+		logger.debug("Starting worker threads");
 		for(Thread t : workers){
 			t.start();
 		}
+		
+		logger.debug("FileLoader setup complete");
 	}
 
 	public void shutdown(){
-		logger.info("ImageLoader shutting down...");
-
+		logger.info("Shutting down FileLoader...");
 		clearQueue();
 
+		logger.debug("Stopping worker threads...");
 		for(Thread t : workers){
 			t.interrupt();
 		}
 
+		logger.debug("Waiting for worker threads to die...");
 		for(Thread t : workers){
 			try {t.join();} catch (InterruptedException e) {}
 		}
-
-		logger.info("ImageLoader shutdown complete");
+		
+		logger.debug("FileLoader shutdown complete");
 	}
 
 	/**
@@ -184,17 +191,19 @@ public abstract class FileLoader {
 				DownloadItem di = null;
 				try{
 					di = downloadList.take(); // grab some work
-					if(di == null) // check if the item is valid
+					if(di == null){ // check if the item is valid
 						continue;
+					}
 
 					loadFile(di.getImageUrl(), new File(di.getImageName()));
 					afterProcessItem(di);
 
 				}catch(InterruptedException ie){
 					interrupt(); //otherwise it will reset it's own interrupt flag
+					logger.debug("FileLoader download worker was interrupted");
 				}catch(Exception e){
-					logger.error("Download Worker failed with "+e.getMessage()+"\n"+
-							"Parameters: "+di.getImageUrl()+" "+di.getImageName());
+					Object[] logParams = {e.getMessage(), di.getImageUrl(), di.getImageName()};
+					logger.error("Download Worker failed with {}, Parameters: {} {}", logParams);
 				}
 			}
 		}

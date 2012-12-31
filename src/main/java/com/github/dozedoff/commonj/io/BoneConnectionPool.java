@@ -76,7 +76,7 @@ public class BoneConnectionPool implements ConnectionPool {
 	}
 
 	public void stopPool(){
-		LOGGER.info("Closing all database connections...");
+		LOGGER.info("Shutting down connection pool, closing all database connections...");
 		connectionPool.shutdown();
 	}
 	
