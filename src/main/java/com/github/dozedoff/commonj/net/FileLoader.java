@@ -30,7 +30,7 @@ public abstract class FileLoader {
 	private static final Logger logger = LoggerFactory.getLogger(FileLoader.class);
 
 	protected LinkedBlockingQueue<DownloadItem> downloadList = new LinkedBlockingQueue<DownloadItem>();
-	private LinkedList<Thread> workers = new LinkedList<>();
+	private LinkedList<DownloadWorker> workers = new LinkedList<>();
 
 	/**Delay between downloads. This is used to limit the number of connections**/
 	protected int downloadSleep = 1000;
@@ -129,7 +129,7 @@ public abstract class FileLoader {
 	 * @param ioe the IOException that was thrown
 	 */
 	protected void onIOException(IOException ioe){
-		logger.warn("Unable to load page {}", ioe.getLocalizedMessage());
+		logger.warn("Unable to load page {}", ioe.getMessage());
 	}
 
 	/**
@@ -141,14 +141,14 @@ public abstract class FileLoader {
 	abstract protected void afterFileDownload(byte[] data, File fullpath, URL url);
 
 	private void setUp(int fileWorkers){
-		logger.info("Setting up FileLoader with {} workers", fileWorkers);
+		logger.debug("Setting up FileLoader with {} workers", fileWorkers);
 		logger.debug("Creating worker threads");
 		for(int i=0; i <fileWorkers; i++){
 			workers.add(new DownloadWorker());
 		}
 
 		logger.debug("Starting worker threads");
-		for(Thread t : workers){
+		for(DownloadWorker t : workers){
 			t.start();
 		}
 		
@@ -160,13 +160,14 @@ public abstract class FileLoader {
 		clearQueue();
 
 		logger.debug("Stopping worker threads...");
-		for(Thread t : workers){
+		for(DownloadWorker t : workers){
+			t.kill();
 			t.interrupt();
 		}
 
 		logger.debug("Waiting for worker threads to die...");
-		for(Thread t : workers){
-			try {t.join();} catch (InterruptedException e) {}
+		for(DownloadWorker t : workers){
+			try {t.join();} catch (InterruptedException e) {t.interrupt();}
 		}
 		
 		logger.debug("FileLoader shutdown complete");
@@ -179,21 +180,23 @@ public abstract class FileLoader {
 	protected void afterProcessItem(DownloadItem di){}
 
 	class DownloadWorker extends Thread{
+		private boolean stopped = false;
 		public DownloadWorker() {
 			super("Download Worker");
 
 			Thread.currentThread().setPriority(2);
 		}
+		
+		public void kill() {
+			this.stopped = true;
+		}
 
 		@Override
 		public void run() {
-			while(! isInterrupted()){
-				DownloadItem di = null;
+			DownloadItem di = null;
+			while(!stopped){
 				try{
-					di = downloadList.take(); // grab some work
-					if(di == null){ // check if the item is valid
-						continue;
-					}
+					di = downloadList.take();
 
 					loadFile(di.getImageUrl(), new File(di.getImageName()));
 					afterProcessItem(di);
@@ -203,9 +206,10 @@ public abstract class FileLoader {
 					logger.debug("FileLoader download worker was interrupted");
 				}catch(Exception e){
 					Object[] logParams = {e.getMessage(), di.getImageUrl(), di.getImageName()};
-					logger.error("Download Worker failed with {}, Parameters: {} {}", logParams);
+					logger.warn("Download Worker failed with {}, Parameters: URL: {} ImageName: {}", logParams);
 				}
 			}
+			logger.debug("FileLoader Download worker has died gracefully");
 		}
 	}
 }
