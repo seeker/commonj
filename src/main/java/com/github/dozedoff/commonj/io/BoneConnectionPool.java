@@ -55,7 +55,6 @@ public class BoneConnectionPool implements ConnectionPool {
 	} 
 	
 	public void startPool() throws Exception{
-		Class.forName( "com.mysql.jdbc.Driver" );
 		Class.forName( "com.jolbox.bonecp.BoneCP" );
 		Class.forName( "com.jolbox.bonecp.BoneCPConfig" );
 		
