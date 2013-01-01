@@ -205,7 +205,7 @@ public abstract class FileLoader {
 					interrupt(); //otherwise it will reset it's own interrupt flag
 					logger.debug("FileLoader download worker was interrupted");
 				}catch(Exception e){
-					Object[] logParams = {e.getMessage(), di.getImageUrl(), di.getImageName()};
+					Object[] logParams = {e, di.getImageUrl(), di.getImageName()};
 					logger.warn("Download Worker failed with {}, Parameters: URL: {} ImageName: {}", logParams);
 				}
 			}
