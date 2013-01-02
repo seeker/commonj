@@ -52,7 +52,6 @@ public class GetHtml {
 		HttpURLConnection httpCon = null;
 		try{
 			httpCon = prepareHttpConnection(url, null);
-			httpCon.setIfModifiedSince(timestamp);
 			httpCon.connect();
 
 			if(httpCon.getLastModified() >= timestamp){
@@ -67,6 +66,25 @@ public class GetHtml {
 		}
 		
 		return false;
+	}
+	
+	public long getLastModified(URL url){
+		HttpURLConnection httpCon = null;
+		long lastMod = 0;
+		
+		try{
+			httpCon = prepareHttpConnection(url, null);
+			httpCon.connect();
+			lastMod = httpCon.getLastModified();
+		}catch(IOException io){
+			logger.warn("Error while getting last modified timestamp", io);
+		}finally{
+			if(httpCon != null){
+				httpCon.disconnect();
+			}
+		}
+		
+		return lastMod;
 	}
 
 	public int getResponse(URL url){
