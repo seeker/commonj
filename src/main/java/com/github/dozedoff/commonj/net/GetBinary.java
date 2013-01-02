@@ -218,7 +218,8 @@ public class GetBinary {
 
 		BufferedInputStream binary = null;
 		HttpURLConnection httpCon = null;
-
+		String lengthHeader = null;
+		
 		try{
 			httpCon = connect(url);
 			if (httpCon.getResponseCode() != 200){
@@ -226,17 +227,15 @@ public class GetBinary {
 				throw new PageLoadException(String.valueOf(httpCon.getResponseCode()),httpCon.getResponseCode());
 			}
 			
-			try{
-				contentLenght = Long.valueOf(httpCon.getHeaderField("Content-Length"));
-			}catch(NumberFormatException nfe){
-				logger.warn("Could not get content lenght");
-			}
-			
+			lengthHeader = httpCon.getHeaderField("Content-Length");
+			contentLenght = Long.valueOf(lengthHeader);
 			binary = new BufferedInputStream(httpCon.getInputStream());
 		}catch(SocketTimeoutException ste){
 			throw new SocketTimeoutException(ste.getMessage()); 
 		}catch(SocketException se){
 			throw new SocketException();
+		}catch(NumberFormatException nfe){
+			logger.warn("Could not get content lenght from header {}", lengthHeader);
 		}
 
 		int count = 0;
