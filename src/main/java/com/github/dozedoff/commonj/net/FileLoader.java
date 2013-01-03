@@ -61,14 +61,17 @@ public abstract class FileLoader {
 	 */
 	protected void afterFileAdd(URL url,String fileName){} // code to run after adding a file to the list
 
-	public void add(URL url,String fileName){
-		if(! beforeFileAdd(url, fileName))
+	public void add(URL url, String fileName) {
+		if (!beforeFileAdd(url, fileName)) {
 			return;
+		}
 
 		DownloadItem toadd = new DownloadItem(url, fileName);
 
-		if(downloadList.contains(toadd))
+		if (downloadList.contains(toadd)) {
+			logger.info("Ignoring {} ({}), already in download queue", toadd.getImageUrl(), toadd.getImageName());
 			return;
+		}
 
 		downloadList.add(toadd);
 
@@ -179,6 +182,13 @@ public abstract class FileLoader {
 	 */
 	protected void afterProcessItem(DownloadItem di){}
 
+	/**
+	 * Called before a worker processes an item from the list.
+	 * @param di the DownloadItem that will be processed
+	 * @return return true if the item should be processed, or false to discard
+	 */
+	protected boolean beforeProcessItem(DownloadItem di) {return true;}
+
 	class DownloadWorker extends Thread{
 		private boolean stopped = false;
 		public DownloadWorker() {
@@ -198,6 +208,10 @@ public abstract class FileLoader {
 				try{
 					di = downloadList.take();
 
+					if(!beforeProcessItem(di)){
+						continue;
+					}
+					
 					loadFile(di.getImageUrl(), new File(di.getImageName()));
 					afterProcessItem(di);
 
