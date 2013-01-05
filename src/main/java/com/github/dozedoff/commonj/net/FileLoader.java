@@ -38,7 +38,7 @@ public abstract class FileLoader {
 
 	private GetBinary getBinary = new GetBinary();
 
-	private File workingDir;
+	protected File workingDir;
 
 	public FileLoader(File workingDir, int fileQueueWorkers) {
 		this.workingDir = workingDir;
