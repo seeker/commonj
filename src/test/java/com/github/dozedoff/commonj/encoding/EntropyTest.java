@@ -25,90 +25,89 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-public class EntrophyTest {
-	Entrophy entrophy;
+public class EntropyTest {
+	Entropy entropy;
 	
 	@Before
 	public void setup() {
-		entrophy = new Entrophy();
+		entropy = new Entropy();
 	}
-	
 	
 	@Test
 	public void testSetSymbolFilter() {
-		entrophy.setSymbolFilter(new TestFilter());
+		entropy.setSymbolFilter(new TestFilter());
 		
-		entrophy.addSymbol('a');
-		entrophy.addSymbol('b');
-		entrophy.addSymbol('c');
+		entropy.addSymbol('a');
+		entropy.addSymbol('b');
+		entropy.addSymbol('c');
 		
-		assertThat(entrophy.getSymbolCount(), is(1));
+		assertThat(entropy.getSymbolCount(), is(1));
 	}
 
 	@Test
 	public void testAddSymbol() {
-		entrophy.addSymbol('a');
+		entropy.addSymbol('a');
 		
-		assertThat(entrophy.getSymbolCount(), is(1));
+		assertThat(entropy.getSymbolCount(), is(1));
 	}
 
 	@Test
 	public void testProbability() {
-		entrophy.addSymbol('a');
-		entrophy.addSymbol('b');
+		entropy.addSymbol('a');
+		entropy.addSymbol('b');
 		
-		assertThat(entrophy.probability('a'), is(0.5));
-		assertThat(entrophy.probability('b'), is(0.5));
+		assertThat(entropy.probability('a'), is(0.5));
+		assertThat(entropy.probability('b'), is(0.5));
 	}
 
 	@Test
 	public void testInformation() {
 		for(int i=0; i < 5; i++) {
-			entrophy.addSymbol('a');
+			entropy.addSymbol('a');
 		}
 		
 		for(int i=0; i < 5; i++) {
-			entrophy.addSymbol('b');
+			entropy.addSymbol('b');
 		}
 		
-		assertThat(entrophy.information('a'), is(1.0));
+		assertThat(entropy.information('a'), is(1.0));
 	}
 
 	@Test
 	public void testIsEmpty() {
-		assertThat(entrophy.isEmpty(), is(true));
+		assertThat(entropy.isEmpty(), is(true));
 	}
 	
 	@Test
 	public void testIsNotEmpty() {
-		entrophy.addSymbol('a');
-		assertThat(entrophy.isEmpty(), is(false));
+		entropy.addSymbol('a');
+		assertThat(entropy.isEmpty(), is(false));
 	}
 
 	@Test
 	public void testReset() {
-		entrophy.addSymbol('a');
-		assertThat(entrophy.isEmpty(), is(false));
-		assertThat(entrophy.getSymbolCount(), is(1));
+		entropy.addSymbol('a');
+		assertThat(entropy.isEmpty(), is(false));
+		assertThat(entropy.getSymbolCount(), is(1));
 		
-		entrophy.reset();
+		entropy.reset();
 		
-		assertThat(entrophy.isEmpty(), is(true));
-		assertThat(entrophy.getSymbolCount(), is(0));
+		assertThat(entropy.isEmpty(), is(true));
+		assertThat(entropy.getSymbolCount(), is(0));
 	}
 
 	@Test
 	public void testGetSymbols() {
 		final Character[] expected = {'a','j','z'};
 		
-		entrophy.addSymbol('a');
-		entrophy.addSymbol('j');
-		entrophy.addSymbol('z');
+		entropy.addSymbol('a');
+		entropy.addSymbol('j');
+		entropy.addSymbol('z');
 
-		List<Character> symbolsCharacters = entrophy.getSymbols();
+		List<Character> symbolsCharacters = entropy.getSymbols();
 		
 		assertThat(symbolsCharacters, hasItems(expected));
-		assertThat(entrophy.getSymbolCount(), is(3));
+		assertThat(entropy.getSymbolCount(), is(3));
 	}
 	
 	class TestFilter implements SymbolFilter {

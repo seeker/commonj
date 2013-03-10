@@ -19,14 +19,14 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
-import com.github.dozedoff.commonj.encoding.EntrophyTest;
+import com.github.dozedoff.commonj.encoding.EntropyTest;
 import com.github.dozedoff.commonj.encoding.HuffmanTest;
 import com.github.dozedoff.commonj.encoding.SymbolTest;
 
 @RunWith(Suite.class)
 @SuiteClasses({
 	SymbolTest.class,
-	EntrophyTest.class,
+	EntropyTest.class,
 	HuffmanTest.class
 })
 

@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class Entrophy {
+public class Entropy {
 	private HashMap<Character, Symbol> symbols = new HashMap<>();
 	private int symbolCount;
 	private SymbolFilter symbolFilter = null;
