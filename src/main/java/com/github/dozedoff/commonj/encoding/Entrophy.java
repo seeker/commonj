@@ -15,7 +15,9 @@
  */
 package com.github.dozedoff.commonj.encoding;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class Entrophy {
 	HashMap<Character, Symbol> symbols = new HashMap<>();
@@ -84,5 +86,12 @@ public class Entrophy {
 	public void reset() {
 		symbols = new HashMap<>();
 		symbolCount = 0;
+	}
+	
+	public List<Character> getSymbols() {
+		List<Character> symbolList = new ArrayList<>();
+		symbolList = new ArrayList<>(symbols.keySet());
+		
+		return symbolList;
 	}
 }
