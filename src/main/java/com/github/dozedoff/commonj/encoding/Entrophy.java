@@ -20,9 +20,9 @@ import java.util.HashMap;
 import java.util.List;
 
 public class Entrophy {
-	HashMap<Character, Symbol> symbols = new HashMap<>();
-	int symbolCount;
-	SymbolFilter symbolFilter = null;
+	private HashMap<Character, Symbol> symbols = new HashMap<>();
+	private int symbolCount;
+	private SymbolFilter symbolFilter = null;
 
 	public void setSymbolFilter(SymbolFilter filter) {
 		this.symbolFilter = filter;
@@ -78,6 +78,10 @@ public class Entrophy {
 //		System.out.printf("%c : %d (P: %.4f) (I: %.4f)\n", character, count,
 //				probability, information);
 //	}
+	
+	public int getSymbolCount() {
+		return symbolCount;
+	}
 	
 	public boolean isEmpty() {
 		return symbols.isEmpty();

@@ -15,45 +15,110 @@
  */
 package com.github.dozedoff.commonj.encoding;
 
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+import static org.junit.matchers.JUnitMatchers.hasItems;
 
+import java.util.List;
+
+import org.junit.Before;
 import org.junit.Test;
 
 public class EntrophyTest {
-
+	Entrophy entrophy;
+	
+	@Before
+	public void setup() {
+		entrophy = new Entrophy();
+	}
+	
+	
 	@Test
 	public void testSetSymbolFilter() {
-		fail("Not yet implemented");
+		entrophy.setSymbolFilter(new TestFilter());
+		
+		entrophy.addSymbol('a');
+		entrophy.addSymbol('b');
+		entrophy.addSymbol('c');
+		
+		assertThat(entrophy.getSymbolCount(), is(1));
 	}
 
 	@Test
 	public void testAddSymbol() {
-		fail("Not yet implemented");
+		entrophy.addSymbol('a');
+		
+		assertThat(entrophy.getSymbolCount(), is(1));
 	}
 
 	@Test
 	public void testProbability() {
-		fail("Not yet implemented");
+		entrophy.addSymbol('a');
+		entrophy.addSymbol('b');
+		
+		assertThat(entrophy.probability('a'), is(0.5));
+		assertThat(entrophy.probability('b'), is(0.5));
 	}
 
 	@Test
 	public void testInformation() {
-		fail("Not yet implemented");
+		for(int i=0; i < 5; i++) {
+			entrophy.addSymbol('a');
+		}
+		
+		for(int i=0; i < 5; i++) {
+			entrophy.addSymbol('b');
+		}
+		
+		assertThat(entrophy.information('a'), is(1.0));
 	}
 
 	@Test
 	public void testIsEmpty() {
-		fail("Not yet implemented");
+		assertThat(entrophy.isEmpty(), is(true));
+	}
+	
+	@Test
+	public void testIsNotEmpty() {
+		entrophy.addSymbol('a');
+		assertThat(entrophy.isEmpty(), is(false));
 	}
 
 	@Test
 	public void testReset() {
-		fail("Not yet implemented");
+		entrophy.addSymbol('a');
+		assertThat(entrophy.isEmpty(), is(false));
+		assertThat(entrophy.getSymbolCount(), is(1));
+		
+		entrophy.reset();
+		
+		assertThat(entrophy.isEmpty(), is(true));
+		assertThat(entrophy.getSymbolCount(), is(0));
 	}
 
 	@Test
 	public void testGetSymbols() {
-		fail("Not yet implemented");
-	}
+		final Character[] expected = {'a','j','z'};
+		
+		entrophy.addSymbol('a');
+		entrophy.addSymbol('j');
+		entrophy.addSymbol('z');
 
+		List<Character> symbolsCharacters = entrophy.getSymbols();
+		
+		assertThat(symbolsCharacters, hasItems(expected));
+		assertThat(entrophy.getSymbolCount(), is(3));
+	}
+	
+	class TestFilter implements SymbolFilter {
+		@Override
+		public boolean accept(char symbol) {
+			if(symbol == 'a') {
+				return true;
+			} else {
+				return false;
+			}
+		}
+	}
 }
