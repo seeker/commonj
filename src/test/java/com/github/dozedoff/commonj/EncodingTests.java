@@ -21,10 +21,12 @@ import org.junit.runners.Suite.SuiteClasses;
 
 import com.github.dozedoff.commonj.encoding.EntropyTest;
 import com.github.dozedoff.commonj.encoding.HuffmanTest;
+import com.github.dozedoff.commonj.encoding.LZ77EncoderTest;
 import com.github.dozedoff.commonj.encoding.SymbolTest;
 
 @RunWith(Suite.class)
 @SuiteClasses({
+	LZ77EncoderTest.class,
 	SymbolTest.class,
 	EntropyTest.class,
 	HuffmanTest.class

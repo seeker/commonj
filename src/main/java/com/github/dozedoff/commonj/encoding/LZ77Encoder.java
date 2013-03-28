@@ -51,6 +51,10 @@ public class LZ77Encoder {
 		}
 	}
 	
+	public String getTokens() {
+		return outputBuffer.toString();
+	}
+	
 	private void preLoadBuffer() {
 		int preloadSize = 0;
 		
