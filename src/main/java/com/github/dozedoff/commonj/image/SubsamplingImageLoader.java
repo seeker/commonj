@@ -32,7 +32,31 @@ import javax.swing.JLabel;
 
 import sun.awt.image.ImageFormatException;
 
+@SuppressWarnings("restriction")
 public class SubsamplingImageLoader {
+	public static Image loadAsImage(Path imagepath, Dimension targetDimension) throws ImageFormatException, IOException {
+		ImageInputStream iis = getImageInputStream(imagepath);
+		ImageReader reader = getImageReader(iis);
+
+		if (reader == null) {
+			throw new ImageFormatException("Could not decode file");
+		}
+
+		Image image = subsampleRead(iis, reader, targetDimension);
+		return image;
+	}
+	
+	public static JLabel loadAsLabel(Path imagepath, Dimension targetDimension) throws ImageFormatException, IOException {
+		Image image = loadAsImage(imagepath, targetDimension);
+		ImageIcon imageicon = new ImageIcon(image);
+		JLabel imageLabel = new JLabel(imageicon, JLabel.CENTER);
+		return imageLabel;
+	}
+	
+	/**
+	 * Use {@link #loadAsLabel(Path imagepath, Dimension targetDimension) } instead.
+	 */
+	@Deprecated
 	public static JLabel loadImage(Path imagepath, Dimension targetDimension) throws ImageFormatException, IOException {
 		ImageInputStream iis = getImageInputStream(imagepath);
 		ImageReader reader = getImageReader(iis);
