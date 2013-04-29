@@ -21,13 +21,13 @@ import java.nio.file.FileVisitResult;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.List;
+import java.util.Collection;
 
 public class FilenameFilterVisitor extends SimpleFileVisitor<Path> {
-	List<Path> resultOutputList;
+	Collection<Path> resultOutputList;
 	FileFilter fileFilter;
 	
-	public FilenameFilterVisitor(List<Path> resultOutputList, FileFilter fileFilter) {
+	public FilenameFilterVisitor(Collection<Path> resultOutputList, FileFilter fileFilter) {
 		this.resultOutputList = resultOutputList;
 		this.fileFilter = fileFilter;
 	}
