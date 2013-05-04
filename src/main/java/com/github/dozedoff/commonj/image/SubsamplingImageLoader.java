@@ -39,10 +39,12 @@ public class SubsamplingImageLoader {
 		ImageReader reader = getImageReader(iis);
 
 		if (reader == null) {
+			iis.close();
 			throw new ImageFormatException("Could not decode file");
 		}
 
 		Image image = subsampleRead(iis, reader, targetDimension);
+		iis.close();
 		return image;
 	}
 	
@@ -58,17 +60,7 @@ public class SubsamplingImageLoader {
 	 */
 	@Deprecated
 	public static JLabel loadImage(Path imagepath, Dimension targetDimension) throws ImageFormatException, IOException {
-		ImageInputStream iis = getImageInputStream(imagepath);
-		ImageReader reader = getImageReader(iis);
-
-		if (reader == null) {
-			throw new ImageFormatException("Could not decode file");
-		}
-
-		Image image = subsampleRead(iis, reader, targetDimension);
-		ImageIcon imageicon = new ImageIcon(image);
-		JLabel imageLabel = new JLabel(imageicon, JLabel.CENTER);
-		return imageLabel;
+		return loadAsLabel(imagepath, targetDimension);
 	}
 	
 	private static Image subsampleRead(ImageInputStream iis, ImageReader reader, Dimension targetDimension) throws IOException {
