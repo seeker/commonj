@@ -35,7 +35,7 @@ public abstract class AbstractSettings {
 		this.validator = validator;
 	}
 	
-	private Properties loadPropertiesFromFile(Path filepath) {
+	private void loadPropertiesFromFile(Path filepath) {
 		try {
 			if (Files.exists(filepath)) {
 				FileReader fr = new FileReader(filepath.toFile());
@@ -48,8 +48,6 @@ public abstract class AbstractSettings {
 		} catch (IOException e) {
 			logger.error("Failed to load {}", filepath, e);
 		}
-
-		return properties;
 	}
 	
 	/**
@@ -57,10 +55,10 @@ public abstract class AbstractSettings {
 	 * @param propertyFilename of the propery file to load
 	 * @return 
 	 */
-	public final Properties loadPropertiesFromFile(String propertyFilename){
+	public final void loadPropertiesFromFile(String propertyFilename){
 		Path workingDir = FileUtil.WorkingDir().toPath();
 		Path propertyfileAbsolute = workingDir.resolve(propertyFilename);
-		return loadPropertiesFromFile(propertyfileAbsolute);
+		loadPropertiesFromFile(propertyfileAbsolute);
 	}
 	
 	/**
@@ -70,10 +68,10 @@ public abstract class AbstractSettings {
 	 * @param propertyFilename of the propery file to load
 	 * @return 
 	 */
-	public final Properties loadPropertiesFromFile(Path subdirectory, String propertyFilename){
+	public final void loadPropertiesFromFile(Path subdirectory, String propertyFilename){
 		Path workingDir = FileUtil.WorkingDir().toPath();
 		Path propertyfileAbsolute = workingDir.resolve(subdirectory).resolve(propertyFilename);
-		return loadPropertiesFromFile(propertyfileAbsolute);
+		loadPropertiesFromFile(propertyfileAbsolute);
 	}
 	
 	/**
@@ -81,8 +79,8 @@ public abstract class AbstractSettings {
 	 * @param propertyFilename of the propery file to load
 	 * @return 
 	 */
-	public final Properties loadPropertiesFromFileAbsolute(Path absolute){
-		return loadPropertiesFromFile(absolute);
+	public final void loadPropertiesFromFileAbsolute(Path absolute){
+		loadPropertiesFromFile(absolute);
 	}
 
 	/**
