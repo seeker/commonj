@@ -4,14 +4,10 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
-@RunWith(Suite.class)
-@SuiteClasses({ 
-	FileTests.class, 
-	HashTests.class, 
-	NetTests.class,
-	ImageTests.class,
-	StringTests.class
-})
-public class AllTestsCommon {
+import com.github.dozedoff.commonj.string.ConvertTest;
 
-}
+@RunWith(Suite.class)
+@SuiteClasses({
+	ConvertTest.class
+})
+public class StringTests {}
