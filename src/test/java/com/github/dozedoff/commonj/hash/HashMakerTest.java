@@ -28,9 +28,10 @@ public class HashMakerTest {
 	
 	@BeforeClass
 	public static void classSetup() throws URISyntaxException {
-		testFile = Paths.get(HashMakerTest.class.getResource("test1").toURI()).toFile();
-		testFile2 = Paths.get(HashMakerTest.class.getResource("test2").toURI()).toFile();
-		testFile3 = Paths.get(HashMakerTest.class.getResource("test3").toURI()).toFile();
+		ClassLoader cl = Thread.currentThread().getContextClassLoader();
+		testFile = Paths.get(cl.getResource("test1").toURI()).toFile();
+		testFile2 = Paths.get(cl.getResource("test2").toURI()).toFile();
+		testFile3 = Paths.get(cl.getResource("test3").toURI()).toFile();
 	}
 
 	@Before

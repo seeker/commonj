@@ -33,7 +33,7 @@ public class SubsamplingImageLoaderTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		imagePath = Paths.get(SubsamplingImageLoader.class.getResource("test.jpg").toURI());
+		imagePath = Paths.get(Thread.currentThread().getContextClassLoader().getResource("test.jpg").toURI());
 	}
 
 	@Test

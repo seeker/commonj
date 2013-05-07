@@ -24,7 +24,7 @@ public class TextFileReaderTest {
 
 	@Test
 	public void testReadFile() throws IOException, URISyntaxException {
-		URL url = getClass().getResource(TEST_FILE_PATH);
+		URL url = Thread.currentThread().getContextClassLoader().getResource(TEST_FILE_PATH);
 		File file = new File(url.toURI());
 		
 		String text = tfr.read(file);
@@ -33,14 +33,14 @@ public class TextFileReaderTest {
 
 	@Test
 	public void testReadInputStream() throws IOException {
-		InputStream is =  getClass().getResourceAsStream(TEST_FILE_PATH);
+		InputStream is =  Thread.currentThread().getContextClassLoader().getResourceAsStream(TEST_FILE_PATH);
 		String text = tfr.read(is);
 		assertThat(text, is(TEST_STRING));
 	}
 
 	@Test
 	public void testReadString() throws IOException, URISyntaxException {
-		URL url = getClass().getResource(TEST_FILE_PATH);
+		URL url = Thread.currentThread().getContextClassLoader().getResource(TEST_FILE_PATH);
 		File file = new File(url.toURI());
 		String filePath = file.toString();
 		
