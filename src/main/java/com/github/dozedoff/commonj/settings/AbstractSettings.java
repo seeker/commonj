@@ -17,6 +17,7 @@ package com.github.dozedoff.commonj.settings;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
@@ -27,9 +28,10 @@ import org.slf4j.LoggerFactory;
 import com.github.dozedoff.commonj.file.FileUtil;
 
 public abstract class AbstractSettings {
-	Logger logger = LoggerFactory.getLogger(AbstractSettings.class);
-	ISettingsValidator validator = null;
-	Properties properties = new Properties();
+	protected static final Logger logger = LoggerFactory.getLogger(AbstractSettings.class);
+	protected ISettingsValidator validator = null;
+	protected Properties properties = new Properties();
+	protected Path settingsPath;
 	
 	public AbstractSettings(ISettingsValidator validator) {
 		this.validator = validator;
@@ -38,6 +40,7 @@ public abstract class AbstractSettings {
 	private void loadPropertiesFromFile(Path filepath) {
 		try {
 			if (Files.exists(filepath)) {
+				settingsPath = filepath;
 				FileReader fr = new FileReader(filepath.toFile());
 				properties.load(fr);
 				fr.close();
@@ -92,6 +95,24 @@ public abstract class AbstractSettings {
 		return false;
 		}else{
 			return validator.validate(properties);
+		}
+	}
+	
+	public void saveSettings() {
+		OutputStream os = null;
+		try {
+			os = Files.newOutputStream(settingsPath);
+			properties.store(os, "Settings for SimilarImage");
+		} catch (IOException e) {
+			logger.warn("Failed to save settings - {}", e.getMessage());
+		} finally {
+			try {
+				if (os != null) {
+					os.close();
+				}
+			} catch (IOException e) {
+				logger.warn("Failed to close output stream", e);
+			}
 		}
 	}
 }
