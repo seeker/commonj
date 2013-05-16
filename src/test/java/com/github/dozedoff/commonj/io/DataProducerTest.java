@@ -9,13 +9,13 @@ import java.util.LinkedList;
 import org.junit.Before;
 import org.junit.Test;
 
-public class DataProviderTest {
+public class DataProducerTest {
 	final int SLEEP_TIME = 100;
-	DataProviderDummy dummy;
+	DataProducerDummy dummy;
 	
 	@Before
 	public void setUp() throws Exception {
-		dummy = new DataProviderDummy();
+		dummy = new DataProducerDummy();
 	}
 
 	@Test(timeout=1000)

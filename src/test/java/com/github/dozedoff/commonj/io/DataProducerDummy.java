@@ -1,6 +1,6 @@
 package com.github.dozedoff.commonj.io;
 
-public class DataProviderDummy extends DataProvider<String, Integer> {
+public class DataProducerDummy extends DataProducer<String, Integer> {
 	private int processed = 0;
 	
 	@Override

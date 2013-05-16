@@ -20,13 +20,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public abstract class DataProvider<I,O> {
+public abstract class DataProducer<I,O> {
 	private final DataLoader loader;
 	
 	LinkedBlockingQueue<I> input = new LinkedBlockingQueue<>();
 	LinkedBlockingQueue<O> output = new LinkedBlockingQueue<>();
 	
-	public DataProvider() {
+	public DataProducer() {
 		loader = new DataLoader();
 		loader.setDaemon(true);
 		loader.start();
