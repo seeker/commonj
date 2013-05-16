@@ -15,107 +15,63 @@
  */
 package com.github.dozedoff.commonj.io;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.atomic.AtomicLong;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.github.dozedoff.commonj.util.Pair;
-
-public class DataProvider {
-	private final static Logger logger = LoggerFactory.getLogger(DataProvider.class);
+public abstract class DataProvider<I,O> {
 	private final DataLoader loader;
 	
-	private long upperLimit = 104857600;  	// 100 MB
-	private long lowerLimit = 83886080;		// 80 MB
-	
-	AtomicLong queueSize = new AtomicLong();
-	LinkedBlockingQueue<Path> filesToLoad = new LinkedBlockingQueue<>();
-	LinkedBlockingQueue<Pair<Path, byte[]>> data = new LinkedBlockingQueue<>();
-	
-	public DataProvider(long lowerLimit, long upperLimit) {
-		this.lowerLimit = lowerLimit;
-		this.upperLimit = upperLimit;
-		loader = new DataLoader();
-		loader.start();
-	}
+	LinkedBlockingQueue<I> input = new LinkedBlockingQueue<>();
+	LinkedBlockingQueue<O> output = new LinkedBlockingQueue<>();
 	
 	public DataProvider() {
 		loader = new DataLoader();
+		loader.setDaemon(true);
 		loader.start();
 	}
 	
 	public void clear() {
-		filesToLoad.clear();
-		data.clear();
+		input.clear();
+		output.clear();
 	}
 	
-	public void addToLoad(Path... paths) {
-		filesToLoad.addAll(filesToLoad);
+	public void addToLoad(@SuppressWarnings("unchecked") I... paths) {
+		List<I> list = Arrays.asList(paths);
+		input.addAll(list);
 	}
 	
-	public Pair<Path, byte[]> takeData() throws InterruptedException {
-		synchronized (data) {
-			return data.take();
-		}
+	public void addToLoad(List<I> paths) {
+		input.addAll(paths);
 	}
 	
-	public void drainData(Collection<Pair<Path, byte[]>> drainTo, int maxElements) {
-		synchronized (data) {
-			data.drainTo(drainTo, maxElements);
-			data.notify();
-		}
+	public O takeData() throws InterruptedException {
+			return output.take();
 	}
+	
+	public void drainTo(Collection<O> drainTo, int maxElements) throws InterruptedException {
+			O next = output.take();
+			drainTo.add(next);
+			output.drainTo(drainTo, maxElements - 1);
+	}
+	
+	abstract protected void loaderDoWork() throws InterruptedException;
 	
 	class DataLoader extends Thread {
+		
 		public DataLoader() {
 			this.setName("Data loader");
 		}
 		
-		public boolean hasWork() {
-			if(queueSize.get() > lowerLimit) {
-				return false;
-			} else if(filesToLoad.isEmpty()) {
-				return false;
-			}
-			
-			return true;
-		}
-		
 		@Override
 		public void run() {
-			while(isInterrupted()) {
-				while(! hasWork()) {
+			while(! isInterrupted()) {
 					try {
-						wait();
-					} catch (InterruptedException e) {interrupt();}
-				}
-				
-				Path next = filesToLoad.peek();
-				
-				try {
-					if(Files.size(next) + queueSize.get() > upperLimit) {
-						try {
-							wait();
-							continue;
-						} catch (InterruptedException e) {interrupt();}
+						loaderDoWork();
+					} catch (InterruptedException e) {
+						interrupt();
 					}
-					
-					try {
-						next = filesToLoad.take();
-						byte[] file = Files.readAllBytes(next);
-						Pair<Path, byte[]> pair = new Pair<Path, byte[]>(next, file);
-						data.add(pair);
-					} catch (InterruptedException e) {interrupt();}
-					
-				} catch (IOException e) {
-					logger.warn("Failed to load data for {} - {}", next, e.getMessage());
-				}
 			}
 		}
 	}

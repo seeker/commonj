@@ -4,15 +4,12 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
+import com.github.dozedoff.commonj.io.DataProducerTest;
+
 @RunWith(Suite.class)
-@SuiteClasses({ 
-	FileTests.class, 
-	HashTests.class, 
-	NetTests.class,
-	ImageTests.class,
-	StringTests.class,
-	IoTests.class
+@SuiteClasses({
+	DataProducerTest.class
 })
-public class AllTestsCommon {
+public class IoTests {
 
 }
