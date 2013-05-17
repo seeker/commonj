@@ -17,36 +17,57 @@ package com.github.dozedoff.commonj.io;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public abstract class DataProducer<I,O> {
-	private final DataLoader loader;
-	
 	protected LinkedBlockingQueue<I> input = new LinkedBlockingQueue<>();
 	protected LinkedBlockingQueue<O> output = new LinkedBlockingQueue<>();
 	
+	private LinkedList<DataLoader> loaders = new LinkedList<>();
+	
 	public DataProducer() {
-		loader = new DataLoader();
-		loader.setDaemon(true);
-		loader.start();
+		startLoader();
 	}
 	
 	public DataProducer(int outputQueueMaxSize) {
 		output = new LinkedBlockingQueue<>(outputQueueMaxSize);
 		
-		loader = new DataLoader();
-		loader.setDaemon(true);
-		loader.start();
+		startLoader();
 	}
 	
 	public DataProducer(int inputQueueMaxSize, int outputQueueMaxSize) {
 		input = new LinkedBlockingQueue<>(inputQueueMaxSize);
 		output = new LinkedBlockingQueue<>(outputQueueMaxSize);
 		
-		loader = new DataLoader();
-		loader.setDaemon(true);
-		loader.start();
+		startLoader();
+	}
+	
+	public void startLoader() {
+		startLoader(1);
+	}
+	
+	public void startLoader(int numberOfLoaders) {
+		for(int i = 0; i < numberOfLoaders; i++){
+			DataLoader loader = new DataLoader();
+			loaders.add(loader);
+			loader.setDaemon(true);
+			loader.start();
+		}
+	}
+	
+	public void stopLoader() {
+		stopLoader(1);
+	}
+	
+	public void stopLoader(int numberOfLoaders) {
+		for(int i = 0; i < numberOfLoaders; i++){
+			if(loaders.size() > 1){
+				DataLoader loader = loaders.removeLast();
+				loader.interrupt();
+			}
+		}
 	}
 	
 	public void clear() {
