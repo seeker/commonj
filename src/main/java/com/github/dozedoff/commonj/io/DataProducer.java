@@ -26,6 +26,7 @@ public abstract class DataProducer<I,O> {
 	protected LinkedBlockingQueue<O> output = new LinkedBlockingQueue<>();
 	
 	private LinkedList<DataLoader> loaders = new LinkedList<>();
+	private int threadPriority = Thread.NORM_PRIORITY;
 	
 	public DataProducer() {
 		startLoader();
@@ -48,11 +49,20 @@ public abstract class DataProducer<I,O> {
 		startLoader(1);
 	}
 	
+	public void setThreadPriority(int priority) {
+		threadPriority = priority;
+		
+		for (Thread t : loaders) {
+			t.setPriority(threadPriority);
+		}
+	}
+	
 	public void startLoader(int numberOfLoaders) {
 		for(int i = 0; i < numberOfLoaders; i++){
 			DataLoader loader = new DataLoader();
 			loaders.add(loader);
 			loader.setDaemon(true);
+			loader.setPriority(threadPriority);
 			loader.start();
 		}
 	}
