@@ -23,8 +23,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 public abstract class DataProducer<I,O> {
 	private final DataLoader loader;
 	
-	LinkedBlockingQueue<I> input = new LinkedBlockingQueue<>();
-	LinkedBlockingQueue<O> output = new LinkedBlockingQueue<>();
+	protected LinkedBlockingQueue<I> input = new LinkedBlockingQueue<>();
+	protected LinkedBlockingQueue<O> output = new LinkedBlockingQueue<>();
 	
 	public DataProducer() {
 		loader = new DataLoader();
@@ -52,6 +52,7 @@ public abstract class DataProducer<I,O> {
 	public void clear() {
 		input.clear();
 		output.clear();
+		outputQueueChanged();
 	}
 	
 	public void addToLoad(@SuppressWarnings("unchecked") I... paths) {
@@ -64,16 +65,25 @@ public abstract class DataProducer<I,O> {
 	}
 	
 	public O takeData() throws InterruptedException {
-			return output.take();
+			O take = output.take();
+			outputQueueChanged();
+			return take;
 	}
 	
 	public void drainTo(Collection<O> drainTo, int maxElements) throws InterruptedException {
 			O next = output.take();
 			drainTo.add(next);
 			output.drainTo(drainTo, maxElements - 1);
+			outputQueueChanged();
+	}
+	
+	public boolean hasWork() {
+		return (! input.isEmpty()) || (! output.isEmpty()); 
 	}
 	
 	abstract protected void loaderDoWork() throws InterruptedException;
+	
+	protected void outputQueueChanged(){};
 	
 	class DataLoader extends Thread {
 		
@@ -86,6 +96,7 @@ public abstract class DataProducer<I,O> {
 			while(! isInterrupted()) {
 					try {
 						loaderDoWork();
+						outputQueueChanged();
 					} catch (InterruptedException e) {
 						interrupt();
 					}
