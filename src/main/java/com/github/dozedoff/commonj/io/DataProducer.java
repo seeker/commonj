@@ -32,6 +32,23 @@ public abstract class DataProducer<I,O> {
 		loader.start();
 	}
 	
+	public DataProducer(int outputQueueMaxSize) {
+		output = new LinkedBlockingQueue<>(outputQueueMaxSize);
+		
+		loader = new DataLoader();
+		loader.setDaemon(true);
+		loader.start();
+	}
+	
+	public DataProducer(int inputQueueMaxSize, int outputQueueMaxSize) {
+		input = new LinkedBlockingQueue<>(inputQueueMaxSize);
+		output = new LinkedBlockingQueue<>(outputQueueMaxSize);
+		
+		loader = new DataLoader();
+		loader.setDaemon(true);
+		loader.start();
+	}
+	
 	public void clear() {
 		input.clear();
 		output.clear();
