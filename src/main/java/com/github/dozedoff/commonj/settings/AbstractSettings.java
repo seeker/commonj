@@ -94,7 +94,7 @@ public abstract class AbstractSettings {
 		if(validator == null){
 		return false;
 		}else{
-			return validator.validate(properties);
+			return validator.validate(this);
 		}
 	}
 	

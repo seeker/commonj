@@ -15,8 +15,6 @@
  */
 package com.github.dozedoff.commonj.settings;
 
-import java.util.Properties;
-
 public interface ISettingsValidator {
-	public boolean validate(Properties settings);
+	public boolean validate(AbstractSettings settings);
 }
