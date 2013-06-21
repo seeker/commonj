@@ -91,6 +91,10 @@ public abstract class DataProducer<I,O> {
 		input.addAll(list);
 	}
 	
+	public void offer(I input) {
+		this.input.offer(input);
+	}
+	
 	public void addToLoad(List<I> paths) {
 		input.addAll(paths);
 	}
