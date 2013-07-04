@@ -11,7 +11,8 @@ import org.junit.runners.Suite.SuiteClasses;
 	NetTests.class,
 	ImageTests.class,
 	StringTests.class,
-	IoTests.class
+	IoTests.class,
+	UtilTests.class
 })
 public class AllTestsCommon {
 
