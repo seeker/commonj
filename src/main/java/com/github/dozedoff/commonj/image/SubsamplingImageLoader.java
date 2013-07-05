@@ -34,6 +34,7 @@ import sun.awt.image.ImageFormatException;
 
 @SuppressWarnings("restriction")
 public class SubsamplingImageLoader {
+	// TODO throw exception for negative dimensions
 	public static Image loadAsImage(Path imagepath, Dimension targetDimension) throws ImageFormatException, IOException {
 		ImageInputStream iis = getImageInputStream(imagepath);
 		ImageReader reader = getImageReader(iis);
@@ -47,14 +48,14 @@ public class SubsamplingImageLoader {
 		iis.close();
 		return image;
 	}
-	
+
 	public static JLabel loadAsLabel(Path imagepath, Dimension targetDimension) throws ImageFormatException, IOException {
 		Image image = loadAsImage(imagepath, targetDimension);
 		ImageIcon imageicon = new ImageIcon(image);
 		JLabel imageLabel = new JLabel(imageicon, JLabel.CENTER);
 		return imageLabel;
 	}
-	
+
 	/**
 	 * Use {@link #loadAsLabel(Path imagepath, Dimension targetDimension) } instead.
 	 */
@@ -62,14 +63,14 @@ public class SubsamplingImageLoader {
 	public static JLabel loadImage(Path imagepath, Dimension targetDimension) throws ImageFormatException, IOException {
 		return loadAsLabel(imagepath, targetDimension);
 	}
-	
+
 	private static Image subsampleRead(ImageInputStream iis, ImageReader reader, Dimension targetDimension) throws IOException {
 		ImageReadParam readerParameters = reader.getDefaultReadParam();
 		reader.setInput(iis, true, true);
 
 		int readerWidth = reader.getWidth(0);
 		int readerHeight = reader.getHeight(0);
-		
+
 		Dimension imageSize = new Dimension(readerWidth, readerHeight);
 		int sampleRate = getSampleRate(imageSize, targetDimension);
 
@@ -84,30 +85,30 @@ public class SubsamplingImageLoader {
 		ImageInputStream iis = ImageIO.createImageInputStream(is);
 		return iis;
 	}
-	
+
 	private static int getSampleRate(Dimension image, Dimension displayArea) {
-		double heightRatio = (double) image.getHeight() / (double)displayArea.getHeight();
-		double widthRato = (double) image.getWidth() / (double)displayArea.getWidth();
-		
-		int xSampleRate =  (int)Math.ceil(heightRatio);
-	    int ySampleRate = (int)Math.ceil(widthRato);
+		double heightRatio = (double) image.getHeight() / (double) displayArea.getHeight();
+		double widthRato = (double) image.getWidth() / (double) displayArea.getWidth();
 
-	    int sampleRate = Math.max(xSampleRate, ySampleRate);
-	    
-	    if(sampleRate < 1){
-	    	sampleRate = 1;
-	    }
-	    
-	    return sampleRate;
+		int xSampleRate = (int) Math.ceil(heightRatio);
+		int ySampleRate = (int) Math.ceil(widthRato);
+
+		int sampleRate = Math.max(xSampleRate, ySampleRate);
+
+		if (sampleRate < 1) {
+			sampleRate = 1;
+		}
+
+		return sampleRate;
 	}
-	
-	private static ImageReader getImageReader(ImageInputStream iis) {
-	    Iterator<?> iter = ImageIO.getImageReaders(iis);
-	    if (!iter.hasNext()) {
-	        return null;
-	    }
 
-	    ImageReader reader = (ImageReader)iter.next();
-	    return reader;
+	private static ImageReader getImageReader(ImageInputStream iis) {
+		Iterator<?> iter = ImageIO.getImageReaders(iis);
+		if (!iter.hasNext()) {
+			return null;
+		}
+
+		ImageReader reader = (ImageReader) iter.next();
+		return reader;
 	}
 }
