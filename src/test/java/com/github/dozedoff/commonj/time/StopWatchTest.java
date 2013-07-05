@@ -130,4 +130,18 @@ public class StopWatchTest {
 	public void testConvertTime() {
 		assertThat(stopWatch.convertTime(100), is("00:00:00.100"));
 	}
+
+	@Test
+	public void testReRun() throws InterruptedException {
+		stopWatch.start();
+		Thread.sleep(100);
+		stopWatch.stop();
+
+		stopWatch.reset();
+
+		stopWatch.start();
+		Thread.sleep(100);
+		assertThat(stopWatch.getTimeMilli(), is(100L));
+		stopWatch.stop();
+	}
 }
