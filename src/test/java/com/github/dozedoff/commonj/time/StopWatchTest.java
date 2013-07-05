@@ -16,9 +16,10 @@
 package com.github.dozedoff.commonj.time;
 
 import static org.hamcrest.CoreMatchers.allOf;
-import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Before;
@@ -40,7 +41,7 @@ public class StopWatchTest {
 		Thread.sleep(100);
 		stopWatch.stop();
 
-		assertThat(stopWatch.getTimeMilli(), allOf(greaterThan(190L), lessThan(210L)));
+		assertThat(stopWatch.getTimeMilli(), allOf(greaterThanOrEqualTo(190L), lessThanOrEqualTo(220L)));
 	}
 
 	@Test
@@ -50,7 +51,7 @@ public class StopWatchTest {
 		stopWatch.stop();
 		stopWatch.stop();
 
-		assertThat(stopWatch.getTimeMilli(), allOf(greaterThan(90L), lessThan(110L)));
+		assertThat(stopWatch.getTimeMilli(), allOf(greaterThanOrEqualTo(90L), lessThanOrEqualTo(110L)));
 	}
 
 	@Test
@@ -59,14 +60,14 @@ public class StopWatchTest {
 		Thread.sleep(100);
 		stopWatch.stop();
 
-		assertThat(stopWatch.getTime(), is("00:00:00.100"));
+		assertThat(stopWatch.getTime(), startsWith("00:00:00.1"));
 	}
 
 	@Test
 	public void testGetTimeWhileRunning() throws InterruptedException {
 		stopWatch.start();
 		Thread.sleep(100);
-		assertThat(stopWatch.getTime(), is("00:00:00.100"));
+		assertThat(stopWatch.getTime(), startsWith("00:00:00.1"));
 		stopWatch.stop();
 	}
 
@@ -76,14 +77,14 @@ public class StopWatchTest {
 		Thread.sleep(100);
 		stopWatch.stop();
 
-		assertThat(stopWatch.getTimeMilli(), allOf(greaterThan(90L), lessThan(110L)));
+		assertThat(stopWatch.getTimeMilli(), allOf(greaterThanOrEqualTo(90L), lessThanOrEqualTo(110L)));
 	}
 
 	@Test
 	public void testGetTimeMilliWhileRunning() throws InterruptedException {
 		stopWatch.start();
 		Thread.sleep(100);
-		assertThat(stopWatch.getTimeMilli(), allOf(greaterThan(90L), lessThan(110L)));
+		assertThat(stopWatch.getTimeMilli(), allOf(greaterThanOrEqualTo(90L), lessThanOrEqualTo(110L)));
 		stopWatch.stop();
 	}
 
@@ -104,7 +105,7 @@ public class StopWatchTest {
 		Thread.sleep(100);
 		stopWatch.stop();
 
-		assertThat(stopWatch.getTimeMilli(), allOf(greaterThan(90L), lessThan(110L)));
+		assertThat(stopWatch.getTimeMilli(), allOf(greaterThanOrEqualTo(90L), lessThanOrEqualTo(110L)));
 
 		stopWatch.reset();
 
@@ -141,7 +142,7 @@ public class StopWatchTest {
 
 		stopWatch.start();
 		Thread.sleep(100);
-		assertThat(stopWatch.getTimeMilli(), is(100L));
+		assertThat(stopWatch.getTimeMilli(), allOf(greaterThanOrEqualTo(90L), lessThanOrEqualTo(110L)));
 		stopWatch.stop();
 	}
 }
