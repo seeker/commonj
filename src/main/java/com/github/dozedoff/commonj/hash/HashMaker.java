@@ -23,38 +23,48 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.dozedoff.commonj.string.Convert;
 
-
 /**
- * Generates a SHA-2 Hash for binary data, and formats the value into
- * a Hex representation.
+ * Generates a SHA-2 Hash (default) for binary data, and formats the value into a Hex representation.
  */
 public class HashMaker {
 	private static Logger logger = LoggerFactory.getLogger(HashMaker.class);
-
+	private final String DEFAULT_ALGORITHM = "SHA-256";
 	MessageDigest md = null;
-	byte[] rawHash;
+
+	public HashMaker() {
+		createDigest(DEFAULT_ALGORITHM);
+	}
+
+	public HashMaker(String algorithm) {
+		createDigest(algorithm);
+	}
+
+	private void createDigest(String algorithm) {
+		try {
+			md = MessageDigest.getInstance(algorithm);
+		} catch (NoSuchAlgorithmException e1) {
+			logger.error("Unable to find Algorithm {}, falling back to {}", algorithm, DEFAULT_ALGORITHM);
+			createDigest(DEFAULT_ALGORITHM);
+		}
+	}
 
 	/**
 	 * Generate a Hash value for binary data.
-	 * @param data Binary data
-	 * @return hash Hash as a hex value 
+	 * 
+	 * @param data
+	 *            Binary data
+	 * @return hash Hash as a hex value
 	 */
-	public String hash(byte[] data){
-		if(md == null){
-			try {
-				md = MessageDigest.getInstance("SHA-256");
-			} catch (NoSuchAlgorithmException e1) {
-				logger.error(e1.getMessage());
-				return null;
-			}
-		}
-		
-		if(data == null){
+	public String hash(byte[] data) {
+		byte[] rawHash;
+
+		if (data == null) {
 			logger.error("No data");
 			return null;
 		}
@@ -64,16 +74,9 @@ public class HashMaker {
 
 		return Convert.byteToHex(rawHash);
 	}
-	
+
 	public String hashFile(File file) {
-		if (md == null) {
-			try {
-				md = MessageDigest.getInstance("SHA-256");
-			} catch (NoSuchAlgorithmException e1) {
-				logger.error(e1.getMessage());
-				return null;
-			}
-		}
+		byte[] rawHash;
 
 		if (file == null) {
 			return null;
@@ -97,14 +100,14 @@ public class HashMaker {
 				md.update(buffer.get());
 			}
 		} catch (final IOException ex) {
-			ex.printStackTrace();
+			logger.warn("Failed to read file {}, {}", file, ex.getMessage());
 			return null;
 		} finally {
 			if (stream != null) {
 				try {
 					stream.close();
 				} catch (final IOException ex) {
-					ex.printStackTrace();
+					logger.warn("Failed to close stream, {}", ex.getMessage());
 				}
 			}
 		}
