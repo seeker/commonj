@@ -33,41 +33,42 @@ import sun.awt.image.ImageFormatException;
 @SuppressWarnings("restriction")
 public class SubsamplingImageLoaderTest {
 	private static Path imagePath, textpath;
-	
+
 	@BeforeClass
 	public static void setUp() throws Exception {
+		new SubsamplingImageLoader(); // Used to get 100% coverage for static only classes
 		imagePath = Paths.get(Thread.currentThread().getContextClassLoader().getResource("test.jpg").toURI());
 		textpath = Paths.get(Thread.currentThread().getContextClassLoader().getResource("testdata.txt").toURI());
 	}
 
 	@Test
-	public void testLoadImageNoSubSample() throws Exception{
+	public void testLoadImageNoSubSample() throws Exception {
 		Dimension dim = new Dimension(100, 100);
 		JLabel label = SubsamplingImageLoader.loadAsLabel(imagePath, dim);
-		
+
 		assertNotNull(label.getIcon());
 		assertThat(label.getIcon().getIconHeight(), is(60));
 		assertThat(label.getIcon().getIconWidth(), is(50));
 	}
-	
+
 	@Test
-	public void testLoadImageSubsample() throws Exception{
+	public void testLoadImageSubsample() throws Exception {
 		Dimension dim = new Dimension(6, 6);
 		JLabel label = SubsamplingImageLoader.loadAsLabel(imagePath, dim);
-		
+
 		assertNotNull(label.getIcon());
 		assertThat(label.getIcon().getIconHeight(), is(6));
 		assertThat(label.getIcon().getIconWidth(), is(5));
 	}
-	
-	@Test(expected=IllegalArgumentException.class)
-	public void testLoadImageNoSubSampleZeroDim() throws Exception{
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testLoadImageNoSubSampleZeroDim() throws Exception {
 		Dimension dim = new Dimension();
 		SubsamplingImageLoader.loadAsLabel(imagePath, dim);
 	}
-	
-	@Test(expected=ImageFormatException.class)
-	public void testLoadNotAnImage() throws Exception{
+
+	@Test(expected = ImageFormatException.class)
+	public void testLoadNotAnImage() throws Exception {
 		Dimension dim = new Dimension(100, 100);
 		SubsamplingImageLoader.loadAsLabel(textpath, dim);
 	}
