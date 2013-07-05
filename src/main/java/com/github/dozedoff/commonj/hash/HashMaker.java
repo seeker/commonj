@@ -17,10 +17,7 @@ package com.github.dozedoff.commonj.hash;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
-import java.nio.channels.FileChannel.MapMode;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -28,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.dozedoff.commonj.string.Convert;
+import com.github.dozedoff.commonj.util.FileIO;
 
 /**
  * Generates a SHA-2 Hash (default) for binary data, and formats the value into a Hex representation.
@@ -78,7 +76,7 @@ public class HashMaker {
 	public String hashFile(File file) {
 		byte[] rawHash;
 
-		if (file == null) {
+		if (file == null || !file.exists()) {
 			return null;
 		}
 
@@ -86,31 +84,22 @@ public class HashMaker {
 
 		stream = null;
 
-		try {
-			final FileChannel channel;
-			final MappedByteBuffer buffer;
-			final int fileSize;
+		final MappedByteBuffer buffer;
+		final int fileSize;
 
-			stream = new FileInputStream(file);
-			channel = stream.getChannel();
-			buffer = channel.map(MapMode.READ_ONLY, 0, file.length());
-			fileSize = (int) file.length();
+		buffer = FileIO.openReadOnlyBuffer(file);
 
-			for (int i = 0; i < fileSize; i++) {
-				md.update(buffer.get());
-			}
-		} catch (final IOException ex) {
-			logger.warn("Failed to read file {}, {}", file, ex.getMessage());
+		if (buffer == null) {
 			return null;
-		} finally {
-			if (stream != null) {
-				try {
-					stream.close();
-				} catch (final IOException ex) {
-					logger.warn("Failed to close stream, {}", ex.getMessage());
-				}
-			}
 		}
+
+		fileSize = (int) file.length();
+
+		for (int i = 0; i < fileSize; i++) {
+			md.update(buffer.get());
+		}
+
+		FileIO.closeFileInputStream(stream);
 
 		rawHash = md.digest();
 

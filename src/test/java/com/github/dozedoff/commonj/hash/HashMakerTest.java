@@ -77,6 +77,11 @@ public class HashMakerTest {
 
 	@Test
 	public void testInvalidFile() {
+		assertNull(hm.hashFile(new File(".\fooBar")));
+	}
+
+	@Test
+	public void testInaccessibleFile() {
 		assertNull(hm.hashFile(new File(".")));
 	}
 
