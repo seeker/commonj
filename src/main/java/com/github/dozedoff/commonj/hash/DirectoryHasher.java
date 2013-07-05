@@ -25,12 +25,12 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.LinkedList;
 import java.util.concurrent.LinkedBlockingQueue;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.dozedoff.commonj.file.BinaryFileReader;
 import com.github.dozedoff.commonj.file.FileInfo;
-
 
 /**
  * Class for hashing files in a directory.
@@ -39,41 +39,46 @@ public class DirectoryHasher {
 	LinkedBlockingQueue<FileInfo> outputQueue = null;
 	final static Logger logger = LoggerFactory.getLogger(DirectoryHasher.class);
 	private HashWorker hashWorker;
-	
-	public DirectoryHasher(LinkedBlockingQueue<FileInfo> outputQueue){
+	private FilenameFilter filter = null;
+
+	public DirectoryHasher(LinkedBlockingQueue<FileInfo> outputQueue) {
 		this.outputQueue = outputQueue;
 		hashWorker = new HashWorker();
 		hashWorker.setDaemon(true);
 		hashWorker.start();
 	}
 
-	public void hashDirectory(String directory) throws IOException{
-		File dir = new File(directory);
-		
-		// check if the directory exists
-		if(! dir.exists()){
-			throw new FileNotFoundException("Directory "+ dir.toString()+" does not exist");
-		}
-		
-		logger.info("Starting to walk "+dir.toString());
-		java.nio.file.Files.walkFileTree(dir.toPath(), new DirectoryVisitor(null));
+	public void setFilter(FilenameFilter filter) {
+		this.filter = filter;
 	}
 
-	class DirectoryVisitor extends SimpleFileVisitor<Path>{
+	public void hashDirectory(String directory) throws IOException {
+		File dir = new File(directory);
+
+		// check if the directory exists
+		if (!dir.exists()) {
+			throw new FileNotFoundException("Directory " + dir.toString() + " does not exist");
+		}
+
+		logger.info("Starting to walk " + dir.toString());
+		java.nio.file.Files.walkFileTree(dir.toPath(), new DirectoryVisitor(filter));
+	}
+
+	class DirectoryVisitor extends SimpleFileVisitor<Path> {
 		FilenameFilter filter;
-		
-		public DirectoryVisitor(FilenameFilter filter){
+
+		public DirectoryVisitor(FilenameFilter filter) {
 			this.filter = filter;
 		}
-		
+
 		@Override
 		public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-			if(filter != null){
-				if(filter.accept(file.getParent().toFile(), file.getFileName().toString())){
+			if (filter != null) {
+				if (filter.accept(file.getParent().toFile(), file.getFileName().toString())) {
 					FileInfo fi = new FileInfo(file.toFile(), null);
 					hashWorker.addFile(fi);
 				}
-			}else{
+			} else {
 				FileInfo fi = new FileInfo(file.toFile(), null);
 				hashWorker.addFile(fi);
 			}
@@ -82,35 +87,35 @@ public class DirectoryHasher {
 	}
 
 	/**
-	 * This Tread hashes files and adds them to a queue. 
+	 * This Tread hashes files and adds them to a queue.
 	 */
-	class HashWorker extends Thread{
+	class HashWorker extends Thread {
 		LinkedBlockingQueue<FileInfo> inputQueue = new LinkedBlockingQueue<>();
 		LinkedList<FileInfo> workingList = new LinkedList<>();
-		
+
 		HashMaker hash = new HashMaker();
 		BinaryFileReader bfr = new BinaryFileReader();
 
-		public void addFile(FileInfo file){
+		public void addFile(FileInfo file) {
 			inputQueue.add(file);
 		}
-		
+
 		@Override
 		public void run() {
-			while(! isInterrupted()){
+			while (!isInterrupted()) {
 				// grab some work
 				inputQueue.drainTo(workingList);
-				
+
 				// process items
-				for(FileInfo f : workingList){
+				for (FileInfo f : workingList) {
 					try {
 						f.setHash(hash.hash(bfr.get(f.getFile())));
 						outputQueue.add(f);
 					} catch (IOException e) {
-						logger.warn("Could not hash file: "+e.getMessage());
+						logger.warn("Could not hash file: " + e.getMessage());
 					}
 				}
-				
+
 				workingList.clear();
 			}
 		}
