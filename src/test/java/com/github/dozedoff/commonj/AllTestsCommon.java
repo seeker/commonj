@@ -13,7 +13,8 @@ import org.junit.runners.Suite.SuiteClasses;
 	StringTests.class,
 	IoTests.class,
 	UtilTests.class,
-	TimeTests.class
+	TimeTests.class,
+	FileFilterTests.class
 })
 public class AllTestsCommon {
 
