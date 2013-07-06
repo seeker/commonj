@@ -21,36 +21,37 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class ArchiveFilter implements FileFilter {
-	final String[] vaildExtensions = {"7z", "XZ", "BZIP2", "GZIP", "TAR", "ZIP", "WIM", "ARJ", "CAB", "CHM", "CPIO", "CramFS", "DEB", "DMG", "FAT", "HFS", "ISO", "LZH", "LZMA", "MBR", "MSI", "NSIS", "NTFS", "RAR", "RPM", "SquashFS", "UDF", "VHD", "XAR", "Z"};
+	final String[] vaildExtensions = { "7z", "XZ", "BZIP2", "GZIP", "TAR", "ZIP", "WIM", "ARJ", "CAB", "CHM", "CPIO", "CramFS", "DEB",
+			"DMG", "FAT", "HFS", "ISO", "LZH", "LZMA", "MBR", "MSI", "NSIS", "NTFS", "RAR", "RPM", "SquashFS", "UDF", "VHD", "XAR", "Z" };
 	final ArrayList<String> vaildArchiveExtensions = new ArrayList<>(vaildExtensions.length);
 
-	public ArchiveFilter(){
-		for(String validExtension : vaildExtensions){
+	public ArchiveFilter() {
+		for (String validExtension : vaildExtensions) {
 			vaildArchiveExtensions.add(validExtension.toLowerCase());
 		}
-		
+
 		Collections.sort(vaildArchiveExtensions);
 	}
-	
+
 	@Override
 	public boolean accept(File pathname) {
-		if(! pathname.isFile()){
+		if (!pathname.isFile()) {
 			return false;
 		}
-		
+
 		String filename = pathname.getName();
-		
+
 		int extensionIndex = filename.lastIndexOf(".") + 1;
 		String fileExtension = filename.substring(extensionIndex).toLowerCase();
-		
-		if(extensionIndex == -1){
+
+		if (extensionIndex <= 0) {
 			return false;
 		}
-		
-		if(Collections.binarySearch(vaildArchiveExtensions, fileExtension) >= 0){
+
+		if (Collections.binarySearch(vaildArchiveExtensions, fileExtension) >= 0) {
 			return true;
 		}
-		
+
 		return false;
 	}
 }
