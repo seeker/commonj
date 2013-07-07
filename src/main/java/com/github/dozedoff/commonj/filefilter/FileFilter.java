@@ -21,7 +21,10 @@ public class FileFilter implements java.io.FileFilter {
 
 	@Override
 	public boolean accept(File pathname) {
+		if (pathname == null) {
+			return false;
+		}
+
 		return pathname.isFile();
 	}
-
 }
