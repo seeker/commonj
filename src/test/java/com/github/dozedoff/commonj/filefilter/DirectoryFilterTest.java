@@ -56,4 +56,10 @@ public class DirectoryFilterTest {
 		File directory = new File("test");
 		assertFalse(df.accept(directory));
 	}
+
+	@Test
+	public void testNull() {
+		assertFalse(df.accept(null));
+	}
+
 }

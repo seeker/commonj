@@ -22,7 +22,10 @@ public class DirectoryFilter implements FileFilter {
 
 	@Override
 	public boolean accept(File pathname) {
+		if (pathname == null) {
+			return false;
+		}
+
 		return pathname.isDirectory();
 	}
-
 }
