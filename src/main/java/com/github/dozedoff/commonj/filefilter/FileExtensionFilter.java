@@ -34,7 +34,7 @@ public class FileExtensionFilter implements FileFilter {
 
 	private void createExtensionList(String[] validExtensions) {
 		for (String extension : validExtensions) {
-			this.validExtensions.add(extension);
+			this.validExtensions.add(extension.toLowerCase());
 		}
 
 		Collections.sort(this.validExtensions);
@@ -49,11 +49,12 @@ public class FileExtensionFilter implements FileFilter {
 		String filename = pathname.getName();
 
 		int extensionIndex = filename.lastIndexOf(".") + 1;
-		String fileExtension = filename.substring(extensionIndex).toLowerCase();
 
 		if (extensionIndex <= 0) {
 			return false;
 		}
+
+		String fileExtension = filename.substring(extensionIndex).toLowerCase();
 
 		if (Collections.binarySearch(validExtensions, fileExtension) >= 0) {
 			return true;
