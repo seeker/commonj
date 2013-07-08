@@ -19,26 +19,11 @@ import java.io.File;
 import java.io.FileFilter;
 
 public class SimpleImageFilter implements FileFilter {
-	final String[] imageExtensions = {"jpg", "png", "gif"};
-	
+	private final String[] imageExtensions = { "jpg", "png", "gif" };
+	private final FileExtensionFilter fef = new FileExtensionFilter(imageExtensions);
+
 	@Override
 	public boolean accept(File pathname) {
-		if(! pathname.isFile()){
-			return false;
-		}
-		
-		String filename = pathname.getName();
-		
-		int extensionIndex = filename.lastIndexOf(".") + 1;
-		String fileExtension = filename.substring(extensionIndex).toLowerCase();
-		
-		for(String extension : imageExtensions){
-			if(fileExtension.equals(extension)){
-				return true;
-			}
-		}
-		
-		return false;
+		return fef.accept(pathname);
 	}
-
 }
