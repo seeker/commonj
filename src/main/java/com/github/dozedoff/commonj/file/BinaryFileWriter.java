@@ -21,21 +21,20 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class BinaryFileWriter {
-	public void write(byte[] byteData, String savePath) throws Exception {
+	public void write(byte[] byteData, String savePath) throws IllegalArgumentException, IOException {
+
+		if (savePath == null || savePath.equals("")) {
+			throw new IllegalArgumentException("Filepath is invalid");
+		}
+
+		if (byteData == null) {
+			throw new IllegalArgumentException("Data cannot be null");
+		}
 
 		File myFile = new File(savePath);
 
-		try {
-			new File(myFile.getParent()).mkdirs(); // alle Verzeichnisse erstellen
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		try {
-			myFile.createNewFile();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		new File(myFile.getParent()).mkdirs(); // create all directories
+		myFile.createNewFile();
 
 		FileOutputStream writeMe = new FileOutputStream(myFile);
 		BufferedOutputStream buffOut = new BufferedOutputStream(writeMe, 1024);
