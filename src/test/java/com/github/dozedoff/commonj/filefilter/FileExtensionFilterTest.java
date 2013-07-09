@@ -39,6 +39,25 @@ public class FileExtensionFilterTest {
 		fef = new FileExtensionFilter(testExtensions);
 	}
 
+	@SuppressWarnings("all")
+	@Test
+	public void testNullParameter() throws IOException {
+		fef = new FileExtensionFilter(null);
+		File file = createTempFile(".tmp");
+		assertFalse(fef.accept(file));
+	}
+
+	@Test
+	public void testNullParameterCast() throws IOException {
+		fef = new FileExtensionFilter("foo", null, "bar");
+
+		File file = createTempFile("test.foo");
+		assertTrue(fef.accept(file));
+
+		file = createTempFile("test.bar");
+		assertTrue(fef.accept(file));
+	}
+
 	@Test
 	public void testNonExistingValidFile() {
 		File file = new File("test.a");

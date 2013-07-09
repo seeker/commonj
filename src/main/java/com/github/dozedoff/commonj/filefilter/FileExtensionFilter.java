@@ -34,7 +34,9 @@ public class FileExtensionFilter implements FileFilter {
 
 	private void createExtensionList(String[] validExtensions) {
 		for (String extension : validExtensions) {
-			this.validExtensions.add(extension.toLowerCase());
+			if (extension != null) {
+				this.validExtensions.add(extension.toLowerCase());
+			}
 		}
 
 		Collections.sort(this.validExtensions);
