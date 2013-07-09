@@ -1,4 +1,4 @@
-/*  Copyright (C) 2012  Nicholas Wright
+/*  Copyright (C) 2013  Nicholas Wright
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -13,19 +13,16 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.dozedoff.commonj;
+package com.github.dozedoff.commonj.util;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+public class Random {
+	public static Byte[] createRandomByteArray(int arrayLength) {
+		Byte[] array = new Byte[arrayLength];
 
-import com.github.dozedoff.commonj.util.PairTest;
-import com.github.dozedoff.commonj.util.RandomTest;
+		for (int i = 0; i < arrayLength; i++) {
+			array[i] = (byte) (127 - (int) (Math.random() * 256));
+		}
 
-@RunWith(Suite.class)
-@SuiteClasses({ PairTest.class,
-				RandomTest.class
-})
-public class UtilTests {
-
+		return array;
+	}
 }
