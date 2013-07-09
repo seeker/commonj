@@ -21,13 +21,14 @@ import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class RandomTest {
 	private Byte[] expectedValues = { -128, 0, 127 };
 	private final int SAMPLE_SIZE = 100000;
 
-	private ArrayList<Byte> arrayToList(Byte[] data) {
+	private ArrayList<Byte> arrayToList(byte[] data) {
 		ArrayList<Byte> dataList = new ArrayList<>(data.length);
 		for (int i = 0; i < data.length; i++) {
 			dataList.add(new Byte(data[i]));
@@ -35,11 +36,16 @@ public class RandomTest {
 		return dataList;
 	}
 
+	@BeforeClass
+	public static void setupBefore() {
+		new Random();
+	}
+
 	@Test
 	public void testCreateRandomByteArraySize() {
 		final int SIZE = 5;
 
-		Byte[] data = Random.createRandomByteArray(SIZE);
+		byte[] data = Random.createRandomByteArray(SIZE);
 		assertThat(data.length, is(SIZE));
 	}
 
@@ -51,7 +57,7 @@ public class RandomTest {
 
 	@Test
 	public void testCreateRandomByteArrayValueRange() {
-		Byte[] data = Random.createRandomByteArray(SAMPLE_SIZE);
+		byte[] data = Random.createRandomByteArray(SAMPLE_SIZE);
 		ArrayList<Byte> dataList = arrayToList(data);
 
 		assertThat(dataList, hasItems(expectedValues));
