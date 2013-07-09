@@ -1,4 +1,4 @@
-/*  Copyright (C) 2012  Nicholas Wright
+/*  Copyright (C) 2013  Nicholas Wright
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -21,27 +21,26 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class BinaryFileWriter {
-	public void write(byte[] byteData, String savePath)throws Exception{
-		
-			File myFile = new File(savePath);
-			
-		try{
-			new File(myFile.getParent()).mkdirs();	// alle Verzeichnisse erstellen
-		}catch(Exception e){
+	public void write(byte[] byteData, String savePath) throws Exception {
+
+		File myFile = new File(savePath);
+
+		try {
+			new File(myFile.getParent()).mkdirs(); // alle Verzeichnisse erstellen
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		try{
+
+		try {
 			myFile.createNewFile();
-		}catch(IOException e){
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
-			
+
 		FileOutputStream writeMe = new FileOutputStream(myFile);
-	     BufferedOutputStream buffOut = new BufferedOutputStream(writeMe,1024);
+		BufferedOutputStream buffOut = new BufferedOutputStream(writeMe, 1024);
 		buffOut.write(byteData);
-		
-		writeMe.close();
+
 		buffOut.close();
 	}
 }
