@@ -21,13 +21,16 @@ import org.junit.runners.Suite.SuiteClasses;
 
 import com.github.dozedoff.commonj.filefilter.ArchiveFilterTest;
 import com.github.dozedoff.commonj.filefilter.DirectoryFilterTest;
+import com.github.dozedoff.commonj.filefilter.FileExtensionFilterTest;
+import com.github.dozedoff.commonj.filefilter.FileFilterTest;
 import com.github.dozedoff.commonj.filefilter.SimpleImageFilterTest;
 
 @RunWith(Suite.class)
-@SuiteClasses({ ArchiveFilterTest.class,
+@SuiteClasses({ FileExtensionFilterTest.class,
+				ArchiveFilterTest.class,
 				DirectoryFilterTest.class,
-				FileFilterTests.class,
-				SimpleImageFilterTest.class
+				SimpleImageFilterTest.class,
+				FileFilterTest.class
 })
 public class FileFilterTests {
 

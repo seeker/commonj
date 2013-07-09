@@ -15,7 +15,6 @@
  */
 package com.github.dozedoff.commonj.filefilter;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -33,62 +32,20 @@ public class ArchiveFilterTest {
 		af = new ArchiveFilter();
 	}
 
-	private File createTempFile(String prefix, String suffix) throws IOException {
-		File file = Files.createTempFile(prefix, suffix).toFile();
+	private File createTempFile(String suffix) throws IOException {
+		File file = Files.createTempFile("", suffix).toFile();
 		return file;
 	}
 
 	@Test
 	public void test7zArchive() throws IOException {
-		File file = createTempFile("test", ".7z");
+		File file = createTempFile("test.7z");
 		assertTrue(af.accept(file));
-	}
-
-	@Test
-	public void test7zArchive2() throws IOException {
-		File file = createTempFile("test", ".7Z");
-		assertTrue(af.accept(file));
-	}
-
-	@Test
-	public void test7zArchiveMissingDot() throws IOException {
-		File file = createTempFile("test", "7z");
-		assertFalse(af.accept(file));
-	}
-
-	@Test
-	public void test7zArchiveNameContainsExtensionNoDot() throws IOException {
-		File file = createTempFile("test7z", ".img");
-		assertFalse(af.accept(file));
-	}
-
-	@Test
-	public void test7zArchiveNameContainsExtension() throws IOException {
-		File file = createTempFile("test.7z", ".img");
-		assertFalse(af.accept(file));
-	}
-
-	@Test
-	public void testNoExtension() throws IOException {
-		File file = createTempFile("test", "");
-		assertFalse(af.accept(file));
-	}
-
-	@Test
-	public void testNotAFile() {
-		File file = new File("test");
-		assertFalse(af.accept(file));
 	}
 
 	@Test
 	public void testZipArchive() throws IOException {
-		File file = createTempFile("test", ".zip");
-		assertTrue(af.accept(file));
-	}
-
-	@Test
-	public void testZipArchive2() throws IOException {
-		File file = createTempFile("test", ".zIp");
+		File file = createTempFile("test.zip");
 		assertTrue(af.accept(file));
 	}
 }
