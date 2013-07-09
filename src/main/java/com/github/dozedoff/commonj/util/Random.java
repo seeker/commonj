@@ -16,8 +16,8 @@
 package com.github.dozedoff.commonj.util;
 
 public class Random {
-	public static Byte[] createRandomByteArray(int arrayLength) {
-		Byte[] array = new Byte[arrayLength];
+	public static byte[] createRandomByteArray(int arrayLength) {
+		byte[] array = new byte[arrayLength];
 
 		for (int i = 0; i < arrayLength; i++) {
 			array[i] = (byte) (127 - (int) (Math.random() * 256));
