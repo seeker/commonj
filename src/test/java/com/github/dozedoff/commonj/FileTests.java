@@ -4,6 +4,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
+import com.github.dozedoff.commonj.file.ArchiveVisitorTest;
 import com.github.dozedoff.commonj.file.BinaryFileWriterTest;
 import com.github.dozedoff.commonj.file.FileUtilTest;
 import com.github.dozedoff.commonj.file.FileWalkerTest;
@@ -13,7 +14,8 @@ import com.github.dozedoff.commonj.file.TextFileReaderTest;
 	FileUtilTest.class, 
 	FileWalkerTest.class,
 	TextFileReaderTest.class,
-	BinaryFileWriterTest.class
+	BinaryFileWriterTest.class,
+	ArchiveVisitorTest.class
 })
 public class FileTests {
 
