@@ -17,14 +17,14 @@ import com.github.dozedoff.commonj.helper.DataGenerator;
 public class BinaryFileReaderTest {
 	private static byte testData[];
 	private static File testFile;
-	
+
 	private BinaryFileReader bfr;
-	
+
 	@BeforeClass
-	public static void before() throws IOException{
+	public static void before() throws IOException {
 		createTestFile(5120); // 5 kb
 	}
-	
+
 	@Before
 	public void setUp() throws Exception {
 		bfr = new BinaryFileReader();
@@ -35,7 +35,7 @@ public class BinaryFileReaderTest {
 		bfr = new BinaryFileReader(5);
 		assertArrayEquals(testData, bfr.get(testFile));
 	}
-	
+
 	@Test
 	public void testDefaultBuffer() throws IOException {
 		assertArrayEquals(testData, bfr.get(testFile));
@@ -49,35 +49,41 @@ public class BinaryFileReaderTest {
 	@Test
 	public void testReUse() throws IOException {
 		assertArrayEquals(testData, bfr.get(testFile));
-		
+
 		createTestFile(512);
-		
+
 		assertArrayEquals(testData, bfr.get(testFile));
 	}
-	
+
 	@Test
 	public void testGetDataInputStream() throws IOException {
 		assertArrayEquals(testData, bfr.getViaDataInputStream(testFile));
 	}
-	
+
 	@Test
 	public void testReUseGetDataInputStream() throws IOException {
 		assertArrayEquals(testData, bfr.getViaDataInputStream(testFile));
-		
+
 		createTestFile(512);
-		
+
 		assertArrayEquals(testData, bfr.getViaDataInputStream(testFile));
+	}
+
+	@Test
+	public void testCustomBlockLength() throws IOException {
+		bfr = new BinaryFileReader(50, 1);
+		assertArrayEquals(testData, bfr.get(testFile));
 	}
 
 	private static File createTestFile(int fileSize) throws IOException {
 		testFile = Files.createTempFile("BFRtestfile", null).toFile();
 		testFile.createNewFile();
-		
+
 		BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(testFile));
 		testData = DataGenerator.generateRandomByteArray(fileSize);
 		bos.write(testData, 0, testData.length);
 		bos.close();
-		
+
 		return testFile;
 	}
 }
