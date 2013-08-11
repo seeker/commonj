@@ -24,21 +24,24 @@ import java.util.LinkedList;
 
 import com.github.dozedoff.commonj.filefilter.ArchiveFilter;
 
-
 public class ArchiveVisitor extends SimpleFileVisitor<Path> {
 	ArchiveFilter archiveFilter = new ArchiveFilter();
 	LinkedList<Path> archiveList;
-	
+
 	public ArchiveVisitor(LinkedList<Path> archiveList) {
+		if (archiveList == null) {
+			throw new IllegalArgumentException("List cannot be null");
+		}
+
 		this.archiveList = archiveList;
 	}
 
 	@Override
 	public FileVisitResult visitFile(Path file, BasicFileAttributes attributes) throws IOException {
-		if(archiveFilter.accept(file.toFile())){
+		if (archiveFilter.accept(file.toFile())) {
 			archiveList.add(file);
 		}
-		
+
 		return FileVisitResult.CONTINUE;
 	}
 }

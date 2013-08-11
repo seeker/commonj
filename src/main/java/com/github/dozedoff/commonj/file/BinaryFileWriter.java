@@ -1,4 +1,4 @@
-/*  Copyright (C) 2012  Nicholas Wright
+/*  Copyright (C) 2013  Nicholas Wright
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -21,27 +21,25 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class BinaryFileWriter {
-	public void write(byte[] byteData, String savePath)throws Exception{
-		
-			File myFile = new File(savePath);
-			
-		try{
-			new File(myFile.getParent()).mkdirs();	// alle Verzeichnisse erstellen
-		}catch(Exception e){
-			e.printStackTrace();
+	public void write(byte[] byteData, String savePath) throws IllegalArgumentException, IOException {
+
+		if (savePath == null || savePath.equals("")) {
+			throw new IllegalArgumentException("Filepath is invalid");
 		}
-		
-		try{
-			myFile.createNewFile();
-		}catch(IOException e){
-			e.printStackTrace();
+
+		if (byteData == null) {
+			throw new IllegalArgumentException("Data cannot be null");
 		}
-			
+
+		File myFile = new File(savePath);
+
+		new File(myFile.getParent()).mkdirs(); // create all directories
+		myFile.createNewFile();
+
 		FileOutputStream writeMe = new FileOutputStream(myFile);
-	     BufferedOutputStream buffOut = new BufferedOutputStream(writeMe,1024);
+		BufferedOutputStream buffOut = new BufferedOutputStream(writeMe, 1024);
 		buffOut.write(byteData);
-		
-		writeMe.close();
+
 		buffOut.close();
 	}
 }

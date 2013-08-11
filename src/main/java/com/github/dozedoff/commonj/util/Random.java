@@ -13,25 +13,16 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.dozedoff.commonj;
+package com.github.dozedoff.commonj.util;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+public class Random {
+	public static byte[] createRandomByteArray(int arrayLength) {
+		byte[] array = new byte[arrayLength];
 
-import com.github.dozedoff.commonj.filefilter.ArchiveFilterTest;
-import com.github.dozedoff.commonj.filefilter.DirectoryFilterTest;
-import com.github.dozedoff.commonj.filefilter.FileExtensionFilterTest;
-import com.github.dozedoff.commonj.filefilter.FileFilterTest;
-import com.github.dozedoff.commonj.filefilter.SimpleImageFilterTest;
+		for (int i = 0; i < arrayLength; i++) {
+			array[i] = (byte) (127 - (int) (Math.random() * 256));
+		}
 
-@RunWith(Suite.class)
-@SuiteClasses({ FileExtensionFilterTest.class,
-				ArchiveFilterTest.class,
-				DirectoryFilterTest.class,
-				SimpleImageFilterTest.class,
-				FileFilterTest.class
-})
-public class FileFilterTests {
-
+		return array;
+	}
 }

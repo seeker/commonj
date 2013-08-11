@@ -1,4 +1,4 @@
-/*  Copyright (C) 2012  Nicholas Wright
+/*  Copyright (C) 2013  Nicholas Wright
 	
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -23,30 +23,34 @@ import java.nio.file.Path;
  */
 public class FileInfo {
 	Path file = null;
-	long size = 0L;
+	long size = -1L;
 	String hash = null;
-	
+
 	public FileInfo(File file, String hash) {
 		super();
 		this.file = file.toPath();
 		this.hash = hash;
 	}
-	
-	public FileInfo(Path file, String hash){
+
+	public FileInfo(Path file, String hash) {
 		super();
 		this.file = file;
 		this.hash = hash;
 	}
-	
-	public FileInfo(File file){
-		this.file = file.toPath();
+
+	public FileInfo(File file) {
+		setFile(file);
 	}
-	
-	public FileInfo(Path path){
-		this.file = path;
+
+	public FileInfo(Path path) {
+		setFile(path);
 	}
 
 	public File getFile() {
+		if (file == null) {
+			return null;
+		}
+
 		return file.toFile();
 	}
 
@@ -59,14 +63,18 @@ public class FileInfo {
 	}
 
 	public void setFile(File file) {
-		this.file = file.toPath();
+		if (file == null) {
+			this.file = null;
+		} else {
+			this.file = file.toPath();
+		}
 	}
-	
-	public void setFile(Path file){
+
+	public void setFile(Path file) {
 		this.file = file;
 	}
-	
-	public Path getFilePath(){
+
+	public Path getFilePath() {
 		return file;
 	}
 
@@ -77,15 +85,15 @@ public class FileInfo {
 	public void setHash(String hash) {
 		this.hash = hash;
 	}
-	
+
 	public boolean hasHash() {
 		return hash == null ? false : true;
 	}
-	
+
 	public boolean hasPath() {
 		return file == null ? false : true;
 	}
-	
+
 	public boolean hasSize() {
 		return size == -1 ? false : true;
 	}
