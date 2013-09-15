@@ -32,11 +32,11 @@ public abstract class AbstractSettings {
 	protected ISettingsValidator validator = null;
 	protected Properties properties = new Properties();
 	protected Path settingsPath;
-	
+
 	public AbstractSettings(ISettingsValidator validator) {
 		this.validator = validator;
 	}
-	
+
 	private void loadPropertiesFromFile(Path filepath) {
 		try {
 			if (Files.exists(filepath)) {
@@ -52,52 +52,60 @@ public abstract class AbstractSettings {
 			logger.error("Failed to load {}", filepath, e);
 		}
 	}
-	
+
 	/**
 	 * Load a property file from the working directory.
-	 * @param propertyFilename of the propery file to load
-	 * @return 
+	 * 
+	 * @param propertyFilename
+	 *            of the propery file to load
+	 * @return
 	 */
-	public final void loadPropertiesFromFile(String propertyFilename){
+	public final void loadPropertiesFromFile(String propertyFilename) {
 		Path workingDir = FileUtil.WorkingDir().toPath();
 		Path propertyfileAbsolute = workingDir.resolve(propertyFilename);
 		loadPropertiesFromFile(propertyfileAbsolute);
 	}
-	
+
 	/**
 	 * Load a property file from a sub directory in the workingdirectory.
 	 * config/ or data/ for example.
-	 * @param subdirectory subdirectory path to the file
-	 * @param propertyFilename of the propery file to load
-	 * @return 
+	 * 
+	 * @param subdirectory
+	 *            subdirectory path to the file
+	 * @param propertyFilename
+	 *            of the propery file to load
+	 * @return
 	 */
-	public final void loadPropertiesFromFile(Path subdirectory, String propertyFilename){
+	public final void loadPropertiesFromFile(Path subdirectory, String propertyFilename) {
 		Path workingDir = FileUtil.WorkingDir().toPath();
 		Path propertyfileAbsolute = workingDir.resolve(subdirectory).resolve(propertyFilename);
 		loadPropertiesFromFile(propertyfileAbsolute);
 	}
-	
+
 	/**
 	 * Load a property file from the given path.
-	 * @param propertyFilename of the propery file to load
-	 * @return 
+	 * 
+	 * @param propertyFilename
+	 *            of the propery file to load
+	 * @return
 	 */
-	public final void loadPropertiesFromFileAbsolute(Path absolute){
+	public final void loadPropertiesFromFileAbsolute(Path absolute) {
 		loadPropertiesFromFile(absolute);
 	}
 
 	/**
 	 * This method validates the settings.
+	 * 
 	 * @return true if all settings are valid.
 	 */
-	public boolean validateSettings(){
-		if(validator == null){
-		return false;
-		}else{
+	public boolean validateSettings() {
+		if (validator == null) {
+			throw new UnsupportedOperationException("No Validator specified");
+		} else {
 			return validator.validate(this);
 		}
 	}
-	
+
 	public void saveSettings() {
 		OutputStream os = null;
 		try {
