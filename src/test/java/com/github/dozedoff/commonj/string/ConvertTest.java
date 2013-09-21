@@ -85,4 +85,46 @@ public class ConvertTest {
 		int value = Convert.stringToInt("-7", 3);
 		assertThat(value, is(-7));
 	}
+
+	@Test
+	public void testStringToBooleanNullDefaultFalse() {
+		boolean value = Convert.stringToBoolean(null, false);
+		assertThat(value, is(false));
+	}
+
+	@Test
+	public void testStringToBooleanNullDefaultTrue() {
+		boolean value = Convert.stringToBoolean(null, true);
+		assertThat(value, is(true));
+	}
+
+	@Test
+	public void testStringToBooleanAllCaps() {
+		boolean value = Convert.stringToBoolean("TRUE", false);
+		assertThat(value, is(true));
+	}
+
+	@Test
+	public void testStringToBooleanTrueCamelCase() {
+		boolean value = Convert.stringToBoolean("TrUe", false);
+		assertThat(value, is(true));
+	}
+
+	@Test
+	public void testStringToBooleanFalseCamelCase() {
+		boolean value = Convert.stringToBoolean("fAlSE", true);
+		assertThat(value, is(false));
+	}
+
+	@Test
+	public void testStringToBooleanEmpty() {
+		boolean value = Convert.stringToBoolean("", true);
+		assertThat(value, is(false));
+	}
+
+	@Test
+	public void testStringToBooleanInvalid() {
+		boolean value = Convert.stringToBoolean("foo", true);
+		assertThat(value, is(false));
+	}
 }
