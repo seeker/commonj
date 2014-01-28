@@ -40,7 +40,7 @@ public class GetBinaryTest {
 	HashMap<Pages, URL> pageURLs = new HashMap<>();
 
 	static final int READ_TIMEOUT_CLASS = 100;
-	static final int READ_TIMEOUT_TEST = 1000;
+	static final int READ_TIMEOUT_TEST = 1500;
 
 	@BeforeClass
 	public static void startServer() throws Exception {
