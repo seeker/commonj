@@ -14,7 +14,8 @@ import org.junit.runners.Suite.SuiteClasses;
 	IoTests.class,
 	UtilTests.class,
 	TimeTests.class,
-	FileFilterTests.class
+	FileFilterTests.class,
+	EncodingTests.class
 })
 public class AllTestsCommon {
 
