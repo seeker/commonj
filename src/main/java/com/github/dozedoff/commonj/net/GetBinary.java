@@ -114,22 +114,14 @@ public class GetBinary {
 			thread = connect(url, HEAD_METHOD, true);
 			thread.connect();
 
-			return Long.valueOf(thread.getHeaderField("Content-Length"));
-		} catch (NumberFormatException nfe) {
-			if (thread.getResponseCode() != 200)
-				throw new PageLoadException(Integer.toString(thread.getResponseCode()), thread.getResponseCode());
-			throw new NumberFormatException("unable to parse " + url.toString());
-		} catch (SocketTimeoutException ste) {
-			throw new SocketTimeoutException(ste.getMessage());
-		} catch (IOException e) {
-			throw new IOException("unable to connect to " + url.toString());
-		} catch (ClassCastException cce) {
-			logger.warn(cce.getMessage() + ", " + url.toString());
+			long contentLength = thread.getContentLengthLong();
+			thread.getResponseCode(); // this line is REQUIRED, otherwise read timeouts won't throw an exception
+
+			return contentLength;
 		} finally {
 			if (thread != null)
 				thread.disconnect();
 		}
-		return contentLenght;
 	}
 
 	public Map<String, List<String>> getHeader(URL url) throws IOException {
