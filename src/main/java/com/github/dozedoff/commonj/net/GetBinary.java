@@ -68,8 +68,7 @@ public class GetBinary {
 
 			return contentLength;
 		} finally {
-			if (thread != null)
-				thread.disconnect();
+			closeHttpConnection(thread);
 		}
 	}
 
@@ -82,9 +81,7 @@ public class GetBinary {
 		} catch (IOException e) {
 			throw new IOException("unable to connect to " + url.toString());
 		} finally {
-			if (thread != null) {
-				thread.disconnect();
-			}
+			closeHttpConnection(thread);
 		}
 	}
 
@@ -100,14 +97,10 @@ public class GetBinary {
 			httpCon.connect();
 			binary = new BufferedInputStream(httpCon.getInputStream());
 		} catch (SocketTimeoutException ste) {
-			if (httpCon != null) {
-				httpCon.disconnect();
-			}
+			closeHttpConnection(httpCon);
 			throw new SocketTimeoutException(ste.getMessage());
 		} catch (IOException e) {
-			if (httpCon != null) {
-				httpCon.disconnect();
-			}
+			closeHttpConnection(httpCon);
 			throw new PageLoadException(Integer.toString(httpCon.getResponseCode()), httpCon.getResponseCode());
 		}
 
@@ -140,9 +133,7 @@ public class GetBinary {
 		} finally {
 			if (binary != null)
 				binary.close();
-			if (httpCon != null) {
-				httpCon.disconnect();
-			}
+			closeHttpConnection(httpCon);
 		}
 		if (failCount != 0)
 			logger.info("GetBinary Successful -> " + dataBuffer.position() + "/" + contentLenght + ", " + failCount + " tries, "
@@ -190,9 +181,7 @@ public class GetBinary {
 		} finally {
 			if (binary != null)
 				binary.close();
-			if (httpCon != null) {
-				httpCon.disconnect();
-			}
+			closeHttpConnection(httpCon);
 		}
 
 		dataBuffer.flip();
@@ -214,6 +203,12 @@ public class GetBinary {
 		httpCon.setReadTimeout(readTimeoutInMilli);
 
 		return httpCon;
+	}
+
+	private void closeHttpConnection(HttpURLConnection httpCon) {
+		if (httpCon != null) {
+			httpCon.disconnect();
+		}
 	}
 
 	private void retry(URL url, ByteBuffer buffer, long contentLength, int triesLeft) throws PageLoadException, IOException {
