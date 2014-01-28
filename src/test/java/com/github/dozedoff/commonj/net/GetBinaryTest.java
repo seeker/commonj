@@ -31,8 +31,8 @@ public class GetBinaryTest {
 
 	static final int SERVER_PORT = 5400;
 
-	static final int READ_TIMEOUT_CLASS = 50;
-	static final int READ_TIMEOUT_TEST = 100;
+	static final int READ_TIMEOUT_CLASS = 100;
+	static final int READ_TIMEOUT_TEST = 1000;
 
 	String url = "http://localhost:" + SERVER_PORT + "/", url2 = "http://localhost:" + SERVER_PORT + "/2", urlWait = "http://localhost:"
 			+ SERVER_PORT + "/wait";
