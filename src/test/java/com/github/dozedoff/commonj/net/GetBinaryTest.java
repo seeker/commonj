@@ -30,8 +30,10 @@ public class GetBinaryTest {
 	static byte[] testData2 = { 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 };
 
 	static final int SERVER_PORT = 5400;
-	static final int READ_TIMEOUT_CLASS = 1000;
-	static final int READ_TIMEOUT_TEST = 1200;
+
+	static final int READ_TIMEOUT_CLASS = 50;
+	static final int READ_TIMEOUT_TEST = 100;
+
 	String url = "http://localhost:" + SERVER_PORT + "/", url2 = "http://localhost:" + SERVER_PORT + "/2", urlWait = "http://localhost:"
 			+ SERVER_PORT + "/wait";
 
