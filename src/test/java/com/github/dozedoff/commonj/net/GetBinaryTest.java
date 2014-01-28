@@ -9,7 +9,6 @@ import java.net.MalformedURLException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
-import java.nio.BufferOverflowException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -69,14 +68,6 @@ public class GetBinaryTest {
 		assertThat(data, is(testData));
 	}
 
-	@Test(expected = BufferOverflowException.class)
-	public void testGetViaHttpTooSmallBufer() throws IOException {
-		getBinary = new GetBinary(1000);
-		testData = generateRandomData(2000);
-		byte[] data = getBinary.getViaHttp(getURL(Pages.data));
-		assertThat(data, is(testData));
-	}
-
 	@Test(timeout = READ_TIMEOUT_TEST, expected = SocketTimeoutException.class)
 	public void testGetViaHttpTimeout() throws IOException {
 		getBinary.setReadTimeout(READ_TIMEOUT_CLASS);
@@ -124,24 +115,6 @@ public class GetBinaryTest {
 	public void testReUse() throws Exception {
 		assertThat(getBinary.getViaHttp(getURL(Pages.data)), is(testData));
 		assertThat(getBinary.getViaHttp(getURL(Pages.data2)), is(testData2));
-		assertThat(getBinary.getViaHttp(getURL(Pages.data)), is(testData));
-	}
-
-	@Test(timeout = 5000)
-	public void testReUseAfterOverflow() throws Exception {
-		getBinary = new GetBinary(1000);
-		testData = generateRandomData(1000);
-		testData2 = generateRandomData(2000);
-
-		assertThat(getBinary.getViaHttp(getURL(Pages.data)), is(testData));
-
-		try {
-			assertThat(getBinary.getViaHttp(getURL(Pages.data2)), is(testData2));
-			fail("Buffer should have overflown");
-		} catch (BufferOverflowException boe) {
-			// OK
-		}
-
 		assertThat(getBinary.getViaHttp(getURL(Pages.data)), is(testData));
 	}
 
