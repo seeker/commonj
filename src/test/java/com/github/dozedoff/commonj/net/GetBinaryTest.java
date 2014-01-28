@@ -26,26 +26,27 @@ import org.junit.Test;
 public class GetBinaryTest {
 	GetBinary getBinary;
 	static Server server;
-	static byte[] testData = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20};
-	static byte[] testData2 = {20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1};
-	
+	static byte[] testData = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 };
+	static byte[] testData2 = { 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 };
+
 	static final int SERVER_PORT = 5400;
-	String url = "http://localhost:"+SERVER_PORT+"/", url2 = "http://localhost:"+SERVER_PORT+"/2", urlWait = "http://localhost:"+SERVER_PORT+"/wait";
+	String url = "http://localhost:" + SERVER_PORT + "/", url2 = "http://localhost:" + SERVER_PORT + "/2", urlWait = "http://localhost:"
+			+ SERVER_PORT + "/wait";
 
 	@BeforeClass
-	public static void startServer() throws Exception{
-		server  = new Server(SERVER_PORT);
+	public static void startServer() throws Exception {
+		server = new Server(SERVER_PORT);
 		server.setHandler(new TestHandler());
 		server.start();
 	}
 
 	@AfterClass
-	public static void stopServer() throws Exception{
+	public static void stopServer() throws Exception {
 		server.stop();
 	}
 
 	@Before
-	public void setUp() throws Exception{
+	public void setUp() throws Exception {
 		getBinary = new GetBinary();
 		server.start();
 	}
@@ -57,87 +58,115 @@ public class GetBinaryTest {
 		assertThat(data, is(testData));
 	}
 
+	@Test(timeout = 1200, expected = SocketTimeoutException.class)
+	public void testGetViaHttpTimeout() throws IOException {
+		getBinary.setReadTimeout(1000);
+		getBinary.getViaHttp(urlWait);
+	}
+
 	@Test
 	public void testGetLenght() throws Exception {
 		testData = generateRandomData(25);
 		Long size = getBinary.getLenght(new URL(url));
-		assertThat(size, is((long)testData.length));
+		assertThat(size, is((long) testData.length));
+	}
+
+	@Test(timeout = 1200, expected = SocketTimeoutException.class)
+	public void testGetLenghtTimeOut() throws Exception {
+		getBinary.setReadTimeout(1000);
+		testData = generateRandomData(25);
+		getBinary.getLenght(new URL(urlWait));
 	}
 
 	@Test
 	@Ignore
-	public void testGetHeader() throws Exception{
+	public void testGetHeader() throws Exception {
 		fail("Not yet implemented");
 	}
 
+	@Test(timeout = 1200, expected = SocketTimeoutException.class)
+	public void testGetHeaderTimeout() throws Exception {
+		getBinary.setReadTimeout(1000);
+		getBinary.getHeader(new URL(urlWait));
+	}
+
 	@Test
-	public void testGetRange() throws Exception{
+	public void testGetRange() throws Exception {
 		testData = generateRandomData(25);
 		byte[] subSet = Arrays.copyOfRange(testData, 10, 25);
-	
+
 		byte[] data = getBinary.getRange(new URL(url), 10, 15);
 		assertThat(data, is(subSet));
 	}
 
-	@Test(timeout=5000)
-	public void testReUse() throws Exception{
+	@Test(timeout = 1200, expected = SocketTimeoutException.class)
+	public void testGetRangeTimeout() throws Exception {
+		getBinary.setReadTimeout(1000);
+		getBinary.getRange(new URL(urlWait), 10, 15);
+	}
+
+	@Test(timeout = 5000)
+	public void testReUse() throws Exception {
 		assertThat(getBinary.getViaHttp(url), is(testData));
 		assertThat(getBinary.getViaHttp(url2), is(testData2));
 		assertThat(getBinary.getViaHttp(url), is(testData));
 	}
-	
-	@Test(timeout=1200, expected=SocketTimeoutException.class)
-	public void testConnectionTimeout() throws Exception{
+
+	@Test(timeout = 1200, expected = SocketTimeoutException.class)
+	public void testConnectionTimeout() throws Exception {
 		getBinary.setMaxRetry(0);
 		getBinary.setReadTimeout(1000);
 		getBinary.getViaHttp(urlWait);
 	}
-	
-	@Test(timeout=10000, expected=SocketException.class)
-	public void testConnectionFail() throws Exception{
+
+	@Test(timeout = 10000, expected = SocketException.class)
+	public void testConnectionFail() throws Exception {
 		getBinary.setMaxRetry(0);
 		server.stop();
 		getBinary.getViaHttp(url);
 	}
-	
-	static class TestHandler extends AbstractHandler{
+
+	static class TestHandler extends AbstractHandler {
 		@Override
-		public void handle(String arg0, Request baseRequest, HttpServletRequest request,
-				HttpServletResponse response) throws IOException, ServletException {
+		public void handle(String arg0, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException,
+				ServletException {
 
 			response.setContentType("application/octet-stream");
 			response.setStatus(HttpServletResponse.SC_OK);
 			baseRequest.setHandled(true);
 
-			if(request.getRequestURI().equals("/2")){
+			if (request.getRequestURI().equals("/2")) {
 				response.getOutputStream().write(testData2);
 				response.getOutputStream().close();
-			}else if(request.getRequestURI().equals("/wait")){
-				try {Thread.sleep(12000);} catch (InterruptedException e) {}
-			}else if(request.getHeader("Range") != null && request.getHeader("Range").contains("bytes")){
+			} else if (request.getRequestURI().equals("/wait")) {
+				try {
+					Thread.sleep(12000);
+				} catch (InterruptedException e) {
+				}
+			} else if (request.getHeader("Range") != null && request.getHeader("Range").contains("bytes")) {
 				StringBuilder sb = new StringBuilder();
 				sb.append(request.getHeader("Range"));
-				
+
 				sb.replace(0, 6, "");
-				String[] marker = sb.toString().split("-"); 
-				
+				String[] marker = sb.toString().split("-");
+
 				int start = Integer.parseInt(marker[0]);
 				int offset = start + Integer.parseInt(marker[1]);
-				
+
 				byte[] selection = Arrays.copyOfRange(testData, start, offset);
 				response.getOutputStream().write(selection);
 				response.getOutputStream().close();
-			}else{
+			} else {
 				response.getOutputStream().write(testData);
 				response.getOutputStream().close();
 			}
 		}
 	}
-	
-	private byte[] generateRandomData(int numOfBytes){
+
+	private byte[] generateRandomData(int numOfBytes) {
 		byte[] randomData = new byte[numOfBytes];
-		for(int i = 0; i<numOfBytes; i++){
-			randomData[i] = (byte)(Math.random()*Byte.MAX_VALUE);
+		for (int i = 0; i < numOfBytes; i++) {
+			randomData[i] = (byte) (Math.random() * Byte.MAX_VALUE);
 		}
 
 		return randomData;
