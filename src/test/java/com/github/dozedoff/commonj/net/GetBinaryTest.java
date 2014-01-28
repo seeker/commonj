@@ -30,6 +30,8 @@ public class GetBinaryTest {
 	static byte[] testData2 = { 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 };
 
 	static final int SERVER_PORT = 5400;
+	static final int READ_TIMEOUT_CLASS = 1000;
+	static final int READ_TIMEOUT_TEST = 1200;
 	String url = "http://localhost:" + SERVER_PORT + "/", url2 = "http://localhost:" + SERVER_PORT + "/2", urlWait = "http://localhost:"
 			+ SERVER_PORT + "/wait";
 
@@ -58,9 +60,9 @@ public class GetBinaryTest {
 		assertThat(data, is(testData));
 	}
 
-	@Test(timeout = 1200, expected = SocketTimeoutException.class)
+	@Test(timeout = READ_TIMEOUT_TEST, expected = SocketTimeoutException.class)
 	public void testGetViaHttpTimeout() throws IOException {
-		getBinary.setReadTimeout(1000);
+		getBinary.setReadTimeout(READ_TIMEOUT_CLASS);
 		getBinary.getViaHttp(urlWait);
 	}
 
@@ -71,9 +73,9 @@ public class GetBinaryTest {
 		assertThat(size, is((long) testData.length));
 	}
 
-	@Test(timeout = 1200, expected = SocketTimeoutException.class)
+	@Test(timeout = READ_TIMEOUT_TEST, expected = SocketTimeoutException.class)
 	public void testGetLenghtTimeOut() throws Exception {
-		getBinary.setReadTimeout(1000);
+		getBinary.setReadTimeout(READ_TIMEOUT_CLASS);
 		getBinary.getLenght(new URL(urlWait));
 	}
 
@@ -92,9 +94,9 @@ public class GetBinaryTest {
 		assertThat(data, is(subSet));
 	}
 
-	@Test(timeout = 1200, expected = SocketTimeoutException.class)
+	@Test(timeout = READ_TIMEOUT_TEST, expected = SocketTimeoutException.class)
 	public void testGetRangeTimeout() throws Exception {
-		getBinary.setReadTimeout(1000);
+		getBinary.setReadTimeout(READ_TIMEOUT_CLASS);
 		getBinary.getRange(new URL(urlWait), 10, 15);
 	}
 
@@ -105,10 +107,10 @@ public class GetBinaryTest {
 		assertThat(getBinary.getViaHttp(url), is(testData));
 	}
 
-	@Test(timeout = 1200, expected = SocketTimeoutException.class)
+	@Test(timeout = READ_TIMEOUT_TEST, expected = SocketTimeoutException.class)
 	public void testConnectionTimeout() throws Exception {
 		getBinary.setMaxRetry(0);
-		getBinary.setReadTimeout(1000);
+		getBinary.setReadTimeout(READ_TIMEOUT_CLASS);
 		getBinary.getViaHttp(urlWait);
 	}
 
