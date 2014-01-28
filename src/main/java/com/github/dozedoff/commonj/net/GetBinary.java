@@ -33,9 +33,6 @@ import org.slf4j.LoggerFactory;
  * Class for downloading binary data from the Internet.
  */
 public class GetBinary {
-	private long contentLenght = 0;
-	private int offset = 0;
-	private int failCount = 0;
 	private int maxRetry = 3;
 	private int readTimeoutInMilli = 10000;
 	private final static Logger logger = LoggerFactory.getLogger(GetBinary.class);
@@ -116,28 +113,11 @@ public class GetBinary {
 			}
 		} catch (SocketException se) {
 			logger.warn("SocketException, http response: " + httpCon.getResponseCode());
-			if (failCount < maxRetry) {
-				try {
-					Thread.sleep(5000);
-				} catch (Exception ie) {
-				}
-				this.offset = dataBuffer.position();
-				httpCon.disconnect();
-				failCount++;
-				return getRange(url, offset, contentLenght - 1);
-			} else {
-				logger.warn("Buffer position at failure: " + dataBuffer.position() + "  URL: " + url.toString());
-				httpCon.disconnect();
-				throw new SocketException();
-			}
 		} finally {
 			if (binary != null)
 				binary.close();
 			closeHttpConnection(httpCon);
 		}
-		if (failCount != 0)
-			logger.info("GetBinary Successful -> " + dataBuffer.position() + "/" + contentLenght + ", " + failCount + " tries, "
-					+ url.toString());
 
 		dataBuffer.flip();
 		byte[] varBuffer = new byte[dataBuffer.limit()];
@@ -212,7 +192,26 @@ public class GetBinary {
 	}
 
 	private void retry(URL url, ByteBuffer buffer, long contentLength, int triesLeft) throws PageLoadException, IOException {
-		getRange(url, buffer.position(), contentLenght - 1);
+		// if (failCount < maxRetry) {
+		// try {
+		// Thread.sleep(5000);
+		// } catch (Exception ie) {
+		// }
+		// this.offset = dataBuffer.position();
+		// httpCon.disconnect();
+		// failCount++;
+		// return getRange(url, offset, contentLenght - 1);
+		// } else {
+		// logger.warn("Buffer position at failure: " + dataBuffer.position() + "  URL: " + url.toString());
+		// httpCon.disconnect();
+		// throw new SocketException();
+		// }
+
+		// if (failCount != 0)
+		// logger.info("GetBinary Successful -> " + dataBuffer.position() + "/" + contentLenght + ", " + failCount + " tries, "
+		// + url.toString());
+
+		// getRange(url, buffer.position(), contentLenght - 1);
 	}
 
 	public int getMaxRetry() {
