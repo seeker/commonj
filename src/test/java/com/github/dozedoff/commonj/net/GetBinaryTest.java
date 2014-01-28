@@ -11,6 +11,8 @@ import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -22,7 +24,6 @@ import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class GetBinaryTest {
@@ -87,9 +88,12 @@ public class GetBinaryTest {
 	}
 
 	@Test
-	@Ignore
 	public void testGetHeader() throws Exception {
-		fail("Not yet implemented");
+		testData = generateRandomData(5000);
+		Map<String, List<String>> header = getBinary.getHeader(getURL(Pages.data));
+
+		assertThat(header.containsKey("Content-Length"), is(true));
+		assertThat(header.get("Content-Length").get(0), is("5000"));
 	}
 
 	@Test
