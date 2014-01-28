@@ -41,6 +41,8 @@ public class GetBinary {
 	private ByteBuffer classBuffer;
 	private final static Logger logger = LoggerFactory.getLogger(GetBinary.class);
 
+	private final static String GET_METHOD = "GET", HEAD_METHOD = "HEAD";
+
 	public GetBinary() {
 		classBuffer = ByteBuffer.allocate(15728640); // 15mb
 	}
@@ -109,15 +111,9 @@ public class GetBinary {
 		HttpURLConnection thread = null;
 
 		try {
-			thread = (HttpURLConnection) url.openConnection();
-			thread.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:2.0) Gecko/20100101 Firefox/4.0"); // pretend to
-																																// be a
-																																// firefox
-																																// browser
-			thread.setRequestMethod("HEAD");
-			thread.setDoOutput(true);
-			thread.setReadTimeout(readTimeoutInMilli);
+			thread = connect(url, HEAD_METHOD, true);
 			thread.connect();
+
 			return Long.valueOf(thread.getHeaderField("Content-Length"));
 		} catch (NumberFormatException nfe) {
 			if (thread.getResponseCode() != 200)
@@ -139,8 +135,8 @@ public class GetBinary {
 	public Map<String, List<String>> getHeader(URL url) throws IOException {
 		HttpURLConnection thread = null;
 		try {
-			thread = (HttpURLConnection) url.openConnection();
-			thread.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:2.0) Gecko/20100101 Firefox/4.0"); // pretend to
+			thread = connect(url, HEAD_METHOD, true);
+			thread.connect();
 			return thread.getHeaderFields();
 		} catch (IOException e) {
 			throw new IOException("unable to connect to " + url.toString());
@@ -153,22 +149,11 @@ public class GetBinary {
 
 	public byte[] getRange(URL url, int start, long l) throws IOException, PageLoadException {
 		BufferedInputStream binary = null;
-		HttpURLConnection httpCon;
-		try {
-			httpCon = (HttpURLConnection) url.openConnection();
-		} catch (IOException e) {
-			throw new IOException("unable to connect to " + url.toString());
-		}
+		HttpURLConnection httpCon = null;
 
 		try {
-			httpCon.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:2.0) Gecko/20100101 Firefox/4.0"); // pretend
-																																// to be a
-																																// firefox
-																																// browser
-			httpCon.setRequestMethod("GET");
-			httpCon.setDoOutput(true);
+			httpCon = connect(url, GET_METHOD, true);
 			httpCon.setRequestProperty("Range", "bytes=" + start + "-" + l);
-			httpCon.setReadTimeout(readTimeoutInMilli);
 
 			httpCon.connect();
 			binary = new BufferedInputStream(httpCon.getInputStream());
@@ -234,7 +219,9 @@ public class GetBinary {
 		BufferedInputStream binary = null;
 		HttpURLConnection httpCon = null;
 
-		httpCon = connect(url);
+		httpCon = connect(url, GET_METHOD, true);
+		httpCon.connect();
+
 		if (httpCon.getResponseCode() != 200) {
 			httpCon.disconnect();
 			throw new PageLoadException(String.valueOf(httpCon.getResponseCode()), httpCon.getResponseCode());
@@ -279,17 +266,17 @@ public class GetBinary {
 		return varBuffer;
 	}
 
-	private HttpURLConnection connect(URL url) throws IOException, ProtocolException {
+	private HttpURLConnection connect(URL url, String method, boolean isOutput) throws IOException, ProtocolException {
 		HttpURLConnection httpCon;
 		httpCon = (HttpURLConnection) url.openConnection();
-		httpCon.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:2.0) Gecko/20100101 Firefox/4.0"); // pretend to be
-																															// a firefox
-																															// browser
-		httpCon.setRequestMethod("GET");
-		httpCon.setDoOutput(true);
+
+		// pretend to be a firefox browser
+		httpCon.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:2.0) Gecko/20100101 Firefox/4.0");
+
+		httpCon.setRequestMethod(method);
+		httpCon.setDoOutput(isOutput);
 		httpCon.setReadTimeout(readTimeoutInMilli);
 
-		httpCon.connect();
 		return httpCon;
 	}
 
