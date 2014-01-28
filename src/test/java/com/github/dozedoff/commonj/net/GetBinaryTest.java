@@ -137,33 +137,65 @@ public class GetBinaryTest {
 			response.setStatus(HttpServletResponse.SC_OK);
 			baseRequest.setHandled(true);
 
-			if (matchesPage(request, Pages.data2)) {
-				response.getOutputStream().write(testData2);
-				response.getOutputStream().close();
-			} else if (matchesPage(request, Pages.wait)) {
+			String pageName = extractPage(request);
+
+			Pages selectedPage = null;
+
+			try {
+				selectedPage = Pages.valueOf(Pages.class, pageName);
+			} catch (IllegalArgumentException iae) {
+				fail(pageName + " is not a valid page Enum");
+			} catch (NullPointerException npe) {
+				fail("Page name was null");
+			}
+
+			switch (selectedPage) {
+			case data:
+				processDataRequest(request, response, testData);
+				break;
+
+			case data2:
+				processDataRequest(request, response, testData2);
+				break;
+
+			case wait:
 				try {
 					Thread.sleep(12000);
 				} catch (InterruptedException e) {
 				}
-			} else if (request.getHeader("Range") != null && request.getHeader("Range").contains("bytes")) {
-				StringBuilder sb = new StringBuilder();
-				sb.append(request.getHeader("Range"));
+				break;
 
-				sb.replace(0, 6, "");
-				String[] marker = sb.toString().split("-");
-
-				int start = Integer.parseInt(marker[0]);
-				int offset = start + Integer.parseInt(marker[1]);
-
-				byte[] selection = Arrays.copyOfRange(testData, start, offset);
-				response.getOutputStream().write(selection);
-				response.getOutputStream().close();
-			} else if (matchesPage(request, Pages.data)) {
-				response.getOutputStream().write(testData);
-				response.getOutputStream().close();
-			} else {
+			default:
 				throw new IllegalArgumentException("Unknown page");
 			}
+		}
+	}
+
+	private static boolean isRangeRequest(HttpServletRequest request) {
+		return (request.getHeader("Range") != null && request.getHeader("Range").contains("bytes"));
+	}
+
+	private static void processRangeRequest(HttpServletRequest request, HttpServletResponse response, byte[] data) throws IOException {
+		StringBuilder sb = new StringBuilder();
+		sb.append(request.getHeader("Range"));
+
+		sb.replace(0, 6, "");
+		String[] marker = sb.toString().split("-");
+
+		int start = Integer.parseInt(marker[0]);
+		int offset = start + Integer.parseInt(marker[1]);
+
+		byte[] selection = Arrays.copyOfRange(data, start, offset);
+		response.getOutputStream().write(selection);
+		response.getOutputStream().close();
+	}
+
+	private static void processDataRequest(HttpServletRequest request, HttpServletResponse response, byte[] data) throws IOException {
+		if (isRangeRequest(request)) {
+			processRangeRequest(request, response, data);
+		} else {
+			response.getOutputStream().write(data);
+			response.getOutputStream().close();
 		}
 	}
 
@@ -176,8 +208,13 @@ public class GetBinaryTest {
 		return randomData;
 	}
 
-	private static boolean matchesPage(HttpServletRequest request, Pages page) {
-		return (request.getRequestURI().equals("/" + page.toString()));
+	private static String extractPage(HttpServletRequest request) {
+		String requestUri = request.getRequestURI();
+		int pageIndexStart = requestUri.lastIndexOf("/");
+
+		String pageName = requestUri.substring(pageIndexStart + 1);
+
+		return pageName;
 	}
 
 	private URL getURL(Pages page) throws MalformedURLException {
