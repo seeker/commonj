@@ -74,7 +74,6 @@ public class GetBinaryTest {
 	@Test(timeout = 1200, expected = SocketTimeoutException.class)
 	public void testGetLenghtTimeOut() throws Exception {
 		getBinary.setReadTimeout(1000);
-		testData = generateRandomData(25);
 		getBinary.getLenght(new URL(urlWait));
 	}
 
@@ -82,12 +81,6 @@ public class GetBinaryTest {
 	@Ignore
 	public void testGetHeader() throws Exception {
 		fail("Not yet implemented");
-	}
-
-	@Test(timeout = 1200, expected = SocketTimeoutException.class)
-	public void testGetHeaderTimeout() throws Exception {
-		getBinary.setReadTimeout(1000);
-		getBinary.getHeader(new URL(urlWait));
 	}
 
 	@Test

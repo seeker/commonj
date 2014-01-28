@@ -25,8 +25,10 @@ import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 /**
  * Class for downloading binary data from the Internet.
  */
@@ -38,15 +40,15 @@ public class GetBinary {
 	private int readTimeoutInMilli = 10000;
 	private ByteBuffer classBuffer;
 	private final static Logger logger = LoggerFactory.getLogger(GetBinary.class);
-	
-	public GetBinary(){
-		classBuffer = ByteBuffer.allocate(15728640); //15mb
+
+	public GetBinary() {
+		classBuffer = ByteBuffer.allocate(15728640); // 15mb
 	}
-	
-	public GetBinary(int size){
+
+	public GetBinary(int size) {
 		classBuffer = ByteBuffer.allocate(size);
 	}
-	
+
 	@Deprecated
 	/**
 	 * Use getViaHttp instead.
@@ -54,7 +56,7 @@ public class GetBinary {
 	 * @return
 	 * @throws IOException
 	 */
-	public byte[] get(String url) throws IOException{
+	public byte[] get(String url) throws IOException {
 		return get(new URL(url));
 	}
 
@@ -65,22 +67,25 @@ public class GetBinary {
 	 * @return
 	 * @throws IOException
 	 */
-	public byte[] get(URL url) throws IOException{
+	public byte[] get(URL url) throws IOException {
 
 		BufferedInputStream binary = null;
 
 		HttpURLConnection thread = null;
 		try {
 			thread = (HttpURLConnection) url.openConnection();
-			thread.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:2.0) Gecko/20100101 Firefox/4.0"); // pretend to be a firefox browser
+			thread.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:2.0) Gecko/20100101 Firefox/4.0"); // pretend to
+																																// be a
+																																// firefox
+																																// browser
 			binary = new BufferedInputStream(thread.getInputStream());
-			classBuffer.clear();		  
-			//ByteBuffer bb = ByteBuffer.allocate(15728640); //15mb
+			classBuffer.clear();
+			// ByteBuffer bb = ByteBuffer.allocate(15728640); //15mb
 
 			int count = 0;
-			byte[] c= new byte[8192];			//transfer data from input (URL) to output (file) one byte at a time
+			byte[] c = new byte[8192]; // transfer data from input (URL) to output (file) one byte at a time
 
-			while ((count=binary.read(c)) != -1){
+			while ((count = binary.read(c)) != -1) {
 				classBuffer.put(c, 0, count);
 			}
 			classBuffer.flip();
@@ -92,115 +97,125 @@ public class GetBinary {
 			return varBuffer;
 		} catch (IOException e) {
 			throw new IOException("unable to connect to " + url.toString());
-		}finally{
-			if(binary != null)
+		} finally {
+			if (binary != null)
 				binary.close();
-			if(thread != null)
+			if (thread != null)
 				thread.disconnect();
 		}
 	}
 
-	public Long getLenght(URL url)throws IOException, PageLoadException{
+	public Long getLenght(URL url) throws IOException, PageLoadException {
 		HttpURLConnection thread = null;
 
-		try{
-			thread = (HttpURLConnection)url.openConnection();
-			thread.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:2.0) Gecko/20100101 Firefox/4.0"); // pretend to be a firefox browser
+		try {
+			thread = (HttpURLConnection) url.openConnection();
+			thread.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:2.0) Gecko/20100101 Firefox/4.0"); // pretend to
+																																// be a
+																																// firefox
+																																// browser
 			thread.setRequestMethod("HEAD");
 			thread.setDoOutput(true);
+			thread.setReadTimeout(readTimeoutInMilli);
 			thread.connect();
 			return Long.valueOf(thread.getHeaderField("Content-Length"));
-		} catch (NumberFormatException nfe){
-			if(thread.getResponseCode() != 200)
-				throw new PageLoadException(Integer.toString(thread.getResponseCode()),thread.getResponseCode());
-			throw new NumberFormatException("unable to parse "+url.toString());
-		}catch(SocketTimeoutException ste){
+		} catch (NumberFormatException nfe) {
+			if (thread.getResponseCode() != 200)
+				throw new PageLoadException(Integer.toString(thread.getResponseCode()), thread.getResponseCode());
+			throw new NumberFormatException("unable to parse " + url.toString());
+		} catch (SocketTimeoutException ste) {
 			throw new SocketTimeoutException(ste.getMessage());
 		} catch (IOException e) {
 			throw new IOException("unable to connect to " + url.toString());
-		} catch(ClassCastException cce){
-			logger.warn(cce.getMessage()+", "+url.toString());
-		}finally{
-			if(thread != null)
+		} catch (ClassCastException cce) {
+			logger.warn(cce.getMessage() + ", " + url.toString());
+		} finally {
+			if (thread != null)
 				thread.disconnect();
 		}
 		return contentLenght;
 	}
 
-	public Map<String,List<String>> getHeader(URL url) throws IOException{
+	public Map<String, List<String>> getHeader(URL url) throws IOException {
 		HttpURLConnection thread = null;
-		try{
+		try {
 			thread = (HttpURLConnection) url.openConnection();
-			thread.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:2.0) Gecko/20100101 Firefox/4.0"); // pretend to be a firefox browser
-			return thread.getHeaderFields();	
+			thread.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:2.0) Gecko/20100101 Firefox/4.0"); // pretend to
+			return thread.getHeaderFields();
 		} catch (IOException e) {
 			throw new IOException("unable to connect to " + url.toString());
-		}finally{
-			if(thread != null){
+		} finally {
+			if (thread != null) {
 				thread.disconnect();
 			}
 		}
 	}
 
-	public byte[] getRange(URL url, int start, long l) throws IOException, PageLoadException{
+	public byte[] getRange(URL url, int start, long l) throws IOException, PageLoadException {
 		BufferedInputStream binary = null;
 		HttpURLConnection httpCon;
-		try{
+		try {
 			httpCon = (HttpURLConnection) url.openConnection();
 		} catch (IOException e) {
 			throw new IOException("unable to connect to " + url.toString());
 		}
 
-		try{
-			httpCon.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:2.0) Gecko/20100101 Firefox/4.0"); // pretend to be a firefox browser
+		try {
+			httpCon.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:2.0) Gecko/20100101 Firefox/4.0"); // pretend
+																																// to be a
+																																// firefox
+																																// browser
 			httpCon.setRequestMethod("GET");
 			httpCon.setDoOutput(true);
-			httpCon.setRequestProperty("Range", "bytes=" + start + "-"+ l);
+			httpCon.setRequestProperty("Range", "bytes=" + start + "-" + l);
 			httpCon.setReadTimeout(readTimeoutInMilli);
 
 			httpCon.connect();
 			binary = new BufferedInputStream(httpCon.getInputStream());
-		}catch(SocketTimeoutException ste){
-			if(httpCon != null){
+		} catch (SocketTimeoutException ste) {
+			if (httpCon != null) {
 				httpCon.disconnect();
 			}
 			throw new SocketTimeoutException(ste.getMessage());
-		}catch(IOException e){
-			if(httpCon != null){
+		} catch (IOException e) {
+			if (httpCon != null) {
 				httpCon.disconnect();
 			}
-			throw new PageLoadException(Integer.toString(httpCon.getResponseCode()),httpCon.getResponseCode());
+			throw new PageLoadException(Integer.toString(httpCon.getResponseCode()), httpCon.getResponseCode());
 		}
 		int count = 0;
-		byte[] c= new byte[8192];			//transfer data from input (URL) to output (file) one byte at a time
+		byte[] c = new byte[8192]; // transfer data from input (URL) to output (file) one byte at a time
 
-		try{
-			while ((count=binary.read(c)) != -1){
+		try {
+			while ((count = binary.read(c)) != -1) {
 				classBuffer.put(c, 0, count);
 			}
-		}catch(SocketException se){
-			logger.warn("SocketException, http response: "+httpCon.getResponseCode());
-			if (failCount < maxRetry){
-				try{Thread.sleep(5000);}catch(Exception ie){}
+		} catch (SocketException se) {
+			logger.warn("SocketException, http response: " + httpCon.getResponseCode());
+			if (failCount < maxRetry) {
+				try {
+					Thread.sleep(5000);
+				} catch (Exception ie) {
+				}
 				this.offset = classBuffer.position();
 				httpCon.disconnect();
 				failCount++;
-				return getRange(url,offset,contentLenght-1);
-			}
-			else{
-				logger.warn("Buffer position at failure: "+classBuffer.position()+"  URL: "+url.toString());
+				return getRange(url, offset, contentLenght - 1);
+			} else {
+				logger.warn("Buffer position at failure: " + classBuffer.position() + "  URL: " + url.toString());
 				httpCon.disconnect();
 				throw new SocketException();
 			}
-		}finally{
-			if(binary != null)
+		} finally {
+			if (binary != null)
 				binary.close();
-			if(httpCon != null){
+			if (httpCon != null) {
 				httpCon.disconnect();
 			}
 		}
 		if (failCount != 0)
-			logger.info("GetBinary Successful -> "+classBuffer.position()+"/"+contentLenght+", "+failCount+" tries, "+url.toString());
+			logger.info("GetBinary Successful -> " + classBuffer.position() + "/" + contentLenght + ", " + failCount + " tries, "
+					+ url.toString());
 
 		classBuffer.flip();
 		byte[] varBuffer = new byte[classBuffer.limit()];
@@ -208,60 +223,61 @@ public class GetBinary {
 		classBuffer.clear();
 		return varBuffer;
 	}
-	
-	public byte[] getViaHttp(String url) throws PageLoadException, IOException{
+
+	public byte[] getViaHttp(String url) throws PageLoadException, IOException {
 		return getViaHttp(new URL(url));
 	}
 
-	public byte[] getViaHttp(URL url)throws IOException, PageLoadException{
+	public byte[] getViaHttp(URL url) throws IOException, PageLoadException {
 		Long contentLenght = 0L;
 
 		BufferedInputStream binary = null;
 		HttpURLConnection httpCon = null;
 		String lengthHeader = null;
-		
-		try{
+
+		try {
 			httpCon = connect(url);
-			if (httpCon.getResponseCode() != 200){
+			if (httpCon.getResponseCode() != 200) {
 				httpCon.disconnect();
-				throw new PageLoadException(String.valueOf(httpCon.getResponseCode()),httpCon.getResponseCode());
+				throw new PageLoadException(String.valueOf(httpCon.getResponseCode()), httpCon.getResponseCode());
 			}
-			
+
 			lengthHeader = httpCon.getHeaderField("Content-Length");
 			contentLenght = Long.valueOf(lengthHeader);
 			binary = new BufferedInputStream(httpCon.getInputStream());
-		}catch(SocketTimeoutException ste){
-			throw new SocketTimeoutException(ste.getMessage()); 
-		}catch(SocketException se){
+		} catch (SocketTimeoutException ste) {
+			throw new SocketTimeoutException(ste.getMessage());
+		} catch (SocketException se) {
 			throw new SocketException();
-		}catch(NumberFormatException nfe){
+		} catch (NumberFormatException nfe) {
 			logger.warn("Could not get content lenght from header {}", lengthHeader);
 		}
 
 		int count = 0;
-		byte[] c= new byte[8192];			//transfer data from input (URL) to output (file) one byte at a time
-		try{	          
-			while ((count=binary.read(c)) != -1){
+		byte[] c = new byte[8192]; // transfer data from input (URL) to output (file) one byte at a time
+		try {
+			while ((count = binary.read(c)) != -1) {
 				classBuffer.put(c, 0, count);
 			}
-		}catch(SocketException se){ //TODO remove this catch block, it's unused
-//			try{Thread.sleep(5000);}catch(Exception ie){}
+		} catch (SocketException se) { // TODO remove this catch block, it's unused
+			// try{Thread.sleep(5000);}catch(Exception ie){}
 			this.offset = classBuffer.position();
-			if(failCount < maxRetry){
+			if (failCount < maxRetry) {
 				failCount++;
-				logger.warn("GetBinary failed, reason: "+ se.getLocalizedMessage()+"  -> "+classBuffer.position()+"/"+contentLenght+"  "+url.toString());
+				logger.warn("GetBinary failed, reason: " + se.getLocalizedMessage() + "  -> " + classBuffer.position() + "/"
+						+ contentLenght + "  " + url.toString());
 				httpCon.disconnect();
-				return getRange(url,offset,contentLenght-1);
-			}else{
+				return getRange(url, offset, contentLenght - 1);
+			} else {
 				throw new SocketException();
 			}
-		}catch(NullPointerException npe){
+		} catch (NullPointerException npe) {
 			logger.error("NullPointerException in GetBinary.getViaHttp");
 			return null;
-		}finally{
-			if(binary != null)
+		} finally {
+			if (binary != null)
 				binary.close();
-			if(httpCon != null){
+			if (httpCon != null) {
 				httpCon.disconnect();
 			}
 		}
@@ -272,12 +288,13 @@ public class GetBinary {
 		classBuffer.clear();
 		return varBuffer;
 	}
-	
-	private HttpURLConnection connect(URL url) throws IOException,
-	ProtocolException {
+
+	private HttpURLConnection connect(URL url) throws IOException, ProtocolException {
 		HttpURLConnection httpCon;
 		httpCon = (HttpURLConnection) url.openConnection();
-		httpCon.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:2.0) Gecko/20100101 Firefox/4.0"); // pretend to be a firefox browser
+		httpCon.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:2.0) Gecko/20100101 Firefox/4.0"); // pretend to be
+																															// a firefox
+																															// browser
 		httpCon.setRequestMethod("GET");
 		httpCon.setDoOutput(true);
 		httpCon.setReadTimeout(readTimeoutInMilli);
@@ -293,7 +310,7 @@ public class GetBinary {
 	public void setMaxRetry(int maxRetry) {
 		this.maxRetry = maxRetry;
 	}
-	
+
 	public boolean setReadTimeout(int milliSeconds) {
 		if (milliSeconds >= 0) {
 			this.readTimeoutInMilli = milliSeconds;
