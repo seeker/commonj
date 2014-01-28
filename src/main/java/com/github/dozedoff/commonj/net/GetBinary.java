@@ -233,25 +233,15 @@ public class GetBinary {
 
 		BufferedInputStream binary = null;
 		HttpURLConnection httpCon = null;
-		String lengthHeader = null;
 
-		try {
-			httpCon = connect(url);
-			if (httpCon.getResponseCode() != 200) {
-				httpCon.disconnect();
-				throw new PageLoadException(String.valueOf(httpCon.getResponseCode()), httpCon.getResponseCode());
-			}
-
-			lengthHeader = httpCon.getHeaderField("Content-Length");
-			contentLenght = Long.valueOf(lengthHeader);
-			binary = new BufferedInputStream(httpCon.getInputStream());
-		} catch (SocketTimeoutException ste) {
-			throw new SocketTimeoutException(ste.getMessage());
-		} catch (SocketException se) {
-			throw new SocketException();
-		} catch (NumberFormatException nfe) {
-			logger.warn("Could not get content lenght from header {}", lengthHeader);
+		httpCon = connect(url);
+		if (httpCon.getResponseCode() != 200) {
+			httpCon.disconnect();
+			throw new PageLoadException(String.valueOf(httpCon.getResponseCode()), httpCon.getResponseCode());
 		}
+
+		contentLenght = httpCon.getContentLengthLong();
+		binary = new BufferedInputStream(httpCon.getInputStream());
 
 		int count = 0;
 		byte[] c = new byte[8192]; // transfer data from input (URL) to output (file) one byte at a time
