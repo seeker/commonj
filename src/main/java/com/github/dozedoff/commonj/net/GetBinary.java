@@ -191,27 +191,37 @@ public class GetBinary {
 		}
 	}
 
-	private void retry(URL url, ByteBuffer buffer, long contentLength, int triesLeft) throws PageLoadException, IOException {
-		// if (failCount < maxRetry) {
-		// try {
-		// Thread.sleep(5000);
-		// } catch (Exception ie) {
-		// }
-		// this.offset = dataBuffer.position();
-		// httpCon.disconnect();
-		// failCount++;
-		// return getRange(url, offset, contentLenght - 1);
-		// } else {
-		// logger.warn("Buffer position at failure: " + dataBuffer.position() + "  URL: " + url.toString());
-		// httpCon.disconnect();
-		// throw new SocketException();
-		// }
+	private boolean retry(URL url, ByteBuffer buffer, long contentLength) throws PageLoadException, IOException {
 
-		// if (failCount != 0)
-		// logger.info("GetBinary Successful -> " + dataBuffer.position() + "/" + contentLenght + ", " + failCount + " tries, "
-		// + url.toString());
+		int failCount = 0;
 
-		// getRange(url, buffer.position(), contentLenght - 1);
+		while (failCount < maxRetry) {
+			Object[] logData = { url, maxRetry - failCount, buffer.position(), buffer.limit() };
+			logger.info("Retrying {}, {} tries left, got {} of {} bytes", logData);
+
+			try {
+				failCount++;
+				byte[] data = getRange(url, buffer.position(), contentLength - 1);
+				buffer.put(data);
+				failCount--;
+			} catch (PageLoadException ple) {
+				logger.warn("Failed to load page with {} during retry for {}", ple.getMessage(), url);
+			} catch (IOException ioe) {
+				logger.warn("Connection issue ({}) during retry for {}", ioe.getMessage(), url);
+			}
+
+			if (!buffer.hasRemaining()) {
+				// all data received
+				break;
+			}
+
+			if (failCount >= maxRetry) {
+				logger.warn("Out of retries for {}, giving up...", url);
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	public int getMaxRetry() {
