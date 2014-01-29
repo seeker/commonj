@@ -62,6 +62,11 @@ public class GetBinaryTest {
 	}
 
 	@Test
+	public void testInvalidTimeoutSetting() {
+		assertThat(getBinary.setReadTimeout(-100), is(false));
+	}
+
+	@Test
 	public void testGetViaHttp() throws IOException {
 		testData = generateRandomData(25);
 		byte[] data = getBinary.getViaHttp(getURL(Pages.data));
