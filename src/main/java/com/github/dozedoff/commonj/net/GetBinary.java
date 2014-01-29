@@ -160,6 +160,8 @@ public class GetBinary {
 			while ((count = binary.read(c)) != -1) {
 				dataBuffer.put(c, 0, count);
 			}
+		} catch (IOException ioe) {
+			retry(url, dataBuffer, contentLenght);
 		} catch (NullPointerException npe) {
 			logger.error("NullPointerException in GetBinary.getViaHttp");
 			return null;
