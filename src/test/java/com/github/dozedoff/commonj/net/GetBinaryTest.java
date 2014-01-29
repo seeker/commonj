@@ -195,6 +195,7 @@ public class GetBinaryTest {
 		int offset = start + Integer.parseInt(marker[1]);
 
 		byte[] selection = Arrays.copyOfRange(data, start, offset);
+		response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
 		response.getOutputStream().write(selection);
 		response.getOutputStream().close();
 	}

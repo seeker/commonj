@@ -92,13 +92,18 @@ public class GetBinary {
 			httpCon.setRequestProperty("Range", "bytes=" + start + "-" + l);
 
 			httpCon.connect();
+
+			if (httpCon.getResponseCode() != 206) {
+				throw new PageLoadException(httpCon.getResponseMessage(), httpCon.getResponseCode());
+			}
+
 			binary = new BufferedInputStream(httpCon.getInputStream());
 		} catch (SocketTimeoutException ste) {
 			closeHttpConnection(httpCon);
 			throw new SocketTimeoutException(ste.getMessage());
 		} catch (IOException e) {
 			closeHttpConnection(httpCon);
-			throw new PageLoadException(Integer.toString(httpCon.getResponseCode()), httpCon.getResponseCode());
+			throw new PageLoadException(httpCon.getResponseMessage(), httpCon.getResponseCode());
 		}
 
 		int contentLength = httpCon.getContentLength();
