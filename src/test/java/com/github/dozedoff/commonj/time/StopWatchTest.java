@@ -28,6 +28,10 @@ import org.junit.Test;
 public class StopWatchTest {
 	StopWatch stopWatch;
 
+	private static final long SLEEP_TIME = 100L;
+	private static final long LOWER_LIMIT = 80L;
+	private static final long UPPER_LIMIT = 120L;
+
 	@Before
 	public void setUp() throws Exception {
 		stopWatch = new StopWatch();
@@ -36,28 +40,28 @@ public class StopWatchTest {
 	@Test
 	public void testStart() throws InterruptedException {
 		stopWatch.start();
-		Thread.sleep(100);
+		Thread.sleep(SLEEP_TIME);
 		stopWatch.start();
-		Thread.sleep(100);
+		Thread.sleep(SLEEP_TIME);
 		stopWatch.stop();
 
-		assertThat(stopWatch.getTimeMilli(), allOf(greaterThanOrEqualTo(190L), lessThanOrEqualTo(220L)));
+		assertThat(stopWatch.getTimeMilli(), allOf(greaterThanOrEqualTo(2 * LOWER_LIMIT), lessThanOrEqualTo(2 * UPPER_LIMIT)));
 	}
 
 	@Test
 	public void testStop() throws InterruptedException {
 		stopWatch.start();
-		Thread.sleep(100);
+		Thread.sleep(SLEEP_TIME);
 		stopWatch.stop();
 		stopWatch.stop();
 
-		assertThat(stopWatch.getTimeMilli(), allOf(greaterThanOrEqualTo(90L), lessThanOrEqualTo(110L)));
+		assertThat(stopWatch.getTimeMilli(), allOf(greaterThanOrEqualTo(LOWER_LIMIT), lessThanOrEqualTo(UPPER_LIMIT)));
 	}
 
 	@Test
 	public void testGetTime() throws InterruptedException {
 		stopWatch.start();
-		Thread.sleep(100);
+		Thread.sleep(SLEEP_TIME);
 		stopWatch.stop();
 
 		assertThat(stopWatch.getTime(), startsWith("00:00:00.1"));
@@ -66,7 +70,7 @@ public class StopWatchTest {
 	@Test
 	public void testGetTimeWhileRunning() throws InterruptedException {
 		stopWatch.start();
-		Thread.sleep(100);
+		Thread.sleep(SLEEP_TIME);
 		assertThat(stopWatch.getTime(), startsWith("00:00:00.1"));
 		stopWatch.stop();
 	}
@@ -74,17 +78,17 @@ public class StopWatchTest {
 	@Test
 	public void testGetTimeMilli() throws InterruptedException {
 		stopWatch.start();
-		Thread.sleep(100);
+		Thread.sleep(SLEEP_TIME);
 		stopWatch.stop();
 
-		assertThat(stopWatch.getTimeMilli(), allOf(greaterThanOrEqualTo(90L), lessThanOrEqualTo(110L)));
+		assertThat(stopWatch.getTimeMilli(), allOf(greaterThanOrEqualTo(LOWER_LIMIT), lessThanOrEqualTo(UPPER_LIMIT)));
 	}
 
 	@Test
 	public void testGetTimeMilliWhileRunning() throws InterruptedException {
 		stopWatch.start();
-		Thread.sleep(100);
-		assertThat(stopWatch.getTimeMilli(), allOf(greaterThanOrEqualTo(90L), lessThanOrEqualTo(110L)));
+		Thread.sleep(SLEEP_TIME);
+		assertThat(stopWatch.getTimeMilli(), allOf(greaterThanOrEqualTo(LOWER_LIMIT), lessThanOrEqualTo(UPPER_LIMIT)));
 		stopWatch.stop();
 	}
 
@@ -102,10 +106,10 @@ public class StopWatchTest {
 	@Test
 	public void testReset() throws InterruptedException {
 		stopWatch.start();
-		Thread.sleep(100);
+		Thread.sleep(SLEEP_TIME);
 		stopWatch.stop();
 
-		assertThat(stopWatch.getTimeMilli(), allOf(greaterThanOrEqualTo(90L), lessThanOrEqualTo(110L)));
+		assertThat(stopWatch.getTimeMilli(), allOf(greaterThanOrEqualTo(LOWER_LIMIT), lessThanOrEqualTo(UPPER_LIMIT)));
 
 		stopWatch.reset();
 
@@ -129,20 +133,20 @@ public class StopWatchTest {
 
 	@Test
 	public void testConvertTime() {
-		assertThat(stopWatch.convertTime(100), is("00:00:00.100"));
+		assertThat(stopWatch.convertTime(SLEEP_TIME), is("00:00:00.100"));
 	}
 
 	@Test
 	public void testReRun() throws InterruptedException {
 		stopWatch.start();
-		Thread.sleep(100);
+		Thread.sleep(SLEEP_TIME);
 		stopWatch.stop();
 
 		stopWatch.reset();
 
 		stopWatch.start();
-		Thread.sleep(100);
-		assertThat(stopWatch.getTimeMilli(), allOf(greaterThanOrEqualTo(90L), lessThanOrEqualTo(110L)));
+		Thread.sleep(SLEEP_TIME);
+		assertThat(stopWatch.getTimeMilli(), allOf(greaterThanOrEqualTo(LOWER_LIMIT), lessThanOrEqualTo(UPPER_LIMIT)));
 		stopWatch.stop();
 	}
 }
