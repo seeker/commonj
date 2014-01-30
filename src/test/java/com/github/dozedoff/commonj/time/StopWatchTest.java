@@ -29,8 +29,8 @@ public class StopWatchTest {
 	StopWatch stopWatch;
 
 	private static final long SLEEP_TIME = 100L;
-	private static final long LOWER_LIMIT = 90L;
-	private static final long UPPER_LIMIT = 110L;
+	private static final long LOWER_LIMIT = 80L;
+	private static final long UPPER_LIMIT = 120L;
 
 	@Before
 	public void setUp() throws Exception {
