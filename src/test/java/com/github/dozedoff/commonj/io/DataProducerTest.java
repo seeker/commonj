@@ -12,35 +12,38 @@ import org.junit.Test;
 public class DataProducerTest {
 	final int SLEEP_TIME = 100;
 	DataProducerDummy dummy;
-	
+
 	@Before
 	public void setUp() throws Exception {
 		dummy = new DataProducerDummy();
 	}
 
-	@Test(timeout=1000)
+	// TODO split clear test into testClearInputQueue and testClearOutputQueue
+	@Test(timeout = 1000)
 	public void testClear() throws InterruptedException {
-		String test[] = {"1", "2", "3"};
+		String test[] = { "1", "2", "3" };
 		LinkedList<Integer> data = new LinkedList<>();
-		
+
 		dummy.addToLoad(test);
 		Thread.sleep(SLEEP_TIME);
 		dummy.drainTo(data, 10);
 		assertThat(data.size(), is(3));
-		
+
 		data = new LinkedList<>();
-		
+
 		dummy.addToLoad(test);
 		dummy.clear();
 		dummy.addToLoad("5");
+		Thread.sleep(SLEEP_TIME);
 		dummy.drainTo(data, 10);
+
 		assertThat(data.size(), is(1));
 	}
 
 	@Test
 	public void testAddToLoadIArray() throws InterruptedException {
-		String test[] = {"1", "2", "3"};
-		
+		String test[] = { "1", "2", "3" };
+
 		dummy.addToLoad(test);
 		Thread.sleep(SLEEP_TIME);
 		assertThat(dummy.getProcessed(), is(3));
@@ -58,7 +61,7 @@ public class DataProducerTest {
 		assertThat(dummy.getProcessed(), is(3));
 	}
 
-	@Test(timeout=200)
+	@Test(timeout = 200)
 	public void testTakeData() throws InterruptedException {
 		String test[] = { "1", "2", "3" };
 
@@ -76,8 +79,8 @@ public class DataProducerTest {
 		Thread.sleep(SLEEP_TIME);
 		LinkedList<Integer> result = new LinkedList<>();
 		dummy.drainTo(result, 10);
-		
-		assertThat(result, hasItems(1,2,3));
+
+		assertThat(result, hasItems(1, 2, 3));
 		assertThat(dummy.getProcessed(), is(3));
 	}
 }
