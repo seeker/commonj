@@ -62,7 +62,7 @@ public class ImagePHashTest {
 
 	private long hashWithScale() throws Exception {
 		BufferedImage bi = ImageIO.read(testImage.toFile());
-		bi = iph.resize(bi, imageSize, imageSize);
+		bi = ImagePHash.resize(bi, imageSize, imageSize);
 
 		return iph.getLongHashScaledImage(bi);
 	}
