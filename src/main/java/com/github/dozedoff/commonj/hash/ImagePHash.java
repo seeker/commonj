@@ -68,6 +68,13 @@ public class ImagePHash {
 		return hash;
 	}
 
+	public long getLongHashScaledImage(BufferedImage img) throws Exception {
+		double[][] dct = calculateDctMapScaledDown(img);
+		double dctAvg = calcDctAverage(dct);
+		long hash = convertToLong(dct, dctAvg);
+		return hash;
+	}
+
 	/**
 	 * 
 	 * @param is
@@ -102,17 +109,20 @@ public class ImagePHash {
 
 	public double[][] calculateDctMap(InputStream is) throws IOException {
 		BufferedImage img = readImage(is);
+
 		return calculateDctMap(img);
 	}
 
 	public double[][] calculateDctMap(BufferedImage img) throws IOException {
-
 		/*
 		 * 1. Reduce size. Like Average Hash, pHash starts with a small image. However, the image is larger than 8x8; 32x32 is a good size.
 		 * This is really done to simplify the DCT computation and not because it is needed to reduce the high frequencies.
 		 */
 		img = resize(img, size, size);
+		return calculateDctMapScaledDown(img);
+	}
 
+	public double[][] calculateDctMapScaledDown(BufferedImage img) throws IOException {
 		/*
 		 * 2. Reduce color. The image is reduced to a grayscale just to further simplify the number of computations.
 		 */
@@ -193,7 +203,7 @@ public class ImagePHash {
 		return avg;
 	}
 
-	private BufferedImage resize(BufferedImage image, int width, int height) {
+	public BufferedImage resize(BufferedImage image, int width, int height) {
 		BufferedImage resizedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g = resizedImage.createGraphics();
 		g.drawImage(image, 0, 0, width, height, null);
