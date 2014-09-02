@@ -1,23 +1,14 @@
-/*  Copyright (C) 2012  Nicholas Wright
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+/* The MIT License (MIT)
+ * Copyright (c) 2014 Nicholas Wright
+ * http://opensource.org/licenses/MIT
  */
+
 package com.github.dozedoff.commonj.io;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,35 +29,35 @@ public class BoneConnectionPool implements ConnectionPool {
 	DataSourceConnectionSource bcpConnSource = null;
 	Properties sqlConfig;
 	int maxResources;
-	
-	public BoneConnectionPool(Properties dbProps,int maxResources) {
+
+	public BoneConnectionPool(Properties dbProps, int maxResources) {
 		this.dbProps = dbProps;
 		this.maxResources = maxResources;
 	}
-	
+
 	public BoneConnectionPool(String url, String username, String password, int maxResources) {
 		this.maxResources = maxResources;
 		Properties props = new Properties();
-		
+
 		props.setProperty("url", url);
 		props.setProperty("password", password);
 		props.setProperty("user", username);
-		
+
 		this.dbProps = props;
-	} 
-	
-	public void startPool() throws Exception{
-		Class.forName( "com.jolbox.bonecp.BoneCP" );
-		Class.forName( "com.jolbox.bonecp.BoneCPConfig" );
-		
+	}
+
+	public void startPool() throws Exception {
+		Class.forName("com.jolbox.bonecp.BoneCP");
+		Class.forName("com.jolbox.bonecp.BoneCPConfig");
+
 		config = new BoneCPConfig();
 		config.setUsername(dbProps.getProperty("user"));
 		config.setPassword(dbProps.getProperty("password"));
 		config.setJdbcUrl(dbProps.getProperty("url"));
-	//	config.setCloseConnectionWatch(true); //DEBUG
+		// config.setCloseConnectionWatch(true); //DEBUG
 		config.setStatementsCacheSize(1024);
 		config.setDriverProperties(dbProps);
-		
+
 		config.setMinConnectionsPerPartition(1);
 		config.setMaxConnectionsPerPartition(maxResources);
 		config.setPartitionCount(1);
@@ -75,21 +66,21 @@ public class BoneConnectionPool implements ConnectionPool {
 		bcpConnSource = new DataSourceConnectionSource(bcpDataSource, dbProps.getProperty("url"));
 	}
 
-	public void stopPool(){
+	public void stopPool() {
 		LOGGER.info("Shutting down connection pool, closing all database connections...");
 		connectionPool.shutdown();
 	}
-	
+
 	/**
 	 * Gets a database connection.
 	 * 
 	 * @return a database connection
-	 * @throws SQLException 
+	 * @throws SQLException
 	 */
 	public Connection getConnection() throws SQLException {
 		return connectionPool.getConnection();
 	}
-	
+
 	public DataSourceConnectionSource getConnectionSource() throws SQLException {
 		return bcpConnSource;
 	}
@@ -98,7 +89,7 @@ public class BoneConnectionPool implements ConnectionPool {
 		try {
 			cn.close();
 		} catch (SQLException e) {
-			LOGGER.warn("Error trying to close connection: "+e.getMessage());
+			LOGGER.warn("Error trying to close connection: " + e.getMessage());
 		}
 	}
 }

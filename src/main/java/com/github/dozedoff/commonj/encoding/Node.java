@@ -1,28 +1,18 @@
-/*  Copyright (C) 2013  Nicholas Wright
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+/* The MIT License (MIT)
+ * Copyright (c) 2014 Nicholas Wright
+ * http://opensource.org/licenses/MIT
  */
+
 package com.github.dozedoff.commonj.encoding;
 
 public class Node {
 	Node leftChild;
 	Node rightChild;
 	Node parent;
-	
+
 	double probability = -1.0;
 	char symbol;
-	
+
 	boolean coding;
 
 	public Node(Node leftChild, Node rightChild, Node parent) {
@@ -30,16 +20,16 @@ public class Node {
 		this.rightChild = rightChild;
 		this.parent = parent;
 	}
-	
+
 	public boolean isLeaf() {
 		return (leftChild == null && rightChild == null);
 	}
-	
+
 	public boolean isRoot() {
 		return parent == null;
 	}
-	
+
 	public boolean isJunction() {
-		return ((! isLeaf()) && (! isRoot()));
+		return ((!isLeaf()) && (!isRoot()));
 	}
 }

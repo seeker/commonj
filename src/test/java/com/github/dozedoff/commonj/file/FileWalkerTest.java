@@ -1,3 +1,8 @@
+/* The MIT License (MIT)
+ * Copyright (c) 2014 Nicholas Wright
+ * http://opensource.org/licenses/MIT
+ */
+
 package com.github.dozedoff.commonj.file;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -19,8 +24,6 @@ import org.junit.Test;
 
 import com.github.dozedoff.commonj.filefilter.FileFilter;
 
-
-
 @SuppressWarnings("deprecation")
 public class FileWalkerTest {
 
@@ -30,42 +33,33 @@ public class FileWalkerTest {
 	File folders[] = new File[3];
 
 	FileWalker fw;
+
 	@Before
-	public void setUp() throws Exception {	
+	public void setUp() throws Exception {
 		/*
-		 * rootFolder
-		 * :	one.txt
-		 * :
-		 * +----subFolderOne
-		 * :		two.txt
-		 * :
-		 * \----subFoldertwo
-		 * 		: 	three.jpg
-		 * 		:
-		 * 		\----subSubFolderOne
-		 * 				four.txt
+		 * rootFolder : one.txt : +----subFolderOne : two.txt : \----subFoldertwo : three.jpg : \----subSubFolderOne four.txt
 		 */
 		rootPath = Files.createTempDirectory("FileWalkerTest");
 		rootFolder = rootPath.toFile();
-		folders[0] = new File(rootFolder,"subFolderOne");
-		folders[1] = new File(rootFolder,"subFoldertwo");
-		folders[2] = new File(folders[1],"subSubFolderOne");
-		
-		for(File f : folders){
+		folders[0] = new File(rootFolder, "subFolderOne");
+		folders[1] = new File(rootFolder, "subFoldertwo");
+		folders[2] = new File(folders[1], "subSubFolderOne");
+
+		for (File f : folders) {
 			f.mkdirs();
 		}
 
-		files[0] = new File(rootFolder,"one.txt");
-		files[1] = new File(folders[0],"two.txt");
-		files[2] = new File(folders[1],"three.jpg");
+		files[0] = new File(rootFolder, "one.txt");
+		files[1] = new File(folders[0], "two.txt");
+		files[2] = new File(folders[1], "three.jpg");
 		files[3] = new File(folders[2], "four.txt");
 
-		for(File f : files){
+		for (File f : files) {
 			f.createNewFile();
 		}
-		
+
 		fw = new FileWalker();
-		
+
 	}
 
 	@After
@@ -83,7 +77,7 @@ public class FileWalkerTest {
 		assertTrue(folders[1].exists());
 		assertTrue(folders[2].exists());
 
-		for(File f : files)
+		for (File f : files)
 			assertTrue(f.exists());
 	}
 
@@ -95,11 +89,11 @@ public class FileWalkerTest {
 		fw.addPath(rootFolder);
 		fw.setnoSub(true);
 		LinkedList<File> results = fw.fileWalk();
-		
+
 		assertThat(results.size(), is(1));
 		assertThat(results, hasItem(files[0]));
 	}
-	
+
 	@Test
 	/**
 	 * Read all files.
@@ -109,9 +103,10 @@ public class FileWalkerTest {
 		fw.setnoSub(false);
 		LinkedList<File> results = fw.fileWalk();
 		assertThat(results.size(), is(4));
-		
+
 		assertThat(results, hasItems(files));
 	}
+
 	@Test
 	/**
 	 * Read all files.
@@ -121,10 +116,10 @@ public class FileWalkerTest {
 		fw.setnoSub(false);
 		List<File> results = fw.fileWalkList();
 		assertThat(results.size(), is(4));
-		
+
 		assertThat(results, hasItems(files));
 	}
-	
+
 	@Test
 	/**
 	 * Read all files.
@@ -134,16 +129,16 @@ public class FileWalkerTest {
 		fw.setnoSub(false);
 		List<String> results = fw.fileWalkStringList();
 		assertThat(results.size(), is(4));
-		
+
 		String[] filesAsStrings = new String[files.length];
-		
-		for(int i=0; i<files.length; i++){
+
+		for (int i = 0; i < files.length; i++) {
 			filesAsStrings[i] = files[i].toString();
 		}
-		
+
 		assertThat(results, hasItems(filesAsStrings));
 	}
-	
+
 	@Test
 	/**
 	 * Read all files.
@@ -153,10 +148,10 @@ public class FileWalkerTest {
 		fw.setnoSub(false);
 		LinkedList<File> results = fw.fileWalk();
 		assertThat(results.size(), is(4));
-		
+
 		assertThat(results, hasItems(files));
 	}
-	
+
 	@Test
 	/**
 	 * Read files from two select folders
@@ -165,16 +160,16 @@ public class FileWalkerTest {
 		File[] dirsToSearch = new File[2];
 		dirsToSearch[0] = folders[0];
 		dirsToSearch[1] = folders[2];
-		
+
 		fw.addPath(dirsToSearch);
 		fw.setnoSub(false);
 		LinkedList<File> results = fw.fileWalk();
 		assertThat(results.size(), is(2));
-		
+
 		assertThat(results, hasItem(files[1]));
 		assertThat(results, hasItem(files[3]));
 	}
-	
+
 	@Test
 	/**
 	 * Read files from two select folders
@@ -187,11 +182,11 @@ public class FileWalkerTest {
 		fw.setnoSub(false);
 		LinkedList<File> results = fw.fileWalk();
 		assertThat(results.size(), is(2));
-		
+
 		assertThat(results, hasItem(files[1]));
 		assertThat(results, hasItem(files[3]));
 	}
-	
+
 	@Test
 	/**
 	 * Read files from two select folders
@@ -200,16 +195,16 @@ public class FileWalkerTest {
 		String[] dirsToSearch = new String[2];
 		dirsToSearch[0] = folders[0].toString();
 		dirsToSearch[1] = folders[2].toString();
-		
+
 		fw.addPath(dirsToSearch);
 		fw.setnoSub(false);
 		LinkedList<File> results = fw.fileWalk();
 		assertThat(results.size(), is(2));
-		
+
 		assertThat(results, hasItem(files[1]));
 		assertThat(results, hasItem(files[3]));
 	}
-	
+
 	@Test
 	/**
 	 * Read all files.
@@ -220,10 +215,10 @@ public class FileWalkerTest {
 		fw.setnoSub(false);
 		LinkedList<File> results = fw.fileWalk();
 		assertThat(results.size(), is(4));
-		
+
 		assertThat(results, hasItems(files));
 	}
-	
+
 	@Test
 	/**
 	 * Read only files with .jpg , .gif or .png extension.
@@ -237,7 +232,7 @@ public class FileWalkerTest {
 		assertThat(results.size(), is(1));
 		assertTrue(results.get(0).equals(files[2]));
 	}
-	
+
 	@Test
 	/**
 	 * same as testFilterWalk(), but without sub-directories.
@@ -250,7 +245,7 @@ public class FileWalkerTest {
 
 		assertThat(results.size(), is(0)); // should not find any files
 	}
-	
+
 	@Test
 	/**
 	 * Find files in a sub-directory
@@ -260,10 +255,10 @@ public class FileWalkerTest {
 		fw.setnoSub(false);
 		fw.setImagesOnly(false);
 		LinkedList<File> results = fw.fileWalk();
-		
+
 		assertThat(results.size(), is(2));
 	}
-	
+
 	@Test
 	/**
 	 * Find all directories
@@ -272,12 +267,12 @@ public class FileWalkerTest {
 		fw.addPath(rootFolder);
 		fw.setfolderOnly(true);
 		LinkedList<File> results = fw.fileWalk();
-		
+
 		assertThat(results.size(), is(4));
 		assertThat(results, hasItems(folders));
 		assertThat(results, hasItem(rootFolder));
 	}
-	
+
 	@Test
 	/**
 	 * Find all directories
@@ -286,12 +281,12 @@ public class FileWalkerTest {
 		fw.addPath(folders[1]);
 		fw.setfolderOnly(true);
 		LinkedList<File> results = fw.fileWalk();
-		
+
 		assertThat(results.size(), is(2));
 		assertThat(results, hasItem(folders[2]));
 		assertThat(results, hasItem(folders[1]));
 	}
-	
+
 	@Test
 	/**
 	 * Find all directories
@@ -301,12 +296,12 @@ public class FileWalkerTest {
 		fw.setfolderOnly(true);
 		fw.setnoSub(true);
 		LinkedList<File> results = fw.fileWalk();
-		
+
 		assertThat(results.size(), is(2));
 		assertThat(results, hasItem(folders[2]));
 		assertThat(results, hasItem(folders[1]));
 	}
-	
+
 	@Test
 	public void testGetAllDirectories() throws IOException {
 		assertThat(FileWalker.getAllDirectories(rootPath), hasItems(convertFileToPath(folders)));
@@ -334,7 +329,8 @@ public class FileWalkerTest {
 
 	@Test
 	public void testWalkFileTreePathArray() throws IOException {
-		assertThat(FileWalker.walkFileTree(convertFileToPath(folders[0],folders[1])), hasItems(convertFileToPath(files[1], files[2], files[3])));
+		assertThat(FileWalker.walkFileTree(convertFileToPath(folders[0], folders[1])),
+				hasItems(convertFileToPath(files[1], files[2], files[3])));
 	}
 
 	@Test
@@ -342,13 +338,13 @@ public class FileWalkerTest {
 		LinkedList<Path> sourceList = new LinkedList<>();
 		sourceList.add(folders[0].toPath());
 		sourceList.add(folders[1].toPath());
-		
+
 		assertThat(FileWalker.walkFileTreePathList(sourceList), hasItems(convertFileToPath(files[1], files[2], files[3])));
 	}
 
 	@Test
 	public void testWalkFileTreeFileArray() throws IOException {
-		assertThat(FileWalker.walkFileTree(folders[0],folders[1]), hasItems(convertFileToPath(files[1], files[2], files[3])));
+		assertThat(FileWalker.walkFileTree(folders[0], folders[1]), hasItems(convertFileToPath(files[1], files[2], files[3])));
 	}
 
 	@Test
@@ -356,13 +352,14 @@ public class FileWalkerTest {
 		LinkedList<String> sourceList = new LinkedList<>();
 		sourceList.add(folders[0].toString());
 		sourceList.add(folders[1].toString());
-		
+
 		assertThat(FileWalker.walkFileTreeStringList(sourceList), hasItems(convertFileToPath(files[1], files[2], files[3])));
 	}
 
 	@Test
 	public void testWalkFileTreeStringArray() throws IOException {
-		assertThat(FileWalker.walkFileTree(folders[0].toString(),folders[1].toString()), hasItems(convertFileToPath(files[1], files[2], files[3])));
+		assertThat(FileWalker.walkFileTree(folders[0].toString(), folders[1].toString()),
+				hasItems(convertFileToPath(files[1], files[2], files[3])));
 	}
 
 	@Test
@@ -370,33 +367,33 @@ public class FileWalkerTest {
 		LinkedList<File> sourceList = new LinkedList<>();
 		sourceList.add(folders[0]);
 		sourceList.add(folders[1]);
-		
+
 		assertThat(FileWalker.walkFileTreeFileList(sourceList), hasItems(convertFileToPath(files[1], files[2], files[3])));
 	}
-	
+
 	@Test
 	public void testCheckDuplicateElimination() throws IOException {
-		LinkedList<Path> results = FileWalker.walkFileTree(rootPath,rootPath);
-		
+		LinkedList<Path> results = FileWalker.walkFileTree(rootPath, rootPath);
+
 		assertThat(results, hasItems(convertFileToPath(files)));
 		assertThat(results.size(), is(4));
 	}
-	
+
 	@Test
 	public void testFindImageInFolder() throws IOException {
 		LinkedList<Path> results = FileWalker.getCurrentFolderImages(folders[1].toPath());
-		
+
 		assertThat(results, hasItem(files[2].toPath()));
 		assertThat(results.size(), is(1));
 	}
-	
+
 	private Path[] convertFileToPath(File... files) {
 		Path[] paths = new Path[files.length];
-		
-		for(int i=0; i < files.length; i++){
+
+		for (int i = 0; i < files.length; i++) {
 			paths[i] = files[i].toPath();
 		}
-		
+
 		return paths;
 	}
 }

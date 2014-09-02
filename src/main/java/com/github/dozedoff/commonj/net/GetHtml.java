@@ -1,18 +1,8 @@
-/*  Copyright (C) 2012  Nicholas Wright
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+/* The MIT License (MIT)
+ * Copyright (c) 2014 Nicholas Wright
+ * http://opensource.org/licenses/MIT
  */
+
 package com.github.dozedoff.commonj.net;
 
 import java.io.BufferedReader;
@@ -24,6 +14,7 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.HashMap;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,10 +27,10 @@ public class GetHtml {
 	private int maxRetry = 3;
 	private int readTimeoutInMilli = 10000;
 
-	public int getResponse(String url)throws Exception{
+	public int getResponse(String url) throws Exception {
 		return getResponse(new URL(url));
 	}
-	
+
 	public int getMaxRetry() {
 		return maxRetry;
 	}
@@ -47,60 +38,59 @@ public class GetHtml {
 	public void setMaxRetry(int maxRetry) {
 		this.maxRetry = maxRetry;
 	}
-	
-	public boolean hasBeenModifiedSince(URL url, long timestamp){
+
+	public boolean hasBeenModifiedSince(URL url, long timestamp) {
 		HttpURLConnection httpCon = null;
-		try{
+		try {
 			httpCon = prepareHttpConnection(url, null);
 			httpCon.connect();
 
-			if(httpCon.getLastModified() >= timestamp){
+			if (httpCon.getLastModified() >= timestamp) {
 				return true;
 			}
-		}catch(IOException io){
-			logger.warn("Error while getting HTML response code: "+io.getMessage());
-		}finally{
-			if(httpCon != null){
+		} catch (IOException io) {
+			logger.warn("Error while getting HTML response code: " + io.getMessage());
+		} finally {
+			if (httpCon != null) {
 				httpCon.disconnect();
 			}
 		}
-		
+
 		return false;
 	}
-	
-	public long getLastModified(URL url){
+
+	public long getLastModified(URL url) {
 		HttpURLConnection httpCon = null;
 		long lastMod = 0;
-		
-		try{
+
+		try {
 			httpCon = prepareHttpConnection(url, null);
 			httpCon.connect();
 			lastMod = httpCon.getLastModified();
-		}catch(IOException io){
+		} catch (IOException io) {
 			logger.warn("Error while getting last modified timestamp", io);
-		}finally{
-			if(httpCon != null){
+		} finally {
+			if (httpCon != null) {
 				httpCon.disconnect();
 			}
 		}
-		
+
 		return lastMod;
 	}
 
-	public int getResponse(URL url){
+	public int getResponse(URL url) {
 		/*
-		URLConnection thread = url.openConnection(); 
-		return thread.getHeaderField(0);
+		 * URLConnection thread = url.openConnection(); return thread.getHeaderField(0);
 		 */
 		int response = 0;
-		HttpURLConnection httpCon = null;		
-		try{
+		HttpURLConnection httpCon = null;
+		try {
 			httpCon = connect(url);
-			response =  httpCon.getResponseCode();
-		}catch(IOException io){
-			logger.warn("Error while getting HTML response code: "+io.getMessage());
-		}finally{
-			if(httpCon != null){
+			response = httpCon.getResponseCode();
+		} catch (IOException io) {
+			logger.warn("Error while getting HTML response code: " + io.getMessage());
+		} finally {
+			if (httpCon != null) {
 				httpCon.disconnect();
 			}
 		}
@@ -108,49 +98,52 @@ public class GetHtml {
 		return response;
 	}
 
-
-	public String get (String url) throws Exception{
+	public String get(String url) throws Exception {
 		return get(new URL(url));
 	}
+
 	/**
-	 * Diese Funktion liefert den HTML code der angegebenen Adresse
-	 * als String.
+	 * Diese Funktion liefert den HTML code der angegebenen Adresse als String.
 	 * 
-	 * @param url Adresse der WebPage
+	 * @param url
+	 *            Adresse der WebPage
 	 * @return WebPage als Text String
-	 * @throws IOException 
-	 * @throws PageLoadException 
+	 * @throws IOException
+	 * @throws PageLoadException
 	 */
-	public String get (URL url) throws IOException, PageLoadException {
+	public String get(URL url) throws IOException, PageLoadException {
 		return loadHtml(connect(url));
 	}
-	
-	public String get(String url, long lastModificationTimestamp) throws PageLoadException, ProtocolException, IOException{
+
+	public String get(String url, long lastModificationTimestamp) throws PageLoadException, ProtocolException, IOException {
 		return get(new URL(url), lastModificationTimestamp);
 	}
-	
+
 	/**
 	 * Get the HTML for the given URL if the page has been modified at or after the timestamp.
-	 * @param url URL to load the HTML from
-	 * @param lastModificationTimestamp the timestamp of the last modification
+	 * 
+	 * @param url
+	 *            URL to load the HTML from
+	 * @param lastModificationTimestamp
+	 *            the timestamp of the last modification
 	 * @return HTML if the page has been modified, otherwise null
 	 * @throws PageLoadException
 	 * @throws ProtocolException
 	 * @throws IOException
 	 */
-	public String get(URL url, long lastModificationTimestamp) throws PageLoadException, ProtocolException, IOException{
+	public String get(URL url, long lastModificationTimestamp) throws PageLoadException, ProtocolException, IOException {
 		HttpURLConnection connection = prepareHttpConnection(url, null);
-		
+
 		connection.setIfModifiedSince(lastModificationTimestamp);
 		connection.connect();
 
-		if(connection.getLastModified() >= lastModificationTimestamp){
+		if (connection.getLastModified() >= lastModificationTimestamp) {
 			return null;
 		}
-		
+
 		return loadHtml(connection);
 	}
-	
+
 	public boolean setReadTimeout(int milliSeconds) {
 		if (milliSeconds >= 0) {
 			this.readTimeoutInMilli = milliSeconds;
@@ -159,41 +152,41 @@ public class GetHtml {
 			return false;
 		}
 	}
-	
-	private String loadHtml(HttpURLConnection connection) throws PageLoadException, IOException{
+
+	private String loadHtml(HttpURLConnection connection) throws PageLoadException, IOException {
 		StringBuilder classString = new StringBuilder();
 		BufferedReader in = null;
 		String inputLine = "";
 
-		try{
-			if (connection.getResponseCode() != 200){
+		try {
+			if (connection.getResponseCode() != 200) {
 				connection.disconnect();
-				throw new PageLoadException(String.valueOf(connection.getResponseCode()),connection.getResponseCode());
+				throw new PageLoadException(String.valueOf(connection.getResponseCode()), connection.getResponseCode());
 			}
-			in = new BufferedReader(
-					new InputStreamReader(
-							connection.getInputStream()));
-			while ((inputLine = in.readLine()) != null)	
+			in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+			while ((inputLine = in.readLine()) != null)
 				classString.append(inputLine);
 
-
-		}catch(SocketException se){
-			try {Thread.sleep(5000);} catch (InterruptedException e) {}
+		} catch (SocketException se) {
+			try {
+				Thread.sleep(5000);
+			} catch (InterruptedException e) {
+			}
 			return reTry(connection.getURL(), connection, new SocketException());
-		}catch(SocketTimeoutException te){
+		} catch (SocketTimeoutException te) {
 			return reTry(connection.getURL(), connection, new SocketTimeoutException());
-		}finally{
-			if(in != null)
+		} finally {
+			if (in != null)
 				in.close();
-			if(connection != null){
+			if (connection != null) {
 				connection.disconnect();
 			}
 		}
-		
+
 		reset();
 		return classString.toString();
 	}
-	
+
 	private HttpURLConnection connect(URL url) throws IOException, ProtocolException {
 		return connect(url, null);
 	}
@@ -204,37 +197,39 @@ public class GetHtml {
 		httpCon.connect();
 		return httpCon;
 	}
-	
-	private HttpURLConnection prepareHttpConnection(URL url, HashMap<String, String> requestProperties) throws IOException{
+
+	private HttpURLConnection prepareHttpConnection(URL url, HashMap<String, String> requestProperties) throws IOException {
 		HttpURLConnection httpCon;
 		httpCon = (HttpURLConnection) url.openConnection();
-		httpCon.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:2.0) Gecko/20100101 Firefox/4.0"); // pretend to be a firefox browser
-		if(requestProperties != null){
-			for(String key : requestProperties.keySet()){
+		httpCon.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:2.0) Gecko/20100101 Firefox/4.0"); // pretend to be
+																															// a firefox
+																															// browser
+		if (requestProperties != null) {
+			for (String key : requestProperties.keySet()) {
 				httpCon.setRequestProperty(key, requestProperties.get(key));
 			}
 		}
 		httpCon.setRequestMethod("GET");
 		httpCon.setDoOutput(true);
 		httpCon.setReadTimeout(readTimeoutInMilli);
-		
+
 		return httpCon;
 	}
 
-	private String reTry(URL url, HttpURLConnection httpCon, IOException ex) throws IOException, PageLoadException  {
-		if (failCount < maxRetry){
+	private String reTry(URL url, HttpURLConnection httpCon, IOException ex) throws IOException, PageLoadException {
+		if (failCount < maxRetry) {
 			failCount++;
 			httpCon.disconnect();
 			return get(url);
-		}else{
-			if(httpCon != null){
+		} else {
+			if (httpCon != null) {
 				httpCon.disconnect();
 			}
 			throw ex;
 		}
 	}
-	
-	private void reset(){
+
+	private void reset() {
 		failCount = 0;
 	}
 }

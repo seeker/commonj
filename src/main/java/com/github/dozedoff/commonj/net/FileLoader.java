@@ -1,18 +1,8 @@
-/*  Copyright (C) 2012  Nicholas Wright
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+/* The MIT License (MIT)
+ * Copyright (c) 2014 Nicholas Wright
+ * http://opensource.org/licenses/MIT
  */
+
 package com.github.dozedoff.commonj.net;
 
 import java.io.File;
@@ -20,6 +10,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.concurrent.LinkedBlockingQueue;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +23,7 @@ public abstract class FileLoader {
 	protected LinkedBlockingQueue<DownloadItem> downloadList = new LinkedBlockingQueue<DownloadItem>();
 	private LinkedList<DownloadWorker> workers = new LinkedList<>();
 
-	/**Delay between downloads. This is used to limit the number of connections**/
+	/** Delay between downloads. This is used to limit the number of connections **/
 	protected int downloadSleep = 1000;
 	protected int fileQueueWorkers;
 
@@ -48,18 +39,27 @@ public abstract class FileLoader {
 
 	/**
 	 * Run before a file is added to the list.
-	 * @param url URL that was added
-	 * @param fileName relative path to working directory
+	 * 
+	 * @param url
+	 *            URL that was added
+	 * @param fileName
+	 *            relative path to working directory
 	 * @return if true operation will continue
 	 */
-	protected boolean beforeFileAdd(URL url,String fileName){return true;} // code to run before adding a file to the list
+	protected boolean beforeFileAdd(URL url, String fileName) {
+		return true;
+	} // code to run before adding a file to the list
 
 	/**
 	 * Run after a file was added to the list.
-	 * @param url URL that was added
-	 * @param fileName relative path to working directory
+	 * 
+	 * @param url
+	 *            URL that was added
+	 * @param fileName
+	 *            relative path to working directory
 	 */
-	protected void afterFileAdd(URL url,String fileName){} // code to run after adding a file to the list
+	protected void afterFileAdd(URL url, String fileName) {
+	} // code to run after adding a file to the list
 
 	public void add(URL url, String fileName) {
 		if (!beforeFileAdd(url, fileName)) {
@@ -80,13 +80,15 @@ public abstract class FileLoader {
 
 	/**
 	 * Set the delay between file downloads. Used to limit the number of connections.
-	 * @param sleep time between downloads in milliseconds
+	 * 
+	 * @param sleep
+	 *            time between downloads in milliseconds
 	 */
-	public void setDownloadSleep(int sleep){
+	public void setDownloadSleep(int sleep) {
 		this.downloadSleep = sleep;
 	}
 
-	public void clearQueue(){
+	public void clearQueue() {
 		downloadList.clear();
 		logger.info("Download queue cleared");
 		afterClearQueue();
@@ -95,108 +97,134 @@ public abstract class FileLoader {
 	/**
 	 * Called after the queue has been cleared.
 	 */
-	protected void afterClearQueue(){}
+	protected void afterClearQueue() {
+	}
 
 	/**
 	 * Download a file, how the data is used is handled in the method afterFileDownload
 	 * 
-	 * @param url URL to save
-	 * @param savePath relative save path
+	 * @param url
+	 *            URL to save
+	 * @param savePath
+	 *            relative save path
 	 */
-	private void loadFile(URL url, File savePath){
+	private void loadFile(URL url, File savePath) {
 		File fullPath = new File(workingDir, savePath.toString());
 
-		try{Thread.sleep(downloadSleep);}catch(InterruptedException ie){}
+		try {
+			Thread.sleep(downloadSleep);
+		} catch (InterruptedException ie) {
+		}
 
 		byte[] data = null;
-		try{
+		try {
 			data = getBinary.getViaHttp(url);
-			afterFileDownload(data,fullPath,url);
-		}catch(PageLoadException ple){
+			afterFileDownload(data, fullPath, url);
+		} catch (PageLoadException ple) {
 			onPageLoadException(ple);
-		}catch(IOException ioe){
+		} catch (IOException ioe) {
 			onIOException(ioe);
 		}
 	}
 
 	/**
 	 * Called when a server could be contacted, but an error code was returned.
-	 * @param ple the PageLoadException that was thrown
+	 * 
+	 * @param ple
+	 *            the PageLoadException that was thrown
 	 */
-	protected void onPageLoadException(PageLoadException ple){
+	protected void onPageLoadException(PageLoadException ple) {
 		logger.warn("Unable to load {} , response is {}", ple.getUrl(), ple.getResponseCode());
 	}
 
 	/**
 	 * Called when a page / File could not be loaded due to an IO error.
-	 * @param ioe the IOException that was thrown
+	 * 
+	 * @param ioe
+	 *            the IOException that was thrown
 	 */
-	protected void onIOException(IOException ioe){
+	protected void onIOException(IOException ioe) {
 		logger.warn("Unable to load page {}", ioe.getMessage());
 	}
 
 	/**
 	 * Called when the file was successfully downloaded.
-	 * @param data the downloaded file
-	 * @param fullpath the absolute filepath
-	 * @param url the url of the file
+	 * 
+	 * @param data
+	 *            the downloaded file
+	 * @param fullpath
+	 *            the absolute filepath
+	 * @param url
+	 *            the url of the file
 	 */
 	abstract protected void afterFileDownload(byte[] data, File fullpath, URL url);
 
-	private void setUp(int fileWorkers){
+	private void setUp(int fileWorkers) {
 		logger.debug("Setting up FileLoader with {} workers", fileWorkers);
 		logger.debug("Creating worker threads");
-		for(int i=0; i <fileWorkers; i++){
+		for (int i = 0; i < fileWorkers; i++) {
 			workers.add(new DownloadWorker());
 		}
 
 		logger.debug("Starting worker threads");
-		for(DownloadWorker t : workers){
+		for (DownloadWorker t : workers) {
 			t.start();
 		}
-		
+
 		logger.debug("FileLoader setup complete");
 	}
 
-	public void shutdown(){
+	public void shutdown() {
 		logger.info("Shutting down FileLoader...");
 		clearQueue();
 
 		logger.debug("Stopping worker threads...");
-		for(DownloadWorker t : workers){
+		for (DownloadWorker t : workers) {
 			t.kill();
 			t.interrupt();
 		}
 
 		logger.debug("Waiting for worker threads to die...");
-		for(DownloadWorker t : workers){
-			try {t.join();} catch (InterruptedException e) {t.interrupt();}
+		for (DownloadWorker t : workers) {
+			try {
+				t.join();
+			} catch (InterruptedException e) {
+				t.interrupt();
+			}
 		}
-		
+
 		logger.debug("FileLoader shutdown complete");
 	}
 
 	/**
 	 * Called after a worker has processed an item from the list.
-	 * @param di the DownloadItem that was processed
+	 * 
+	 * @param di
+	 *            the DownloadItem that was processed
 	 */
-	protected void afterProcessItem(DownloadItem di){}
+	protected void afterProcessItem(DownloadItem di) {
+	}
 
 	/**
 	 * Called before a worker processes an item from the list.
-	 * @param di the DownloadItem that will be processed
+	 * 
+	 * @param di
+	 *            the DownloadItem that will be processed
 	 * @return return true if the item should be processed, or false to discard
 	 */
-	protected boolean beforeProcessItem(DownloadItem di) {return true;}
+	protected boolean beforeProcessItem(DownloadItem di) {
+		return true;
+	}
 
-	class DownloadWorker extends Thread{
+	class DownloadWorker extends Thread {
 		private boolean stopped = false;
+
 		public DownloadWorker() {
 			super("Download Worker");
 
 			Thread.currentThread().setPriority(2);
 		}
-		
+
 		public void kill() {
 			this.stopped = true;
 		}
@@ -204,22 +232,22 @@ public abstract class FileLoader {
 		@Override
 		public void run() {
 			DownloadItem di = null;
-			while(!stopped){
-				try{
+			while (!stopped) {
+				try {
 					di = downloadList.take();
 
-					if(!beforeProcessItem(di)){
+					if (!beforeProcessItem(di)) {
 						continue;
 					}
-					
+
 					loadFile(di.getImageUrl(), new File(di.getImageName()));
 					afterProcessItem(di);
 
-				}catch(InterruptedException ie){
-					interrupt(); //otherwise it will reset it's own interrupt flag
+				} catch (InterruptedException ie) {
+					interrupt(); // otherwise it will reset it's own interrupt flag
 					logger.debug("FileLoader download worker was interrupted");
-				}catch(Exception e){
-					Object[] logParams = {e, di.getImageUrl(), di.getImageName()};
+				} catch (Exception e) {
+					Object[] logParams = { e, di.getImageUrl(), di.getImageName() };
 					logger.warn("Download Worker failed with {}, Parameters: URL: {} ImageName: {}", logParams);
 				}
 			}
