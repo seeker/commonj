@@ -9,19 +9,11 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
-// @formatter:off
+import com.github.dozedoff.commonj.settings.AbstractSettingsTest;
+
+//@formatter:off
 @RunWith(Suite.class)
-@SuiteClasses({ 
-	FileTests.class, 
-	HashTests.class, 
-	NetTests.class,
-	ImageTests.class,
-	StringTests.class,
-	IoTests.class,
-	UtilTests.class,
-	TimeTests.class,
-	FileFilterTests.class,
-	EncodingTests.class,
-	SettingsTests.class
+@SuiteClasses({
+	AbstractSettingsTest.class
 })
-public class AllTestsCommon {}
+public class SettingsTests {}
