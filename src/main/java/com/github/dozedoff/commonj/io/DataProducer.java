@@ -100,6 +100,10 @@ public abstract class DataProducer<I, O> {
 		outputQueueChanged();
 	}
 
+	public int availableWork() {
+		return output.size();
+	}
+
 	public boolean hasWork() {
 		return (!input.isEmpty()) || (!output.isEmpty());
 	}
