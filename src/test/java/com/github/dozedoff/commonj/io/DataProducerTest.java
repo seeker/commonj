@@ -15,12 +15,16 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class DataProducerTest {
-	final int SLEEP_TIME = 100;
 	DataProducerDummy dummy;
 
 	@Before
 	public void setUp() throws Exception {
 		dummy = new DataProducerDummy();
+	}
+
+	private void spinWaitUntil(int availableWork) {
+		while (dummy.availableWork() != availableWork) {
+		}
 	}
 
 	// TODO split clear test into testClearInputQueue and testClearOutputQueue
@@ -30,7 +34,7 @@ public class DataProducerTest {
 		LinkedList<Integer> data = new LinkedList<>();
 
 		dummy.addToLoad(test);
-		Thread.sleep(SLEEP_TIME);
+		spinWaitUntil(test.length);
 		dummy.drainTo(data, 10);
 		assertThat(data.size(), is(3));
 
@@ -39,7 +43,7 @@ public class DataProducerTest {
 		dummy.addToLoad(test);
 		dummy.clear();
 		dummy.addToLoad("5");
-		Thread.sleep(SLEEP_TIME);
+		spinWaitUntil(1);
 		dummy.drainTo(data, 10);
 
 		assertThat(data.size(), is(1));
@@ -50,7 +54,7 @@ public class DataProducerTest {
 		String test[] = { "1", "2", "3" };
 
 		dummy.addToLoad(test);
-		Thread.sleep(SLEEP_TIME);
+		spinWaitUntil(test.length);
 		assertThat(dummy.getProcessed(), is(3));
 	}
 
@@ -62,7 +66,7 @@ public class DataProducerTest {
 		test.add("3");
 
 		dummy.addToLoad(test);
-		Thread.sleep(SLEEP_TIME);
+		spinWaitUntil(test.size());
 		assertThat(dummy.getProcessed(), is(3));
 	}
 
@@ -81,7 +85,7 @@ public class DataProducerTest {
 		String test[] = { "1", "2", "3" };
 
 		dummy.addToLoad(test);
-		Thread.sleep(SLEEP_TIME);
+		spinWaitUntil(test.length);
 		LinkedList<Integer> result = new LinkedList<>();
 		dummy.drainTo(result, 10);
 
