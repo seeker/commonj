@@ -51,7 +51,7 @@ public class DataProducerTest {
 		assertThat(data.size(), is(1));
 	}
 
-	@Test
+	@Test(timeout = TEST_TIMEOUT)
 	public void testAddToLoadIArray() throws InterruptedException {
 		String test[] = { "1", "2", "3" };
 
@@ -60,7 +60,7 @@ public class DataProducerTest {
 		assertThat(dummy.getProcessed(), is(3));
 	}
 
-	@Test
+	@Test(timeout = TEST_TIMEOUT)
 	public void testAddToLoadListOfI() throws InterruptedException {
 		LinkedList<String> test = new LinkedList<>();
 		test.add("1");
@@ -82,7 +82,7 @@ public class DataProducerTest {
 		assertThat(dummy.takeData(), is(3));
 	}
 
-	@Test
+	@Test(timeout = TEST_TIMEOUT)
 	public void testDrainTo() throws InterruptedException {
 		String test[] = { "1", "2", "3" };
 
