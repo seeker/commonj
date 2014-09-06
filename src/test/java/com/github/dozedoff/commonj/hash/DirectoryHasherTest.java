@@ -22,6 +22,8 @@ import com.github.dozedoff.commonj.file.BinaryFileWriter;
 import com.github.dozedoff.commonj.file.FileInfo;
 
 public class DirectoryHasherTest {
+	private final static int TEST_TIMEOUT = 2000;
+
 	File tempDir;
 	BinaryFileWriter bfr = new BinaryFileWriter();
 	byte[] testData = { 12, 45, 6, 12, 99 }; // SHA-256: 95F6A79D2199FC2CFA8F73C315AA16B33BF3544C407B4F9B29889333CA0DB815
@@ -29,6 +31,11 @@ public class DirectoryHasherTest {
 
 	LinkedBlockingQueue<FileInfo> fileQueue;
 	DirectoryHasher dh;
+
+	private void spinWaitForQueue(int queueSize) {
+		while (fileQueue.size() != queueSize) {
+		}
+	}
 
 	@Before
 	public void setUp() throws Exception {
@@ -40,19 +47,19 @@ public class DirectoryHasherTest {
 		dh = new DirectoryHasher(fileQueue);
 	}
 
-	@Test
+	@Test(timeout = TEST_TIMEOUT)
 	public void testHashDirectory() throws Exception {
 		dh.hashDirectory(tempDir.toString());
-		Thread.sleep(2000);
+		spinWaitForQueue(2);
 		assertThat(fileQueue.size(), is(2));
 	}
 
-	@Test
+	@Test(timeout = TEST_TIMEOUT)
 	public void testFilter() throws InterruptedException, IOException {
 		dh.setFilter(new testFilter());
 
 		dh.hashDirectory(tempDir.toString());
-		Thread.sleep(2000);
+		spinWaitForQueue(1);
 		assertThat(fileQueue.size(), is(1));
 		assertThat(fileQueue.remove().getFilePath().toString(), containsString("testFile2.txt"));
 	}
