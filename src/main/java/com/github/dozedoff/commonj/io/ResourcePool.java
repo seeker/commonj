@@ -54,7 +54,7 @@ public abstract class ResourcePool<T> {
 		}
 	}
 
-	abstract protected T createResource();
+	abstract protected T createResource() throws Exception;
 
 	// to allow checks and manipulation before return
 	public T processBeforReturn(T resource) {
