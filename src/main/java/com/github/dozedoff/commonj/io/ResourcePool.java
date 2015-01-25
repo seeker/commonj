@@ -13,6 +13,7 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public abstract class ResourcePool<T> {
 
@@ -37,7 +38,9 @@ public abstract class ResourcePool<T> {
 	public T getResource(long maxWait) throws InterruptedException, ResourceCreationException {
 
 		// try to get a resource. Do not wait longer than the timeout
-		semaphore.tryAcquire(maxWait, TimeUnit.MILLISECONDS);
+		if (!semaphore.tryAcquire(maxWait, TimeUnit.MILLISECONDS)) {
+			throw new ResourceCreationException(new TimeoutException("No Resource available within the required time"));
+		}
 
 		// Acquire a resource
 		T resource = resources.poll();

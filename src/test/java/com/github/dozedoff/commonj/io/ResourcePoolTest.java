@@ -66,7 +66,7 @@ public class ResourcePoolTest {
 		}
 	}
 
-	@Test
+	@Test(expected = ResourceCreationException.class)
 	public void testGetResourceMoreThanMax() throws Exception {
 		LinkedList<Integer> res = new LinkedList<Integer>();
 
