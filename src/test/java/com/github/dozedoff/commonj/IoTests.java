@@ -10,11 +10,10 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 import com.github.dozedoff.commonj.io.DataProducerTest;
+import com.github.dozedoff.commonj.io.ResourcePoolTest;
 
 @RunWith(Suite.class)
-@SuiteClasses({
-	DataProducerTest.class
-})
+@SuiteClasses({ DataProducerTest.class, ResourcePoolTest.class })
 public class IoTests {
 
 }
