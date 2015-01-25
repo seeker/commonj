@@ -12,6 +12,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -229,5 +230,38 @@ public class FileUtilTest {
 
 		String validPath = buildRelativePath("test", "me", "now").toString();
 		assertThat(path, is(validPath));
+	}
+
+	@Test
+	public void testSanitizeFilenameForWindows() {
+		String original = "foo:bar";
+		String clean = FileUtil.sanitizeFilenameForWindows(original);
+
+		assertThat(clean, is("foo_bar"));
+	}
+
+	@Test
+	public void testHasValidWindowsFilenameFileEmpty() {
+		assertThat(FileUtil.hasValidWindowsFilename(new File("")), is(false));
+	}
+
+	@Test
+	public void testHasValidWindowsFilenameValidAbsolute() {
+		assertThat(FileUtil.hasValidWindowsFilename(new File("C:\foobar")), is(true));
+	}
+
+	@Test
+	public void testHasValidWindowsFilenameValidRelative() {
+		assertThat(FileUtil.hasValidWindowsFilename(new File("baz\foobar")), is(true));
+	}
+
+	@Test
+	public void testHasValidWindowsFilenameFileInvalid() {
+		assertThat(FileUtil.hasValidWindowsFilename(new File("foo:bar")), is(false));
+	}
+
+	@Test
+	public void testHasValidWindowsFilenameString() {
+		assertThat(FileUtil.hasValidWindowsFilename("C:\foobar"), is(true));
 	}
 }
