@@ -28,14 +28,33 @@ public class DownloadItem {
 	}
 
 	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((imageName == null) ? 0 : imageName.hashCode());
+		result = prime * result + ((imageUrl == null) ? 0 : imageUrl.hashCode());
+		return result;
+	}
+
+	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof DownloadItem)) {
+		if (this == obj)
+			return true;
+		if (obj == null)
 			return false;
-		} else {
-			DownloadItem ii = (DownloadItem) obj;
-			if (ii.getImageUrl().equals(imageUrl) && ii.getImageName().equals(imageName))
-				return true;
-		}
-		return false;
+		if (getClass() != obj.getClass())
+			return false;
+		DownloadItem other = (DownloadItem) obj;
+		if (imageName == null) {
+			if (other.imageName != null)
+				return false;
+		} else if (!imageName.equals(other.imageName))
+			return false;
+		if (imageUrl == null) {
+			if (other.imageUrl != null)
+				return false;
+		} else if (!imageUrl.equals(other.imageUrl))
+			return false;
+		return true;
 	}
 }
