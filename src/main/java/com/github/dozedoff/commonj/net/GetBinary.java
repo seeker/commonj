@@ -93,7 +93,11 @@ public class GetBinary {
 			throw new SocketTimeoutException(ste.getMessage());
 		} catch (IOException e) {
 			closeHttpConnection(httpCon);
-			throw new PageLoadException(httpCon.getResponseMessage(), httpCon.getResponseCode());
+			if (httpCon != null) {
+				throw new PageLoadException(httpCon.getResponseMessage(), httpCon.getResponseCode());
+			} else {
+				throw new PageLoadException("null", 0);
+			}
 		}
 
 		int contentLength = httpCon.getContentLength();
