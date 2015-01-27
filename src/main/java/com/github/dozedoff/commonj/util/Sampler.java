@@ -19,26 +19,35 @@ public class Sampler {
 	}
 
 	public void sample() {
-		ringBuffer.add(deltaSum.getAndSet(0));
+		synchronized (ringBuffer) {
+			ringBuffer.add(deltaSum.getAndSet(0));
+		}
 	}
 
 	public double getAverage() {
-		if (ringBuffer.isEmpty()) {
-			return 0;
+		synchronized (ringBuffer) {
+			if (ringBuffer.isEmpty()) {
+				return 0;
+			}
+
+			int sum = 0;
+
+			for (int sample : ringBuffer) {
+				sum += sample;
+			}
+
+			return sum / (double) ringBuffer.size();
 		}
-
-		int sum = 0;
-
-		for (int sample : ringBuffer) {
-			sum += sample;
-		}
-
-		return sum / (double) ringBuffer.size();
 	}
 
 	public List<Integer> getSamples() {
-		Integer[] samples = new Integer[ringBuffer.size()];
-		ringBuffer.toArray(samples);
+		Integer[] samples;
+
+		synchronized (ringBuffer) {
+			samples = new Integer[ringBuffer.size()];
+			ringBuffer.toArray(samples);
+		}
+
 		return Arrays.asList(samples);
 	}
 }
