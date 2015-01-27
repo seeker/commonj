@@ -7,12 +7,13 @@ package com.github.dozedoff.commonj.gui;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.JPanel;
+
+import com.github.dozedoff.commonj.util.Sampler;
 
 public class DataGraph extends JPanel {
 	/**
@@ -26,8 +27,7 @@ public class DataGraph extends JPanel {
 	private boolean autoscale;
 	private double scaleFactor = 1;
 
-	LinkedList<Integer> graphData = new LinkedList<Integer>();
-	AtomicInteger currentCount = new AtomicInteger(0);
+	Sampler sampler;
 
 	public DataGraph(int hight, int width, int cNum, int cWidth, int interval, boolean autoscale) {
 		this.setSize(width, hight);
@@ -36,29 +36,15 @@ public class DataGraph extends JPanel {
 		this.updateInterval = interval;
 		this.autoscale = autoscale;
 
-		initGraphData();
+		sampler = new Sampler(noOfColums);
 	}
 
 	public DataGraph(int hight, int width, int cNum, int cWidth, int interval) {
-
-		this.setSize(width, hight);
-		this.noOfColums = cNum;
-		this.columWidth = cWidth;
-		this.updateInterval = interval;
-
-		initGraphData();
-	}
-
-	private void initGraphData() {
-		synchronized (graphData) {
-			for (int i = 0; i < noOfColums; i++) {
-				graphData.add(0);
-			}
-		}
+		this(hight, width, cNum, cWidth, interval, false);
 	}
 
 	public void add(int delta) {
-		currentCount.addAndGet(delta);
+		sampler.addDelta(delta);
 	}
 
 	public void start() {
@@ -72,18 +58,17 @@ public class DataGraph extends JPanel {
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		g.setColor(Color.BLUE);
+		List<Integer> graphData = sampler.getSamples();
+		int i = 0;
 
-		synchronized (graphData) {
-			int i = 0;
-			for (int currval : graphData) {
-				currval = (int) (currval / scaleFactor);
-				g.fillRect(i * columWidth, this.getHeight() - currval, columWidth, currval);
-				i++;
-			}
+		for (int currval : graphData) {
+			currval = (int) (currval / scaleFactor);
+			g.fillRect(i * columWidth, this.getHeight() - currval, columWidth, currval);
+			i++;
 		}
 	}
 
-	private void calcScale() {
+	private void calcScale(List<Integer> graphData) {
 		int max = 0;
 
 		for (int i : graphData) {
@@ -91,7 +76,7 @@ public class DataGraph extends JPanel {
 		}
 
 		if (max > this.getHeight()) {
-			scaleFactor = max / this.getHeight();
+			scaleFactor = max / (double) this.getHeight();
 		} else {
 			scaleFactor = 1;
 		}
@@ -101,11 +86,8 @@ public class DataGraph extends JPanel {
 
 		@Override
 		public void run() {
-			synchronized (graphData) {
-				graphData.removeLast();
-				graphData.addFirst(currentCount.getAndSet(0));
-			}
-			calcScale();
+			sampler.sample();
+			calcScale(sampler.getSamples());
 			repaint();
 		}
 	}
