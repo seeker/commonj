@@ -8,11 +8,11 @@ package com.github.dozedoff.commonj.gui;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.JPanel;
 
+import com.github.dozedoff.commonj.time.Ticker;
 import com.github.dozedoff.commonj.util.Sampler;
 
 public class DataGraph extends JPanel {
@@ -23,7 +23,7 @@ public class DataGraph extends JPanel {
 	private int updateInterval = 1; // in Seconds
 	private int noOfColums = 20;
 	private int columWidth = 2;
-	private Timer updater = null;
+	private Ticker updater;
 	private boolean autoscale;
 	private double scaleFactor = 1;
 
@@ -48,10 +48,16 @@ public class DataGraph extends JPanel {
 	}
 
 	public void start() {
-		if (updater == null) {
-			updater = new Timer("DataGraph updater");
-			updater.scheduleAtFixedRate(new Updater(), updateInterval * 1000, updateInterval * 1000);
+		if (updater != null) {
+			return;
 		}
+
+		updater = new Ticker("DataGraph updater", updateInterval, TimeUnit.SECONDS) {
+			@Override
+			public void tickEvent() {
+				updateGui();
+			}
+		};
 	}
 
 	@Override
@@ -82,13 +88,9 @@ public class DataGraph extends JPanel {
 		}
 	}
 
-	class Updater extends TimerTask {
-
-		@Override
-		public void run() {
-			sampler.sample();
-			calcScale(sampler.getSamples());
-			repaint();
-		}
+	private void updateGui() {
+		sampler.sample();
+		calcScale(sampler.getSamples());
+		repaint();
 	}
 }
