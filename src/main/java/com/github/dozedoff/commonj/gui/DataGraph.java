@@ -23,11 +23,10 @@ public class DataGraph extends JPanel {
 	private int updateInterval = 1; // in Seconds
 	private int noOfColums = 20;
 	private int columWidth = 2;
-	private Ticker updater;
+	private transient Ticker updater;
+	private transient Sampler sampler;
 	private boolean autoscale;
 	private double scaleFactor = 1;
-
-	Sampler sampler;
 
 	public DataGraph(int hight, int width, int cNum, int cWidth, int interval, boolean autoscale) {
 		this.setSize(width, hight);
