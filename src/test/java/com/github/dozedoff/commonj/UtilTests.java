@@ -12,11 +12,13 @@ import org.junit.runners.Suite.SuiteClasses;
 import com.github.dozedoff.commonj.util.FileIOTest;
 import com.github.dozedoff.commonj.util.PairTest;
 import com.github.dozedoff.commonj.util.RandomTest;
+import com.github.dozedoff.commonj.util.SamplerTest;
 
 @RunWith(Suite.class)
 @SuiteClasses({ PairTest.class,
 				RandomTest.class,
-				FileIOTest.class
+				FileIOTest.class,
+				SamplerTest.class
 })
 public class UtilTests {
 
