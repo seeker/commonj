@@ -55,6 +55,20 @@ public class ImagePHashTest {
 		assertThat(getHammingDistance(normal, scaled), is(3));
 	}
 
+	@Test
+	public void testSourceImageHash() throws Exception {
+		long normal = hashImage(testImage);
+
+		assertThat(normal, is(126456174376128L));
+	}
+
+	@Test
+	public void testScaledSourceImageHash() throws Exception {
+		long scaled = hashImage(testImageSmall);
+
+		assertThat(scaled, is(126456442795200L));
+	}
+
 	private int getHammingDistance(long a, long b) {
 		long xor = a ^ b;
 		int distance = Long.bitCount(xor);
