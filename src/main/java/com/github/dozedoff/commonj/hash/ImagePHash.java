@@ -154,7 +154,7 @@ public class ImagePHash {
 
 		for (int x = 0; x < smallerSize; x++) {
 			for (int y = 0; y < smallerSize; y++) {
-				if (x != 0 || y != 0) {
+				if (x != 0 && y != 0) {
 					hash += (dctVals[x][y] > avg ? "1" : "0");
 				}
 			}
@@ -171,7 +171,7 @@ public class ImagePHash {
 
 		for (int x = 0; x < smallerSize; x++) {
 			for (int y = 0; y < smallerSize; y++) {
-				if (x != 0 || y != 0) {
+				if (x != 0 && y != 0) {
 					hash += (dctVals[x][y] > avg ? 1 : 0);
 					hash = Long.rotateLeft(hash, 1);
 				}

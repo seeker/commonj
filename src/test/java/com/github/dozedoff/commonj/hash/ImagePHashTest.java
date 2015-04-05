@@ -10,7 +10,6 @@ import static org.junit.Assert.assertThat;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -23,15 +22,14 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class ImagePHashTest {
-	private static Path testImage, testImageSmall;
+	private static Path testImage;
 	private int imageSize = 32;
 
 	private ImagePHash iph;
 
 	@BeforeClass
 	public static void setUpClass() throws Exception {
-		testImage = Paths.get(Thread.currentThread().getContextClassLoader().getResource("testImage.jpg").toURI());
-		testImageSmall = Paths.get(Thread.currentThread().getContextClassLoader().getResource("testImage_small.jpg").toURI());
+		testImage = Paths.get(Thread.currentThread().getContextClassLoader().getResource("test.jpg").toURI());
 	}
 
 	@Before
@@ -41,42 +39,10 @@ public class ImagePHashTest {
 
 	@Test
 	public void testgetLongHashCompareScaledandUnscaled() throws Exception {
-		long normal = hashWithNoScale();
-		long scaled = hashWithScale();
+		long noPrescale = hashWithNoScale();
+		long withPrescale = hashWithScale();
 
-		assertThat(scaled, is(normal));
-	}
-
-	@Test
-	public void testCompareScaledSourceImage() throws Exception {
-		long normal = hashImage(testImage);
-		long scaled = hashImage(testImageSmall);
-
-		assertThat(getHammingDistance(normal, scaled), is(4));
-	}
-
-	@Test
-	public void testSourceImageHash() throws Exception {
-		long normal = hashImage(testImage);
-
-		assertThat(normal, is(-6261023631344080448L));
-	}
-
-	@Test
-	public void testScaledSourceImageHash() throws Exception {
-		long scaled = hashImage(testImageSmall);
-
-		assertThat(scaled, is(-6261023624918439488L));
-	}
-
-	private int getHammingDistance(long a, long b) {
-		long xor = a ^ b;
-		int distance = Long.bitCount(xor);
-		return distance;
-	}
-
-	private long hashImage(Path path) throws IOException, Exception {
-		return iph.getLongHash(new BufferedInputStream(Files.newInputStream(path)));
+		assertThat(withPrescale, is(noPrescale));
 	}
 
 	private long hashWithNoScale() throws Exception {
