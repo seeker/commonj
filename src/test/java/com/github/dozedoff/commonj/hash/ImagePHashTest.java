@@ -22,14 +22,15 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class ImagePHashTest {
-	private static Path testImage;
+	private static Path testImage, testImageSmall;
 	private int imageSize = 32;
 
 	private ImagePHash iph;
 
 	@BeforeClass
 	public static void setUpClass() throws Exception {
-		testImage = Paths.get(Thread.currentThread().getContextClassLoader().getResource("test.jpg").toURI());
+		testImage = Paths.get(Thread.currentThread().getContextClassLoader().getResource("testImage.jpg").toURI());
+		testImageSmall = Paths.get(Thread.currentThread().getContextClassLoader().getResource("testImage_small.jpg").toURI());
 	}
 
 	@Before
