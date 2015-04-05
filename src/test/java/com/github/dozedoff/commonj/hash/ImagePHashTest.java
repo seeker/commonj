@@ -52,21 +52,21 @@ public class ImagePHashTest {
 		long normal = hashImage(testImage);
 		long scaled = hashImage(testImageSmall);
 
-		assertThat(getHammingDistance(normal, scaled), is(3));
+		assertThat(getHammingDistance(normal, scaled), is(4));
 	}
 
 	@Test
 	public void testSourceImageHash() throws Exception {
 		long normal = hashImage(testImage);
 
-		assertThat(normal, is(126456174376128L));
+		assertThat(normal, is(-6261023631344080448L));
 	}
 
 	@Test
 	public void testScaledSourceImageHash() throws Exception {
 		long scaled = hashImage(testImageSmall);
 
-		assertThat(scaled, is(126456442795200L));
+		assertThat(scaled, is(-6261023624918439488L));
 	}
 
 	private int getHammingDistance(long a, long b) {
