@@ -10,6 +10,7 @@ import static org.junit.Assert.assertThat;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -40,10 +41,28 @@ public class ImagePHashTest {
 
 	@Test
 	public void testgetLongHashCompareScaledandUnscaled() throws Exception {
-		long noPrescale = hashWithNoScale();
-		long withPrescale = hashWithScale();
+		long normal = hashWithNoScale();
+		long scaled = hashWithScale();
 
-		assertThat(withPrescale, is(noPrescale));
+		assertThat(scaled, is(normal));
+	}
+
+	@Test
+	public void testCompareScaledSourceImage() throws Exception {
+		long normal = hashImage(testImage);
+		long scaled = hashImage(testImageSmall);
+
+		assertThat(getHammingDistance(normal, scaled), is(3));
+	}
+
+	private int getHammingDistance(long a, long b) {
+		long xor = a ^ b;
+		int distance = Long.bitCount(xor);
+		return distance;
+	}
+
+	private long hashImage(Path path) throws IOException, Exception {
+		return iph.getLongHash(new BufferedInputStream(Files.newInputStream(path)));
 	}
 
 	private long hashWithNoScale() throws Exception {
