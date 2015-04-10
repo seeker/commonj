@@ -11,7 +11,6 @@ import static org.junit.Assert.assertThat;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -80,8 +79,7 @@ public class ImagePHashTest {
 	}
 
 	private long hashWithNoScale() throws Exception {
-		InputStream is = new BufferedInputStream(Files.newInputStream(testImage));
-		return iph.getLongHash(is);
+		return hashImage(testImage);
 	}
 
 	private long hashWithScale() throws Exception {
