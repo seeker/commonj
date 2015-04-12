@@ -67,49 +67,49 @@ public class ImagePHashTest {
 	public void testSourceImageHash() throws Exception {
 		long normal = hashImage(testImageJPG);
 
-		assertThat(normal, is(-6261023631344080448L));
+		assertThat(normal, is(-6261023631344080447L));
 	}
 
 	@Test
 	public void testSourceImageHashPNG() throws Exception {
 		long normal = hashImage(testImagePNG);
 
-		assertThat(normal, is(-6261023631344080448L));
+		assertThat(normal, is(-6261023631344080447L));
 	}
 
 	@Test
 	public void testSourceImageHashGIF() throws Exception {
 		long normal = hashImage(testImageGIF);
 
-		assertThat(normal, is(-6261023631344080448L));
+		assertThat(normal, is(-6261023631344080447L));
 	}
 
 	@Test
 	public void testSourceImageHashBMP() throws Exception {
 		long normal = hashImage(testImageBMP);
 
-		assertThat(normal, is(-6261023631344080448L));
+		assertThat(normal, is(-6261023631344080447L));
 	}
 
 	@Test
 	public void testSourceImageHashPNGtr() throws Exception {
 		long normal = hashImage(testImagePNGtr);
 
-		assertThat(normal, is(-6261023631344080448L));
+		assertThat(normal, is(-6261023631344080447L));
 	}
 
 	@Test
 	public void testSourceImageHashGIFtr() throws Exception {
 		long normal = hashImage(testImageGIFtr);
 
-		assertThat(getHammingDistance(normal, -6261023631344080448L), lessThanOrEqualTo(4));
+		assertThat(getHammingDistance(normal, -6261023631344080447L), lessThanOrEqualTo(4));
 	}
 
 	@Test
 	public void testScaledSourceImageHash() throws Exception {
 		long scaled = hashImage(testImageSmallJPG);
 
-		assertThat(scaled, is(-6261023624918439488L));
+		assertThat(scaled, is(-6261023624918439487L));
 	}
 
 	private int getHammingDistance(long a, long b) {
