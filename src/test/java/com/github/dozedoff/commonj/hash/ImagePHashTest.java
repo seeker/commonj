@@ -22,15 +22,15 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class ImagePHashTest {
-	private static Path testImage, testImageSmall;
+	private static Path testImageJPG, testImageSmallJPG;
 	private int imageSize = 32;
 
 	private ImagePHash iph;
 
 	@BeforeClass
 	public static void setUpClass() throws Exception {
-		testImage = Paths.get(Thread.currentThread().getContextClassLoader().getResource("testImage.jpg").toURI());
-		testImageSmall = Paths.get(Thread.currentThread().getContextClassLoader().getResource("testImage_small.jpg").toURI());
+		testImageJPG = Paths.get(Thread.currentThread().getContextClassLoader().getResource("testImage.jpg").toURI());
+		testImageSmallJPG = Paths.get(Thread.currentThread().getContextClassLoader().getResource("testImage_small.jpg").toURI());
 	}
 
 	@Before
@@ -48,22 +48,22 @@ public class ImagePHashTest {
 
 	@Test
 	public void testCompareScaledSourceImage() throws Exception {
-		long normal = hashImage(testImage);
-		long scaled = hashImage(testImageSmall);
+		long normal = hashImage(testImageJPG);
+		long scaled = hashImage(testImageSmallJPG);
 
 		assertThat(getHammingDistance(normal, scaled), is(4));
 	}
 
 	@Test
 	public void testSourceImageHash() throws Exception {
-		long normal = hashImage(testImage);
+		long normal = hashImage(testImageJPG);
 
 		assertThat(normal, is(-6261023631344080448L));
 	}
 
 	@Test
 	public void testScaledSourceImageHash() throws Exception {
-		long scaled = hashImage(testImageSmall);
+		long scaled = hashImage(testImageSmallJPG);
 
 		assertThat(scaled, is(-6261023624918439488L));
 	}
@@ -79,11 +79,11 @@ public class ImagePHashTest {
 	}
 
 	private long hashWithNoScale() throws Exception {
-		return hashImage(testImage);
+		return hashImage(testImageJPG);
 	}
 
 	private long hashWithScale() throws Exception {
-		BufferedImage bi = ImageIO.read(testImage.toFile());
+		BufferedImage bi = ImageIO.read(testImageJPG.toFile());
 		bi = ImagePHash.resize(bi, imageSize, imageSize);
 
 		return iph.getLongHashScaledImage(bi);
