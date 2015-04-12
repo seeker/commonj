@@ -13,7 +13,6 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ColorConvertOp;
 import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -72,38 +71,6 @@ public class ImagePHashTest {
 		long scaled = hashImage(testImageSmall);
 
 		assertThat(scaled, is(-6261023624918439488L));
-	}
-
-	@Test
-	public void testGrayScaleConversionDirect() throws Exception {
-		InputStream is = Files.newInputStream(testImage);
-		BufferedImage img = ImageIO.read(is);
-
-		colorConvert.filter(img, img);
-
-		assertThat(img.getRGB(100, 100), is(-197380));
-	}
-
-	@Test
-	public void testGrayScaleConversionDirectWithResize() throws Exception {
-		InputStream is = Files.newInputStream(testImage);
-		BufferedImage img = ImageIO.read(is);
-
-		img = ImagePHash.resize(img, 32, 32);
-
-		colorConvert.filter(img, img);
-
-		assertThat(img.getRGB(10, 10), is(-1776412));
-	}
-
-	@Test
-	public void testGrayScaleConversionNewObject() throws Exception {
-		InputStream is = Files.newInputStream(testImage);
-		BufferedImage img = ImageIO.read(is);
-
-		BufferedImage grayImage = colorConvert.filter(img, null);
-
-		assertThat(grayImage.getRGB(100, 100), is(-197380));
 	}
 
 	private int getHammingDistance(long a, long b) {
