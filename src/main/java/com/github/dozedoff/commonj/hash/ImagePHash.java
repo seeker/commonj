@@ -23,6 +23,11 @@ import javax.imageio.ImageIO;
 public class ImagePHash {
 	private int size = 32;
 	private int smallerSize = 8;
+	private static int resizeType = BufferedImage.TYPE_INT_ARGB_PRE;
+
+	static {
+		resizeType = getResizeImageType();
+	}
 
 	public ImagePHash() {
 		initCoefficients();
@@ -204,7 +209,7 @@ public class ImagePHash {
 	}
 
 	public static BufferedImage resize(BufferedImage image, int width, int height) {
-		BufferedImage resizedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB_PRE);
+		BufferedImage resizedImage = new BufferedImage(width, height, resizeType);
 		Graphics2D g = resizedImage.createGraphics();
 		g.drawImage(image, 0, 0, width, height, null);
 		g.dispose();
@@ -255,5 +260,13 @@ public class ImagePHash {
 			}
 		}
 		return F;
+	}
+
+	private static int getResizeImageType() {
+		if ("Oracle Corporation".equals(System.getProperty("java.vendor")) && System.getProperty("java.version").startsWith("1.7")) {
+			return BufferedImage.TYPE_INT_ARGB;
+		}
+
+		return BufferedImage.TYPE_INT_ARGB_PRE;
 	}
 }
