@@ -23,7 +23,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class ImagePHashTest {
-	private static Path testImageJPG, testImageSmallJPG, testImagePNG, testImageGIF, testImageBMP;
+	private static Path testImageJPG, testImageSmallJPG, testImagePNG, testImageGIF, testImageBMP, testImagePNGtr, testImageGIFtr;
 	private int imageSize = 32;
 
 	private ImagePHash iph;
@@ -36,6 +36,9 @@ public class ImagePHashTest {
 
 		testImageGIF = findFilePath("testImage.gif");
 		testImageBMP = findFilePath("testImage.bmp");
+
+		testImagePNGtr = findFilePath("testImage-with-transparency.png");
+		testImageGIFtr = findFilePath("testImage-with-transparency.gif");
 	}
 
 	@Before
@@ -85,6 +88,20 @@ public class ImagePHashTest {
 		long normal = hashImage(testImageBMP);
 
 		assertThat(normal, is(-6261023631344080448L));
+	}
+
+	@Test
+	public void testSourceImageHashPNGtr() throws Exception {
+		long normal = hashImage(testImagePNGtr);
+
+		assertThat(normal, is(-6261023631344080448L));
+	}
+
+	@Test
+	public void testSourceImageHashGIFtr() throws Exception {
+		long normal = hashImage(testImageGIFtr);
+
+		assertThat(getHammingDistance(normal, -6261023631344080448L), is(3));
 	}
 
 	@Test
