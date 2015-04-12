@@ -1,9 +1,11 @@
 package com.github.dozedoff.commonj.hash;
 
 /*
- *  Original Source:		http://pastebin.com/Pj9d8jt5#
- *  
- *  File modified to remove DCT reports
+ * pHash-like image hash.
+ * Author: Elliot Shepherd (elliot@jarofworms.com)
+ * Based On: http://www.hackerfactor.com/blog/index.php?/archives/432-Looks-Like-It.html
+ * 
+ * Original Source:		http://pastebin.com/Pj9d8jt5#
  */
 
 import java.awt.Graphics2D;
@@ -18,11 +20,6 @@ import javax.imageio.ImageIO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/*
- * pHash-like image hash.
- * Author: Elliot Shepherd (elliot@jarofworms.com
- * Based On: http://www.hackerfactor.com/blog/index.php?/archives/432-Looks-Like-It.html
- */
 public class ImagePHash {
 	private static final int DEFAULT_SCALED_IMAGE_SIZE = 32;
 	private static final int DEFAULT_DCT_SIZE = 8;
@@ -43,8 +40,8 @@ public class ImagePHash {
 		this.size = size;
 		this.smallerSize = smallerSize;
 
-		//TODO validate parameters
-		
+		// TODO validate parameters
+
 		initCoefficients();
 		ImageIO.setUseCache(false);
 	}
