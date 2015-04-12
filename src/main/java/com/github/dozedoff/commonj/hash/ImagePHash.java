@@ -267,9 +267,11 @@ public class ImagePHash {
 	}
 
 	private static int getResizeImageType() {
-		logger.debug("Java version: {}, {}", System.getProperty("java.vendor"), System.getProperty("java.version"));
-		if ("Oracle Corporation".equals(System.getProperty("java.vendor")) && System.getProperty("java.version").startsWith("1.7")) {
+		logger.debug("Java version: {}, {}, {}", System.getProperty("java.vendor"), System.getProperty("java.vm.name"),
+				System.getProperty("java.version"));
+		if ((!System.getProperty("java.vm.name").startsWith("OpenJDK")) && System.getProperty("java.version").startsWith("1.7")) {
 			logger.debug("Selected TYPE_INT_ARGB, value: ({})", BufferedImage.TYPE_INT_ARGB);
+			logger.debug("You should only see this if you are running Oracle JRE/JDK 7");
 			return BufferedImage.TYPE_INT_ARGB;
 		}
 
