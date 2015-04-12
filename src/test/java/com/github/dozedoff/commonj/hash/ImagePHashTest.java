@@ -8,7 +8,6 @@ package com.github.dozedoff.commonj.hash;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -68,16 +67,6 @@ public class ImagePHashTest {
 		long scaled = hashImage(testImageSmall);
 
 		assertThat(scaled, is(-6261023624918439488L));
-	}
-
-	@Test
-	public void testgetPixelBlue() throws Exception {
-		InputStream is = Files.newInputStream(testImage);
-		BufferedImage img = ImageIO.read(is);
-
-		int blue = new Color(img.getRGB(100, 100)).getBlue();
-
-		assertThat(blue, is(248));
 	}
 
 	private int getHammingDistance(long a, long b) {
