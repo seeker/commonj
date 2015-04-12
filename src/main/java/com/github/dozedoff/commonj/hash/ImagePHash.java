@@ -15,6 +15,9 @@ import java.io.InputStream;
 
 import javax.imageio.ImageIO;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /*
  * pHash-like image hash.
  * Author: Elliot Shepherd (elliot@jarofworms.com
@@ -23,6 +26,7 @@ import javax.imageio.ImageIO;
 public class ImagePHash {
 	private int size = 32;
 	private int smallerSize = 8;
+	private static final Logger logger = LoggerFactory.getLogger(ImagePHash.class);
 	private static int resizeType = BufferedImage.TYPE_INT_ARGB_PRE;
 
 	static {
@@ -263,10 +267,13 @@ public class ImagePHash {
 	}
 
 	private static int getResizeImageType() {
+		logger.debug("Java version: {}, {}", System.getProperty("java.vendor"), System.getProperty("java.version"));
 		if ("Oracle Corporation".equals(System.getProperty("java.vendor")) && System.getProperty("java.version").startsWith("1.7")) {
+			logger.debug("Selected TYPE_INT_ARGB, value: ({})", BufferedImage.TYPE_INT_ARGB);
 			return BufferedImage.TYPE_INT_ARGB;
 		}
 
+		logger.debug("Selected TYPE_INT_ARGB_PRE, value: ({})", BufferedImage.TYPE_INT_ARGB_PRE);
 		return BufferedImage.TYPE_INT_ARGB_PRE;
 	}
 }
