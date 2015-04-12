@@ -8,9 +8,7 @@ package com.github.dozedoff.commonj.hash;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorConvertOp;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -29,13 +27,10 @@ public class ImagePHashTest {
 
 	private ImagePHash iph;
 
-	private static ColorConvertOp colorConvert;
-
 	@BeforeClass
 	public static void setUpClass() throws Exception {
 		testImage = Paths.get(Thread.currentThread().getContextClassLoader().getResource("testImage.jpg").toURI());
 		testImageSmall = Paths.get(Thread.currentThread().getContextClassLoader().getResource("testImage_small.jpg").toURI());
-		colorConvert = new ColorConvertOp(ColorSpace.getInstance(ColorSpace.CS_GRAY), null);
 	}
 
 	@Before
