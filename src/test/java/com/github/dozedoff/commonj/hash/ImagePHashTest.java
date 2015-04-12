@@ -112,6 +112,20 @@ public class ImagePHashTest {
 		assertThat(scaled, is(-6261023624918439487L));
 	}
 
+	@Test
+	public void testGetStringHash() throws Exception {
+		String hash = iph.getStringHash(Files.newInputStream(testImageJPG));
+
+		assertThat(hash, is("1101010010001110001100000001011011111101101101000111010011100000"));
+	}
+
+	@Test
+	public void testGetLongHashBufferedImage() throws Exception {
+		long normal = iph.getLongHash(ImageIO.read(Files.newInputStream(testImageJPG)));
+
+		assertThat(normal, is(-6261023631344080447L));
+	}
+
 	private int getHammingDistance(long a, long b) {
 		long xor = a ^ b;
 		int distance = Long.bitCount(xor);
@@ -136,4 +150,5 @@ public class ImagePHashTest {
 	private static Path findFilePath(String fileName) throws URISyntaxException {
 		return Paths.get(Thread.currentThread().getContextClassLoader().getResource(fileName).toURI());
 	}
+
 }
