@@ -155,10 +155,7 @@ public class ImagePHash {
 		 * 3. Compute the DCT. The DCT separates the image into a collection of frequencies and scalars. While JPEG uses an 8x8 DCT, this
 		 * algorithm uses a 32x32 DCT.
 		 */
-		// long start = System.currentTimeMillis();
 		double[][] dctVals = applyDCT(vals);
-		// System.out.println("DCT: " + (System.currentTimeMillis() - start));
-		// // Removed to prevent system.out spam
 
 		return dctVals;
 	}
