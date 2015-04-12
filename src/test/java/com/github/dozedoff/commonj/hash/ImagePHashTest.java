@@ -23,7 +23,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class ImagePHashTest {
-	private static Path testImageJPG, testImageSmallJPG;
+	private static Path testImageJPG, testImageSmallJPG, testImagePNG, testImageGIF, testImageBMP;
 	private int imageSize = 32;
 
 	private ImagePHash iph;
@@ -32,6 +32,10 @@ public class ImagePHashTest {
 	public static void setUpClass() throws Exception {
 		testImageJPG = findFilePath("testImage.jpg");
 		testImageSmallJPG = findFilePath("testImage_small.jpg");
+		testImagePNG = findFilePath("testImage.png");
+
+		testImageGIF = findFilePath("testImage.gif");
+		testImageBMP = findFilePath("testImage.bmp");
 	}
 
 	@Before
@@ -58,6 +62,27 @@ public class ImagePHashTest {
 	@Test
 	public void testSourceImageHash() throws Exception {
 		long normal = hashImage(testImageJPG);
+
+		assertThat(normal, is(-6261023631344080448L));
+	}
+
+	@Test
+	public void testSourceImageHashPNG() throws Exception {
+		long normal = hashImage(testImagePNG);
+
+		assertThat(normal, is(-6261023631344080448L));
+	}
+
+	@Test
+	public void testSourceImageHashGIF() throws Exception {
+		long normal = hashImage(testImageGIF);
+
+		assertThat(normal, is(-6261023631344080448L));
+	}
+
+	@Test
+	public void testSourceImageHashBMP() throws Exception {
+		long normal = hashImage(testImageBMP);
 
 		assertThat(normal, is(-6261023631344080448L));
 	}
