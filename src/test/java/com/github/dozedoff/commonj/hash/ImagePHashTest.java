@@ -11,6 +11,7 @@ import static org.junit.Assert.assertThat;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -29,8 +30,8 @@ public class ImagePHashTest {
 
 	@BeforeClass
 	public static void setUpClass() throws Exception {
-		testImageJPG = Paths.get(Thread.currentThread().getContextClassLoader().getResource("testImage.jpg").toURI());
-		testImageSmallJPG = Paths.get(Thread.currentThread().getContextClassLoader().getResource("testImage_small.jpg").toURI());
+		testImageJPG = findFilePath("testImage.jpg");
+		testImageSmallJPG = findFilePath("testImage_small.jpg");
 	}
 
 	@Before
@@ -87,5 +88,9 @@ public class ImagePHashTest {
 		bi = ImagePHash.resize(bi, imageSize, imageSize);
 
 		return iph.getLongHashScaledImage(bi);
+	}
+
+	private static Path findFilePath(String fileName) throws URISyntaxException {
+		return Paths.get(Thread.currentThread().getContextClassLoader().getResource(fileName).toURI());
 	}
 }
