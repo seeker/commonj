@@ -6,6 +6,7 @@
 package com.github.dozedoff.commonj.hash;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.Assert.assertThat;
 
 import java.awt.image.BufferedImage;
@@ -101,7 +102,7 @@ public class ImagePHashTest {
 	public void testSourceImageHashGIFtr() throws Exception {
 		long normal = hashImage(testImageGIFtr);
 
-		assertThat(getHammingDistance(normal, -6261023631344080448L), is(3));
+		assertThat(getHammingDistance(normal, -6261023631344080448L), lessThanOrEqualTo(4));
 	}
 
 	@Test
