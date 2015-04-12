@@ -91,13 +91,25 @@ public class ImagePHash {
 	 * @return a 'binary string' (like. 001010111011100010) which is easy to do a hamming distance on.
 	 * @throws IOException
 	 */
-	public String getHash(InputStream is) throws IOException {
+	public String getStringHash(InputStream is) throws IOException {
 		String hash;
 		double[][] dct = calculateDctMap(is);
 		double dctAvg = calcDctAverage(dct);
 		hash = convertToBitString(dct, dctAvg);
 
 		return hash;
+	}
+
+	/**
+	 * Use {@link ImagePHash#getStringHash(InputStream)} instead.
+	 * 
+	 * @param is
+	 * @return
+	 * @throws IOException
+	 */
+	@Deprecated
+	public String getHash(InputStream is) throws IOException {
+		return getStringHash(is);
 	}
 
 	private BufferedImage readImage(InputStream is) throws IOException {
@@ -163,9 +175,9 @@ public class ImagePHash {
 
 		for (int x = 0; x < smallerSize; x++) {
 			for (int y = 0; y < smallerSize; y++) {
-					hash += (dctVals[x][y] > avg ? "1" : "0");
-				}
+				hash += (dctVals[x][y] > avg ? "1" : "0");
 			}
+		}
 
 		return hash;
 	}
@@ -179,10 +191,10 @@ public class ImagePHash {
 
 		for (int x = 0; x < smallerSize; x++) {
 			for (int y = 0; y < smallerSize; y++) {
-					hash += (dctVals[x][y] > avg ? 1 : 0);
-					hash = Long.rotateLeft(hash, 1);
-				}
+				hash += (dctVals[x][y] > avg ? 1 : 0);
+				hash = Long.rotateLeft(hash, 1);
 			}
+		}
 		return hash;
 	}
 
@@ -270,7 +282,7 @@ public class ImagePHash {
 			logger.debug("Selected TYPE_INT_ARGB, value: ({})", BufferedImage.TYPE_INT_ARGB);
 			logger.debug("You should only see this if you are running Oracle JRE/JDK 7");
 			return BufferedImage.TYPE_INT_ARGB;
-}
+		}
 
 		logger.debug("Selected TYPE_INT_ARGB_PRE, value: ({})", BufferedImage.TYPE_INT_ARGB_PRE);
 		return BufferedImage.TYPE_INT_ARGB_PRE;
