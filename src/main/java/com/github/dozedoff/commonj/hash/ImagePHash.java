@@ -15,6 +15,9 @@ import java.io.InputStream;
 
 import javax.imageio.ImageIO;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /*
  * pHash-like image hash.
  * Author: Elliot Shepherd (elliot@jarofworms.com
@@ -23,6 +26,12 @@ import javax.imageio.ImageIO;
 public class ImagePHash {
 	private int size = 32;
 	private int smallerSize = 8;
+	private static final Logger logger = LoggerFactory.getLogger(ImagePHash.class);
+	private static int resizeType = BufferedImage.TYPE_INT_ARGB_PRE;
+
+	static {
+		resizeType = getResizeImageType();
+	}
 
 	public ImagePHash() {
 		initCoefficients();
@@ -154,11 +163,10 @@ public class ImagePHash {
 
 		for (int x = 0; x < smallerSize; x++) {
 			for (int y = 0; y < smallerSize; y++) {
-				if (x != 0 && y != 0) {
 					hash += (dctVals[x][y] > avg ? "1" : "0");
 				}
 			}
-		}
+
 		return hash;
 	}
 
@@ -171,12 +179,10 @@ public class ImagePHash {
 
 		for (int x = 0; x < smallerSize; x++) {
 			for (int y = 0; y < smallerSize; y++) {
-				if (x != 0 && y != 0) {
 					hash += (dctVals[x][y] > avg ? 1 : 0);
 					hash = Long.rotateLeft(hash, 1);
 				}
 			}
-		}
 		return hash;
 	}
 
@@ -204,7 +210,7 @@ public class ImagePHash {
 	}
 
 	public static BufferedImage resize(BufferedImage image, int width, int height) {
-		BufferedImage resizedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		BufferedImage resizedImage = new BufferedImage(width, height, resizeType);
 		Graphics2D g = resizedImage.createGraphics();
 		g.drawImage(image, 0, 0, width, height, null);
 		g.dispose();
@@ -255,5 +261,18 @@ public class ImagePHash {
 			}
 		}
 		return F;
+	}
+
+	private static int getResizeImageType() {
+		logger.debug("Java version: {}, {}, {}", System.getProperty("java.vendor"), System.getProperty("java.vm.name"),
+				System.getProperty("java.version"));
+		if ((!System.getProperty("java.vm.name").startsWith("OpenJDK")) && System.getProperty("java.version").startsWith("1.7")) {
+			logger.debug("Selected TYPE_INT_ARGB, value: ({})", BufferedImage.TYPE_INT_ARGB);
+			logger.debug("You should only see this if you are running Oracle JRE/JDK 7");
+			return BufferedImage.TYPE_INT_ARGB;
+}
+
+		logger.debug("Selected TYPE_INT_ARGB_PRE, value: ({})", BufferedImage.TYPE_INT_ARGB_PRE);
+		return BufferedImage.TYPE_INT_ARGB_PRE;
 	}
 }

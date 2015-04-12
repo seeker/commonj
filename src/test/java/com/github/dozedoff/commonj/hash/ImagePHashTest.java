@@ -6,11 +6,13 @@
 package com.github.dozedoff.commonj.hash;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.Assert.assertThat;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
-import java.io.InputStream;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -22,14 +24,22 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class ImagePHashTest {
-	private static Path testImage;
+	private static Path testImageJPG, testImageSmallJPG, testImagePNG, testImageGIF, testImageBMP, testImagePNGtr, testImageGIFtr;
 	private int imageSize = 32;
 
 	private ImagePHash iph;
 
 	@BeforeClass
 	public static void setUpClass() throws Exception {
-		testImage = Paths.get(Thread.currentThread().getContextClassLoader().getResource("test.jpg").toURI());
+		testImageJPG = findFilePath("testImage.jpg");
+		testImagePNG = findFilePath("testImage.png");
+		testImageGIF = findFilePath("testImage.gif");
+		testImageBMP = findFilePath("testImage.bmp");
+
+		testImageSmallJPG = findFilePath("testImage_small.jpg");
+
+		testImagePNGtr = findFilePath("testImage-with-transparency.png");
+		testImageGIFtr = findFilePath("testImage-with-transparency.gif");
 	}
 
 	@Before
@@ -39,21 +49,91 @@ public class ImagePHashTest {
 
 	@Test
 	public void testgetLongHashCompareScaledandUnscaled() throws Exception {
-		long noPrescale = hashWithNoScale();
-		long withPrescale = hashWithScale();
+		long normal = hashWithNoScale();
+		long scaled = hashWithScale();
 
-		assertThat(withPrescale, is(noPrescale));
+		assertThat(scaled, is(normal));
+	}
+
+	@Test
+	public void testCompareScaledSourceImage() throws Exception {
+		long normal = hashImage(testImageJPG);
+		long scaled = hashImage(testImageSmallJPG);
+
+		assertThat(getHammingDistance(normal, scaled), is(4));
+	}
+
+	@Test
+	public void testSourceImageHash() throws Exception {
+		long normal = hashImage(testImageJPG);
+
+		assertThat(normal, is(-6261023631344080447L));
+	}
+
+	@Test
+	public void testSourceImageHashPNG() throws Exception {
+		long normal = hashImage(testImagePNG);
+
+		assertThat(normal, is(-6261023631344080447L));
+	}
+
+	@Test
+	public void testSourceImageHashGIF() throws Exception {
+		long normal = hashImage(testImageGIF);
+
+		assertThat(normal, is(-6261023631344080447L));
+	}
+
+	@Test
+	public void testSourceImageHashBMP() throws Exception {
+		long normal = hashImage(testImageBMP);
+
+		assertThat(normal, is(-6261023631344080447L));
+	}
+
+	@Test
+	public void testSourceImageHashPNGtr() throws Exception {
+		long normal = hashImage(testImagePNGtr);
+
+		assertThat(normal, is(-6261023631344080447L));
+	}
+
+	@Test
+	public void testSourceImageHashGIFtr() throws Exception {
+		long normal = hashImage(testImageGIFtr);
+
+		assertThat(getHammingDistance(normal, -6261023631344080447L), lessThanOrEqualTo(4));
+	}
+
+	@Test
+	public void testScaledSourceImageHash() throws Exception {
+		long scaled = hashImage(testImageSmallJPG);
+
+		assertThat(scaled, is(-6261023624918439487L));
+	}
+
+	private int getHammingDistance(long a, long b) {
+		long xor = a ^ b;
+		int distance = Long.bitCount(xor);
+		return distance;
+	}
+
+	private long hashImage(Path path) throws IOException, Exception {
+		return iph.getLongHash(new BufferedInputStream(Files.newInputStream(path)));
 	}
 
 	private long hashWithNoScale() throws Exception {
-		InputStream is = new BufferedInputStream(Files.newInputStream(testImage));
-		return iph.getLongHash(is);
+		return hashImage(testImageJPG);
 	}
 
 	private long hashWithScale() throws Exception {
-		BufferedImage bi = ImageIO.read(testImage.toFile());
+		BufferedImage bi = ImageIO.read(testImageJPG.toFile());
 		bi = ImagePHash.resize(bi, imageSize, imageSize);
 
 		return iph.getLongHashScaledImage(bi);
+	}
+
+	private static Path findFilePath(String fileName) throws URISyntaxException {
+		return Paths.get(Thread.currentThread().getContextClassLoader().getResource(fileName).toURI());
 	}
 }
