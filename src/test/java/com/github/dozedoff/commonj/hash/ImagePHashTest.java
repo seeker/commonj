@@ -85,6 +85,18 @@ public class ImagePHashTest {
 	}
 
 	@Test
+	public void testGrayScaleConversionDirectWithResize() throws Exception {
+		InputStream is = Files.newInputStream(testImage);
+		BufferedImage img = ImageIO.read(is);
+
+		img = ImagePHash.resize(img, 32, 32);
+
+		colorConvert.filter(img, img);
+
+		assertThat(img.getRGB(10, 10), is(-1776412));
+	}
+
+	@Test
 	public void testGrayScaleConversionNewObject() throws Exception {
 		InputStream is = Files.newInputStream(testImage);
 		BufferedImage img = ImageIO.read(is);
