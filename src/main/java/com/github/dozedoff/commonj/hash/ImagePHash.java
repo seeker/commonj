@@ -24,8 +24,10 @@ import org.slf4j.LoggerFactory;
  * Based On: http://www.hackerfactor.com/blog/index.php?/archives/432-Looks-Like-It.html
  */
 public class ImagePHash {
-	private int size = 32;
-	private int smallerSize = 8;
+	private static final int DEFAULT_SCALED_IMAGE_SIZE = 32;
+	private static final int DEFAULT_DCT_SIZE = 8;
+	private int size = 0;
+	private int smallerSize = 0;
 	private static final Logger logger = LoggerFactory.getLogger(ImagePHash.class);
 	private static int resizeType = BufferedImage.TYPE_INT_ARGB_PRE;
 
@@ -34,14 +36,15 @@ public class ImagePHash {
 	}
 
 	public ImagePHash() {
-		initCoefficients();
-		ImageIO.setUseCache(false);
+		this(DEFAULT_SCALED_IMAGE_SIZE, DEFAULT_DCT_SIZE);
 	}
 
 	public ImagePHash(int size, int smallerSize) {
 		this.size = size;
 		this.smallerSize = smallerSize;
 
+		//TODO validate parameters
+		
 		initCoefficients();
 		ImageIO.setUseCache(false);
 	}
