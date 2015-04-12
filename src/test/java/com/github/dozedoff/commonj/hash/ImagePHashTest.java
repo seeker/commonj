@@ -31,11 +31,11 @@ public class ImagePHashTest {
 	@BeforeClass
 	public static void setUpClass() throws Exception {
 		testImageJPG = findFilePath("testImage.jpg");
-		testImageSmallJPG = findFilePath("testImage_small.jpg");
 		testImagePNG = findFilePath("testImage.png");
-
 		testImageGIF = findFilePath("testImage.gif");
 		testImageBMP = findFilePath("testImage.bmp");
+
+		testImageSmallJPG = findFilePath("testImage_small.jpg");
 
 		testImagePNGtr = findFilePath("testImage-with-transparency.png");
 		testImageGIFtr = findFilePath("testImage-with-transparency.gif");
