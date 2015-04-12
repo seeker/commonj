@@ -171,15 +171,15 @@ public class ImagePHash {
 		 * same; this can survive gamma and color histogram adjustments without a problem.
 		 */
 
-		String hash = "";
+		StringBuilder hash = new StringBuilder(64);
 
 		for (int x = 0; x < smallerSize; x++) {
 			for (int y = 0; y < smallerSize; y++) {
-				hash += (dctVals[x][y] > avg ? "1" : "0");
+				hash.append(dctVals[x][y] > avg ? "1" : "0");
 			}
 		}
 
-		return hash;
+		return hash.toString();
 	}
 
 	private long convertToLong(double[][] dctVals, double avg) {
