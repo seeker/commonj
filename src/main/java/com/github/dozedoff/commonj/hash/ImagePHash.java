@@ -23,10 +23,14 @@ import org.slf4j.LoggerFactory;
 public class ImagePHash {
 	private static final int DEFAULT_RESIZED_IMAGE_SIZE = 32;
 	private static final int DEFAULT_DCT_MATRIX_SIZE = 8;
+
 	private int resizedImageSize = 0;
 	private int dctMatrixSize = 0;
-	private static final Logger logger = LoggerFactory.getLogger(ImagePHash.class);
+	private double[] dctCoefficients;
 	private static int resizeType = BufferedImage.TYPE_INT_ARGB_PRE;
+	private ColorConvertOp colorConverter = new ColorConvertOp(ColorSpace.getInstance(ColorSpace.CS_GRAY), null);
+
+	private static final Logger logger = LoggerFactory.getLogger(ImagePHash.class);
 
 	static {
 		resizeType = getResizeImageType();
@@ -228,8 +232,6 @@ public class ImagePHash {
 		return resizedImage;
 	}
 
-	private ColorConvertOp colorConverter = new ColorConvertOp(ColorSpace.getInstance(ColorSpace.CS_GRAY), null);
-
 	private BufferedImage grayscale(BufferedImage img) {
 		colorConverter.filter(img, img);
 		return img;
@@ -241,8 +243,6 @@ public class ImagePHash {
 
 	// DCT function stolen from
 	// http://stackoverflow.com/questions/4240490/problems-with-dct-and-idct-algorithm-in-java
-
-	private double[] dctCoefficients;
 
 	private void initCoefficients() {
 		dctCoefficients = new double[resizedImageSize];
