@@ -20,6 +20,8 @@ import javax.imageio.ImageIO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.dozedoff.commonj.util.Bits;
+
 public class ImagePHash {
 	private static final int DEFAULT_RESIZED_IMAGE_SIZE = 32;
 	private static final int DEFAULT_DCT_MATRIX_SIZE = 8;
@@ -50,14 +52,12 @@ public class ImagePHash {
 		ImageIO.setUseCache(false);
 	}
 
+	/**
+	 * Use {@link Bits#hammingDistance(String, String)} instead.
+	 */
+	@Deprecated
 	public int distance(String s1, String s2) {
-		int counter = 0;
-		for (int k = 0; k < s1.length(); k++) {
-			if (s1.charAt(k) != s2.charAt(k)) {
-				counter++;
-			}
-		}
-		return counter;
+		return Bits.hammingDistance(s1, s2);
 	}
 
 	/**
