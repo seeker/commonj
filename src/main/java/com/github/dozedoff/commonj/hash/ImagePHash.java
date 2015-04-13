@@ -67,11 +67,11 @@ public class ImagePHash {
 	 * @return hash in as long
 	 * @throws IOException
 	 */
-	public long getLongHash(InputStream is) throws Exception {
+	public long getLongHash(InputStream is) throws IOException {
 		return getLongHash(readImage(is));
 	}
 
-	public long getLongHash(BufferedImage img) throws Exception {
+	public long getLongHash(BufferedImage img) throws IOException {
 		double[][] dct = calculateDctMap(img);
 		double dctAvg = calcDctAverage(dct);
 		long hash = convertToLong(dct, dctAvg);
@@ -96,7 +96,7 @@ public class ImagePHash {
 	 * @return a 'binary string' (like. 001010111011100010) which is easy to do a hamming distance on.
 	 * @throws Exception
 	 */
-	public String getStringHash(InputStream is) throws Exception {
+	public String getStringHash(InputStream is) throws IOException {
 		/*
 		 * 6. Further reduce the DCT. This is the magic step. Set the 64 hash bits to 0 or 1 depending on whether each of the 64 DCT values
 		 * is above or below the average value. The result doesn't tell us the actual low frequencies; it just tells us the very-rough
