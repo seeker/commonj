@@ -28,7 +28,7 @@ public class ImagePHash {
 	private int dctMatrixSize = 0;
 	private double[] dctCoefficients;
 	private static int resizeType = BufferedImage.TYPE_INT_ARGB_PRE;
-	private ColorConvertOp colorConverter = new ColorConvertOp(ColorSpace.getInstance(ColorSpace.CS_GRAY), null);
+	private static final ColorConvertOp colorConverter = new ColorConvertOp(ColorSpace.getInstance(ColorSpace.CS_GRAY), null);
 
 	private static final Logger logger = LoggerFactory.getLogger(ImagePHash.class);
 
@@ -117,7 +117,7 @@ public class ImagePHash {
 		return getStringHash(is);
 	}
 
-	private BufferedImage readImage(InputStream is) throws IOException {
+	private static BufferedImage readImage(InputStream is) throws IOException {
 		return ImageIO.read(is);
 	}
 
@@ -233,7 +233,7 @@ public class ImagePHash {
 		return resizedImage;
 	}
 
-	private BufferedImage grayscale(BufferedImage img) {
+	private static BufferedImage grayscale(BufferedImage img) {
 		colorConverter.filter(img, img);
 		return img;
 	}
