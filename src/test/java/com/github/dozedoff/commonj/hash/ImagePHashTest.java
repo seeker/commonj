@@ -23,6 +23,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.github.dozedoff.commonj.util.ImageUtil;
+
 public class ImagePHashTest {
 	private static Path testImageJPG, testImageSmallJPG, testImagePNG, testImageGIF, testImageBMP, testImagePNGtr, testImageGIFtr;
 	private int imageSize = 32;
@@ -112,6 +114,30 @@ public class ImagePHashTest {
 		assertThat(scaled, is(-6261023624918439487L));
 	}
 
+	@Test
+	public void testGetStringHash() throws Exception {
+		String hash = iph.getStringHash(Files.newInputStream(testImageJPG));
+
+		assertThat(hash, is("1101010010001110001100000001011011111101101101000111010011100000"));
+	}
+
+	@Test
+	public void testGetLongHashBufferedImage() throws Exception {
+		long normal = iph.getLongHash(ImageIO.read(Files.newInputStream(testImageJPG)));
+
+		assertThat(normal, is(-6261023631344080447L));
+	}
+
+	@Test
+	public void testGetLongHashScaledImage() throws Exception {
+		BufferedImage bi = ImageIO.read(testImageJPG.toFile());
+		bi = ImageUtil.resizeImage(bi, imageSize, imageSize);
+
+		long hash = iph.getLongHash(bi);
+
+		assertThat(hash, is(-6261023631344080447L));
+	}
+
 	private int getHammingDistance(long a, long b) {
 		long xor = a ^ b;
 		int distance = Long.bitCount(xor);
@@ -126,9 +152,10 @@ public class ImagePHashTest {
 		return hashImage(testImageJPG);
 	}
 
+	@SuppressWarnings("deprecation")
 	private long hashWithScale() throws Exception {
 		BufferedImage bi = ImageIO.read(testImageJPG.toFile());
-		bi = ImagePHash.resize(bi, imageSize, imageSize);
+		bi = ImageUtil.resizeImage(bi, imageSize, imageSize);
 
 		return iph.getLongHashScaledImage(bi);
 	}
