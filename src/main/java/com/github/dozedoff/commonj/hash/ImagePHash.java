@@ -20,6 +20,7 @@ import javax.imageio.ImageIO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.dozedoff.commonj.helper.TransformHelper;
 import com.github.dozedoff.commonj.util.Bits;
 
 public class ImagePHash {
@@ -28,9 +29,9 @@ public class ImagePHash {
 
 	private int resizedImageSize = 0;
 	private int dctMatrixSize = 0;
-	private double[] dctCoefficients;
 	private static int resizeType = BufferedImage.TYPE_INT_ARGB_PRE;
 	private static final ColorConvertOp colorConverter = new ColorConvertOp(ColorSpace.getInstance(ColorSpace.CS_GRAY), null);
+	private TransformHelper transformHelper;
 
 	private static final Logger logger = LoggerFactory.getLogger(ImagePHash.class);
 
@@ -48,7 +49,7 @@ public class ImagePHash {
 
 		// TODO validate parameters
 
-		initCoefficients();
+		transformHelper = new TransformHelper(resizedImageSize);
 		ImageIO.setUseCache(false);
 	}
 
@@ -73,7 +74,18 @@ public class ImagePHash {
 
 	public long getLongHash(BufferedImage img) throws IOException {
 		double[][] dct = calculateDctMap(img);
-		double dctAvg = calcDctAverage(dct);
+
+		/*
+		 * 4. Reduce the DCT. This is the magic step. While the DCT is 32x32, just keep the top-left 8x8. Those represent the lowest
+		 * frequencies in the picture.
+		 */
+		/*
+		 * 5. Compute the average value. Like the Average Hash, compute the mean DCT value (using only the 8x8 DCT low-frequency values and
+		 * excluding the first term since the DC coefficient can be significantly different from the other values and will throw off the
+		 * average).
+		 */
+
+		double dctAvg = TransformHelper.dctAverage(dct, dctMatrixSize);
 		long hash = convertToLong(dct, dctAvg);
 		return hash;
 	}
@@ -84,7 +96,7 @@ public class ImagePHash {
 	@Deprecated
 	public long getLongHashScaledImage(BufferedImage img) throws Exception {
 		double[][] dct = calculateDctMapScaledDown(img);
-		double dctAvg = calcDctAverage(dct);
+		double dctAvg = TransformHelper.dctAverage(dct, dctMatrixSize);
 		long hash = convertToLong(dct, dctAvg);
 		return hash;
 	}
@@ -169,7 +181,7 @@ public class ImagePHash {
 		 * 3. Compute the DCT. The DCT separates the image into a collection of frequencies and scalars. While JPEG uses an 8x8 DCT, this
 		 * algorithm uses a 32x32 DCT.
 		 */
-		double[][] dctMap = applyDCT(reducedColorValues);
+		double[][] dctMap = transformHelper.transformDCT(reducedColorValues);
 
 		return dctMap;
 	}
@@ -191,30 +203,6 @@ public class ImagePHash {
 		return hash;
 	}
 
-	private double calcDctAverage(double[][] dctMap) {
-		/*
-		 * 4. Reduce the DCT. This is the magic step. While the DCT is 32x32, just keep the top-left 8x8. Those represent the lowest
-		 * frequencies in the picture.
-		 */
-		/*
-		 * 5. Compute the average value. Like the Average Hash, compute the mean DCT value (using only the 8x8 DCT low-frequency values and
-		 * excluding the first term since the DC coefficient can be significantly different from the other values and will throw off the
-		 * average).
-		 */
-		double sum = 0;
-
-		for (int x = 0; x < dctMatrixSize; x++) {
-			for (int y = 0; y < dctMatrixSize; y++) {
-				sum += dctMap[x][y];
-			}
-		}
-
-		sum -= dctMap[0][0];
-		double average = sum / (double) ((dctMatrixSize * dctMatrixSize) - 1);
-
-		return average;
-	}
-
 	public static BufferedImage resize(BufferedImage image, int width, int height) {
 		BufferedImage resizedImage = new BufferedImage(width, height, resizeType);
 		Graphics2D g = resizedImage.createGraphics();
@@ -230,40 +218,6 @@ public class ImagePHash {
 
 	private static int getBlue(BufferedImage img, int x, int y) {
 		return (img.getRGB(x, y)) & 0xff;
-	}
-
-	// DCT function stolen from
-	// http://stackoverflow.com/questions/4240490/problems-with-dct-and-idct-algorithm-in-java
-
-	private void initCoefficients() {
-		dctCoefficients = new double[resizedImageSize];
-
-		for (int i = 1; i < resizedImageSize; i++) {
-			dctCoefficients[i] = 1;
-		}
-
-		dctCoefficients[0] = 1 / Math.sqrt(2.0);
-	}
-
-	private double[][] applyDCT(double[][] reducedColorValues) {
-		int N = resizedImageSize;
-
-		double[][] F = new double[N][N];
-		for (int u = 0; u < N; u++) {
-			for (int v = 0; v < N; v++) {
-				double sum = 0.0;
-				for (int i = 0; i < N; i++) {
-					for (int j = 0; j < N; j++) {
-						sum += Math.cos(((2 * i + 1) / (2.0 * N)) * u * Math.PI) * Math.cos(((2 * j + 1) / (2.0 * N)) * v * Math.PI)
-								* (reducedColorValues[i][j]);
-					}
-				}
-				sum *= ((dctCoefficients[u] * dctCoefficients[v]) / 4.0);
-				F[u][v] = sum;
-			}
-		}
-
-		return F;
 	}
 
 	private static int getResizeImageType() {
