@@ -94,15 +94,19 @@ public class ImagePHash {
 	 * @param is
 	 *            file to hash
 	 * @return a 'binary string' (like. 001010111011100010) which is easy to do a hamming distance on.
-	 * @throws IOException
+	 * @throws Exception
 	 */
-	public String getStringHash(InputStream is) throws IOException {
-		String hash;
-		double[][] dct = calculateDctMap(is);
-		double dctAvg = calcDctAverage(dct);
-		hash = convertToBitString(dct, dctAvg);
+	public String getStringHash(InputStream is) throws Exception {
+		/*
+		 * 6. Further reduce the DCT. This is the magic step. Set the 64 hash bits to 0 or 1 depending on whether each of the 64 DCT values
+		 * is above or below the average value. The result doesn't tell us the actual low frequencies; it just tells us the very-rough
+		 * relative scale of the frequencies to the mean. The result will not vary as long as the overall structure of the image remains the
+		 * same; this can survive gamma and color histogram adjustments without a problem.
+		 */
 
-		return hash;
+		long hash = getLongHash(is);
+		hash = Long.rotateRight(hash, 1);
+		return Long.toBinaryString(hash);
 	}
 
 	/**
@@ -110,10 +114,10 @@ public class ImagePHash {
 	 * 
 	 * @param is
 	 * @return
-	 * @throws IOException
+	 * @throws Exception
 	 */
 	@Deprecated
-	public String getHash(InputStream is) throws IOException {
+	public String getHash(InputStream is) throws Exception {
 		return getStringHash(is);
 	}
 
@@ -163,25 +167,6 @@ public class ImagePHash {
 		double[][] dctMap = applyDCT(reducedColorValues);
 
 		return dctMap;
-	}
-
-	private String convertToBitString(double[][] dctVals, double avg) {
-		/*
-		 * 6. Further reduce the DCT. This is the magic step. Set the 64 hash bits to 0 or 1 depending on whether each of the 64 DCT values
-		 * is above or below the average value. The result doesn't tell us the actual low frequencies; it just tells us the very-rough
-		 * relative scale of the frequencies to the mean. The result will not vary as long as the overall structure of the image remains the
-		 * same; this can survive gamma and color histogram adjustments without a problem.
-		 */
-
-		StringBuilder hash = new StringBuilder(64);
-
-		for (int x = 0; x < dctMatrixSize; x++) {
-			for (int y = 0; y < dctMatrixSize; y++) {
-				hash.append(dctVals[x][y] > avg ? "1" : "0");
-			}
-		}
-
-		return hash.toString();
 	}
 
 	private long convertToLong(double[][] dctVals, double avg) {
