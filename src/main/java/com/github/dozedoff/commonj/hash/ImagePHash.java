@@ -78,6 +78,10 @@ public class ImagePHash {
 		return hash;
 	}
 
+	/**
+	 * Use {@link ImagePHash#getLongHash(BufferedImage)} instead.
+	 */
+	@Deprecated
 	public long getLongHashScaledImage(BufferedImage img) throws Exception {
 		double[][] dct = calculateDctMapScaledDown(img);
 		double dctAvg = calcDctAverage(dct);

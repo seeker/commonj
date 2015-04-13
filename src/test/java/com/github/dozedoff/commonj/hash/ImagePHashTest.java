@@ -126,6 +126,16 @@ public class ImagePHashTest {
 		assertThat(normal, is(-6261023631344080447L));
 	}
 
+	@Test
+	public void testGetLongHashScaledImage() throws Exception {
+		BufferedImage bi = ImageIO.read(testImageJPG.toFile());
+		bi = ImagePHash.resize(bi, imageSize, imageSize);
+
+		long hash = iph.getLongHash(bi);
+
+		assertThat(hash, is(-6261023631344080447L));
+	}
+
 	private int getHammingDistance(long a, long b) {
 		long xor = a ^ b;
 		int distance = Long.bitCount(xor);
@@ -140,6 +150,7 @@ public class ImagePHashTest {
 		return hashImage(testImageJPG);
 	}
 
+	@SuppressWarnings("deprecation")
 	private long hashWithScale() throws Exception {
 		BufferedImage bi = ImageIO.read(testImageJPG.toFile());
 		bi = ImagePHash.resize(bi, imageSize, imageSize);
@@ -150,5 +161,4 @@ public class ImagePHashTest {
 	private static Path findFilePath(String fileName) throws URISyntaxException {
 		return Paths.get(Thread.currentThread().getContextClassLoader().getResource(fileName).toURI());
 	}
-
 }
