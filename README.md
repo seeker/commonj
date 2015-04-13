@@ -6,4 +6,4 @@ Common classes used in other projects.
 
 ### Note
 ------
-The pHash generated in 0.0.2 and 1.0.0 are incompatible, due to a faulty implementation.
+The pHash generated in 0.0.2 and 0.1.0 are incompatible, due to a faulty implementation.
