@@ -68,10 +68,7 @@ public class ImagePHash {
 	 * @throws IOException
 	 */
 	public long getLongHash(InputStream is) throws Exception {
-		double[][] dct = calculateDctMap(is);
-		double dctAvg = calcDctAverage(dct);
-		long hash = convertToLong(dct, dctAvg);
-		return hash;
+		return getLongHash(readImage(is));
 	}
 
 	public long getLongHash(BufferedImage img) throws Exception {
