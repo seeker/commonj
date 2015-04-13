@@ -8,20 +8,15 @@ package com.github.dozedoff.commonj.hash;
  * Original Source:		http://pastebin.com/Pj9d8jt5#
  */
 
-import java.awt.Graphics2D;
-import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorConvertOp;
 import java.io.IOException;
 import java.io.InputStream;
 
 import javax.imageio.ImageIO;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.github.dozedoff.commonj.helper.TransformHelper;
 import com.github.dozedoff.commonj.util.Bits;
+import com.github.dozedoff.commonj.util.ImageUtil;
 
 public class ImagePHash {
 	private static final int DEFAULT_RESIZED_IMAGE_SIZE = 32;
@@ -29,15 +24,7 @@ public class ImagePHash {
 
 	private int resizedImageSize = 0;
 	private int dctMatrixSize = 0;
-	private static int resizeType = BufferedImage.TYPE_INT_ARGB_PRE;
-	private static final ColorConvertOp colorConverter = new ColorConvertOp(ColorSpace.getInstance(ColorSpace.CS_GRAY), null);
 	private TransformHelper transformHelper;
-
-	private static final Logger logger = LoggerFactory.getLogger(ImagePHash.class);
-
-	static {
-		resizeType = getResizeImageType();
-	}
 
 	public ImagePHash() {
 		this(DEFAULT_RESIZED_IMAGE_SIZE, DEFAULT_DCT_MATRIX_SIZE);
@@ -69,7 +56,7 @@ public class ImagePHash {
 	 * @throws IOException
 	 */
 	public long getLongHash(InputStream is) throws IOException {
-		return getLongHash(readImage(is));
+		return getLongHash(ImageUtil.readImage(is));
 	}
 
 	public long getLongHash(BufferedImage img) throws IOException {
@@ -133,29 +120,13 @@ public class ImagePHash {
 		return getStringHash(is);
 	}
 
-	private static BufferedImage readImage(InputStream is) throws IOException {
-		return ImageIO.read(is);
-	}
-
-	private double[][] reduceColor(BufferedImage img) {
-		double reducedValues[][] = new double[resizedImageSize][resizedImageSize];
-
-		for (int x = 0; x < img.getWidth(); x++) {
-			for (int y = 0; y < img.getHeight(); y++) {
-				reducedValues[x][y] = getBlue(img, x, y);
-			}
-		}
-
-		return reducedValues;
-	}
-
 	/**
 	 * This method should not be public, there will be no replacement.
 	 */
 
 	@Deprecated
 	public double[][] calculateDctMap(InputStream is) throws IOException {
-		BufferedImage img = readImage(is);
+		BufferedImage img = ImageUtil.readImage(is);
 
 		return calculateDctMap(img);
 	}
@@ -165,7 +136,7 @@ public class ImagePHash {
 		 * 1. Reduce size. Like Average Hash, pHash starts with a small image. However, the image is larger than 8x8; 32x32 is a good size.
 		 * This is really done to simplify the DCT computation and not because it is needed to reduce the high frequencies.
 		 */
-		img = resize(img, resizedImageSize, resizedImageSize);
+		img = ImageUtil.resizeImage(img, resizedImageSize, resizedImageSize);
 		return calculateDctMapScaledDown(img);
 	}
 
@@ -173,9 +144,9 @@ public class ImagePHash {
 		/*
 		 * 2. Reduce color. The image is reduced to a grayscale just to further simplify the number of computations.
 		 */
-		BufferedImage grayscaleImage = grayscale(img);
+		BufferedImage grayscaleImage = ImageUtil.toGrayscale(img);
 
-		double[][] reducedColorValues = reduceColor(grayscaleImage);
+		double[][] reducedColorValues = ImageUtil.toDoubleMatrix(grayscaleImage);
 
 		/*
 		 * 3. Compute the DCT. The DCT separates the image into a collection of frequencies and scalars. While JPEG uses an 8x8 DCT, this
@@ -201,35 +172,5 @@ public class ImagePHash {
 		}
 
 		return hash;
-	}
-
-	public static BufferedImage resize(BufferedImage image, int width, int height) {
-		BufferedImage resizedImage = new BufferedImage(width, height, resizeType);
-		Graphics2D g = resizedImage.createGraphics();
-		g.drawImage(image, 0, 0, width, height, null);
-		g.dispose();
-		return resizedImage;
-	}
-
-	private static BufferedImage grayscale(BufferedImage img) {
-		colorConverter.filter(img, img);
-		return img;
-	}
-
-	private static int getBlue(BufferedImage img, int x, int y) {
-		return (img.getRGB(x, y)) & 0xff;
-	}
-
-	private static int getResizeImageType() {
-		logger.debug("Java version: {}, {}, {}", System.getProperty("java.vendor"), System.getProperty("java.vm.name"),
-				System.getProperty("java.version"));
-		if ((!System.getProperty("java.vm.name").startsWith("OpenJDK")) && System.getProperty("java.version").startsWith("1.7")) {
-			logger.debug("Selected TYPE_INT_ARGB, value: ({})", BufferedImage.TYPE_INT_ARGB);
-			logger.debug("You should only see this if you are running Oracle JRE/JDK 7");
-			return BufferedImage.TYPE_INT_ARGB;
-		}
-
-		logger.debug("Selected TYPE_INT_ARGB_PRE, value: ({})", BufferedImage.TYPE_INT_ARGB_PRE);
-		return BufferedImage.TYPE_INT_ARGB_PRE;
 	}
 }

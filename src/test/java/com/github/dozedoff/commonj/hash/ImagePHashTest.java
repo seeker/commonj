@@ -23,6 +23,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.github.dozedoff.commonj.util.ImageUtil;
+
 public class ImagePHashTest {
 	private static Path testImageJPG, testImageSmallJPG, testImagePNG, testImageGIF, testImageBMP, testImagePNGtr, testImageGIFtr;
 	private int imageSize = 32;
@@ -129,7 +131,7 @@ public class ImagePHashTest {
 	@Test
 	public void testGetLongHashScaledImage() throws Exception {
 		BufferedImage bi = ImageIO.read(testImageJPG.toFile());
-		bi = ImagePHash.resize(bi, imageSize, imageSize);
+		bi = ImageUtil.resizeImage(bi, imageSize, imageSize);
 
 		long hash = iph.getLongHash(bi);
 
@@ -153,7 +155,7 @@ public class ImagePHashTest {
 	@SuppressWarnings("deprecation")
 	private long hashWithScale() throws Exception {
 		BufferedImage bi = ImageIO.read(testImageJPG.toFile());
-		bi = ImagePHash.resize(bi, imageSize, imageSize);
+		bi = ImageUtil.resizeImage(bi, imageSize, imageSize);
 
 		return iph.getLongHashScaledImage(bi);
 	}
