@@ -21,10 +21,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ImagePHash {
-	private static final int DEFAULT_SCALED_IMAGE_SIZE = 32;
-	private static final int DEFAULT_DCT_SIZE = 8;
-	private int size = 0;
-	private int smallerSize = 0;
+	private static final int DEFAULT_RESIZED_IMAGE_SIZE = 32;
+	private static final int DEFAULT_DCT_MATRIX_SIZE = 8;
+	private int resizedImageSize = 0;
+	private int dctMatrixSize = 0;
 	private static final Logger logger = LoggerFactory.getLogger(ImagePHash.class);
 	private static int resizeType = BufferedImage.TYPE_INT_ARGB_PRE;
 
@@ -33,12 +33,12 @@ public class ImagePHash {
 	}
 
 	public ImagePHash() {
-		this(DEFAULT_SCALED_IMAGE_SIZE, DEFAULT_DCT_SIZE);
+		this(DEFAULT_RESIZED_IMAGE_SIZE, DEFAULT_DCT_MATRIX_SIZE);
 	}
 
-	public ImagePHash(int size, int smallerSize) {
-		this.size = size;
-		this.smallerSize = smallerSize;
+	public ImagePHash(int resizedImageSize, int dctMatrixSize) {
+		this.resizedImageSize = resizedImageSize;
+		this.dctMatrixSize = dctMatrixSize;
 
 		// TODO validate parameters
 
@@ -117,15 +117,15 @@ public class ImagePHash {
 	}
 
 	private double[][] reduceColor(BufferedImage img) {
-		double values[][] = new double[size][size];
+		double reducedValues[][] = new double[resizedImageSize][resizedImageSize];
 
 		for (int x = 0; x < img.getWidth(); x++) {
 			for (int y = 0; y < img.getHeight(); y++) {
-				values[x][y] = getBlue(img, x, y);
+				reducedValues[x][y] = getBlue(img, x, y);
 			}
 		}
 
-		return values;
+		return reducedValues;
 	}
 
 	public double[][] calculateDctMap(InputStream is) throws IOException {
@@ -139,7 +139,7 @@ public class ImagePHash {
 		 * 1. Reduce size. Like Average Hash, pHash starts with a small image. However, the image is larger than 8x8; 32x32 is a good size.
 		 * This is really done to simplify the DCT computation and not because it is needed to reduce the high frequencies.
 		 */
-		img = resize(img, size, size);
+		img = resize(img, resizedImageSize, resizedImageSize);
 		return calculateDctMapScaledDown(img);
 	}
 
@@ -147,17 +147,17 @@ public class ImagePHash {
 		/*
 		 * 2. Reduce color. The image is reduced to a grayscale just to further simplify the number of computations.
 		 */
-		img = grayscale(img);
+		BufferedImage grayscaleImage = grayscale(img);
 
-		double[][] vals = reduceColor(img);
+		double[][] reducedColorValues = reduceColor(grayscaleImage);
 
 		/*
 		 * 3. Compute the DCT. The DCT separates the image into a collection of frequencies and scalars. While JPEG uses an 8x8 DCT, this
 		 * algorithm uses a 32x32 DCT.
 		 */
-		double[][] dctVals = applyDCT(vals);
+		double[][] dctMap = applyDCT(reducedColorValues);
 
-		return dctVals;
+		return dctMap;
 	}
 
 	private String convertToBitString(double[][] dctVals, double avg) {
@@ -170,8 +170,8 @@ public class ImagePHash {
 
 		StringBuilder hash = new StringBuilder(64);
 
-		for (int x = 0; x < smallerSize; x++) {
-			for (int y = 0; y < smallerSize; y++) {
+		for (int x = 0; x < dctMatrixSize; x++) {
+			for (int y = 0; y < dctMatrixSize; y++) {
 				hash.append(dctVals[x][y] > avg ? "1" : "0");
 			}
 		}
@@ -180,22 +180,23 @@ public class ImagePHash {
 	}
 
 	private long convertToLong(double[][] dctVals, double avg) {
-		if (smallerSize > 9) {
+		if (dctMatrixSize > 9) {
 			throw new IllegalArgumentException("The selected smallerSize value is to big for the long datatype");
 		}
 
 		long hash = 0;
 
-		for (int x = 0; x < smallerSize; x++) {
-			for (int y = 0; y < smallerSize; y++) {
+		for (int x = 0; x < dctMatrixSize; x++) {
+			for (int y = 0; y < dctMatrixSize; y++) {
 				hash += (dctVals[x][y] > avg ? 1 : 0);
 				hash = Long.rotateLeft(hash, 1);
 			}
 		}
+
 		return hash;
 	}
 
-	private double calcDctAverage(double[][] dctVals) {
+	private double calcDctAverage(double[][] dctMap) {
 		/*
 		 * 4. Reduce the DCT. This is the magic step. While the DCT is 32x32, just keep the top-left 8x8. Those represent the lowest
 		 * frequencies in the picture.
@@ -205,17 +206,18 @@ public class ImagePHash {
 		 * excluding the first term since the DC coefficient can be significantly different from the other values and will throw off the
 		 * average).
 		 */
-		double total = 0;
+		double sum = 0;
 
-		for (int x = 0; x < smallerSize; x++) {
-			for (int y = 0; y < smallerSize; y++) {
-				total += dctVals[x][y];
+		for (int x = 0; x < dctMatrixSize; x++) {
+			for (int y = 0; y < dctMatrixSize; y++) {
+				sum += dctMap[x][y];
 			}
 		}
-		total -= dctVals[0][0];
 
-		double avg = total / (double) ((smallerSize * smallerSize) - 1);
-		return avg;
+		sum -= dctMap[0][0];
+		double average = sum / (double) ((dctMatrixSize * dctMatrixSize) - 1);
+
+		return average;
 	}
 
 	public static BufferedImage resize(BufferedImage image, int width, int height) {
@@ -226,10 +228,10 @@ public class ImagePHash {
 		return resizedImage;
 	}
 
-	private ColorConvertOp colorConvert = new ColorConvertOp(ColorSpace.getInstance(ColorSpace.CS_GRAY), null);
+	private ColorConvertOp colorConverter = new ColorConvertOp(ColorSpace.getInstance(ColorSpace.CS_GRAY), null);
 
 	private BufferedImage grayscale(BufferedImage img) {
-		colorConvert.filter(img, img);
+		colorConverter.filter(img, img);
 		return img;
 	}
 
@@ -240,20 +242,20 @@ public class ImagePHash {
 	// DCT function stolen from
 	// http://stackoverflow.com/questions/4240490/problems-with-dct-and-idct-algorithm-in-java
 
-	private double[] c;
+	private double[] dctCoefficients;
 
 	private void initCoefficients() {
-		c = new double[size];
+		dctCoefficients = new double[resizedImageSize];
 
-		for (int i = 1; i < size; i++) {
-			c[i] = 1;
+		for (int i = 1; i < resizedImageSize; i++) {
+			dctCoefficients[i] = 1;
 		}
 
-		c[0] = 1 / Math.sqrt(2.0);
+		dctCoefficients[0] = 1 / Math.sqrt(2.0);
 	}
 
-	private double[][] applyDCT(double[][] f) {
-		int N = size;
+	private double[][] applyDCT(double[][] reducedColorValues) {
+		int N = resizedImageSize;
 
 		double[][] F = new double[N][N];
 		for (int u = 0; u < N; u++) {
@@ -262,13 +264,14 @@ public class ImagePHash {
 				for (int i = 0; i < N; i++) {
 					for (int j = 0; j < N; j++) {
 						sum += Math.cos(((2 * i + 1) / (2.0 * N)) * u * Math.PI) * Math.cos(((2 * j + 1) / (2.0 * N)) * v * Math.PI)
-								* (f[i][j]);
+								* (reducedColorValues[i][j]);
 					}
 				}
-				sum *= ((c[u] * c[v]) / 4.0);
+				sum *= ((dctCoefficients[u] * dctCoefficients[v]) / 4.0);
 				F[u][v] = sum;
 			}
 		}
+
 		return F;
 	}
 
