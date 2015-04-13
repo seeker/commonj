@@ -137,6 +137,11 @@ public class ImagePHash {
 		return reducedValues;
 	}
 
+	/**
+	 * This method should not be public, there will be no replacement.
+	 */
+
+	@Deprecated
 	public double[][] calculateDctMap(InputStream is) throws IOException {
 		BufferedImage img = readImage(is);
 
