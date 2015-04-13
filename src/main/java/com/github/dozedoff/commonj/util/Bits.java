@@ -11,4 +11,10 @@ public class Bits {
 
 		return counter;
 	}
+
+	public static int hammingDistance(long left, long right) {
+		long xor = left ^ right;
+		int distance = Long.bitCount(xor);
+		return distance;
+	}
 }
