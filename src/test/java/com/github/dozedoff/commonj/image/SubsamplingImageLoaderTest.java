@@ -51,17 +51,6 @@ public class SubsamplingImageLoaderTest {
 		assertThat(label.getIcon().getIconWidth(), is(50));
 	}
 
-	@SuppressWarnings("deprecation")
-	@Test
-	public void testLoadImageNoSubSampleDeprecated() throws Exception {
-		Dimension dim = new Dimension(100, 100);
-		JLabel label = SubsamplingImageLoader.loadImage(imagePath, dim);
-
-		assertNotNull(label.getIcon());
-		assertThat(label.getIcon().getIconHeight(), is(60));
-		assertThat(label.getIcon().getIconWidth(), is(50));
-	}
-
 	@Test
 	public void testLoadImageSubsample() throws Exception {
 		Dimension dim = new Dimension(6, 6);
