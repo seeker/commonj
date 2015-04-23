@@ -44,6 +44,7 @@ public class ImagePHash {
 	 * Use {@link Bits#hammingDistance(String, String)} instead.
 	 */
 	@Deprecated
+	// TODO DEPRECATED remove after 0.1.1
 	public int distance(String s1, String s2) {
 		return Bits.hammingDistance(s1, s2);
 	}
@@ -81,6 +82,7 @@ public class ImagePHash {
 	 * Use {@link ImagePHash#getLongHash(BufferedImage)} instead.
 	 */
 	@Deprecated
+	// TODO DEPRECATED remove after 0.1.1
 	public long getLongHashScaledImage(BufferedImage img) throws Exception {
 		double[][] dct = calculateDctMapScaledDown(img);
 		double dctAvg = TransformHelper.dctAverage(dct, dctMatrixSize);
@@ -116,6 +118,7 @@ public class ImagePHash {
 	 * @throws Exception
 	 */
 	@Deprecated
+	// TODO DEPRECATED remove after 0.1.1
 	public String getHash(InputStream is) throws Exception {
 		return getStringHash(is);
 	}
@@ -125,6 +128,7 @@ public class ImagePHash {
 	 */
 
 	@Deprecated
+	// TODO DEPRECATED remove after 0.1.1
 	public double[][] calculateDctMap(InputStream is) throws IOException {
 		BufferedImage img = ImageUtil.readImage(is);
 

@@ -33,16 +33,6 @@ public class GetBinary {
 
 	}
 
-	/**
-	 * No longer used, as buffers are now created on demand
-	 * 
-	 * @param size
-	 */
-	@Deprecated
-	public GetBinary(int size) {
-
-	}
-
 	public Long getLenght(URL url) throws IOException, PageLoadException {
 		HttpURLConnection thread = null;
 
