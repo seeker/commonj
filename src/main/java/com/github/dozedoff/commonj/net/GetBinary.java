@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Class for downloading binary data from the Internet.
  */
-public class GetBinary {
+public class GetBinary implements DataDownloader {
 	private int maxRetry = 3;
 	private int readTimeoutInMilli = 10000;
 	private final static Logger logger = LoggerFactory.getLogger(GetBinary.class);
@@ -230,5 +230,10 @@ public class GetBinary {
 		} else {
 			return false;
 		}
+	}
+
+	@Override
+	public byte[] download(URL url) throws PageLoadException, IOException {
+		return getViaHttp(url);
 	}
 }
