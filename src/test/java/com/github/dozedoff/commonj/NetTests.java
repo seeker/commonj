@@ -10,6 +10,7 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 import com.github.dozedoff.commonj.net.DownloadItemTest;
+import com.github.dozedoff.commonj.net.FileLoaderTest;
 import com.github.dozedoff.commonj.net.GetBinaryTest;
 import com.github.dozedoff.commonj.net.GetHtmlTest;
 
@@ -17,7 +18,8 @@ import com.github.dozedoff.commonj.net.GetHtmlTest;
 @SuiteClasses({ 
 	GetBinaryTest.class, 
 	GetHtmlTest.class,
-	DownloadItemTest.class
+	DownloadItemTest.class,
+	FileLoaderTest.class
 })
 public class NetTests {
 
