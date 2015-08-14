@@ -7,6 +7,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.LinkedList;
@@ -17,6 +18,7 @@ import org.junit.Test;
 
 public class FileLoaderTest {
 	Dummy cut;
+	DataDownloader ddl;
 	
 	class Dummy extends FileLoader {
 		// Download parameters
@@ -24,6 +26,9 @@ public class FileLoaderTest {
 		private LinkedList<File> files = new LinkedList<File>();
 		private LinkedList<URL> urls = new LinkedList<URL>();
 		
+		private boolean pleCalled = false;
+		private boolean ioeCalled = false;
+
 		public LinkedList<byte[]> getData() {
 			return data;
 		}
@@ -46,11 +51,29 @@ public class FileLoaderTest {
 			this.files.add(fullpath);
 			this.urls.add(url);
 		}
+		
+		@Override
+		protected void onPageLoadException(PageLoadException ple) {
+			pleCalled = true;
 		}
 		
+		@Override
+		protected void onIOException(IOException ioe) {
+			ioeCalled = true;
+		}
+
+		public boolean isPleCalled() {
+			return pleCalled;
+		}
+
+		public boolean isIoeCalled() {
+			return ioeCalled;
+		}
+	}
+
 	@Before
 	public void setUp() throws Exception {
-		DataDownloader ddl = mock(DataDownloader.class);
+		ddl = mock(DataDownloader.class);
 		when(ddl.download(any(URL.class))).thenReturn("42".getBytes());
 		
 		assertThat(ddl, notNullValue());
@@ -134,4 +157,26 @@ public class FileLoaderTest {
 		
 		assertThat(cut.getUrls().size(), is(1));
 	}
+	
+	@Test
+	public void testFailToLoadPage() throws Exception {
+		when(ddl.download(any(URL.class))).thenThrow(new PageLoadException(404));
+		
+		cut.add(new URL("http://example.com"), "foo");
+		
+		Thread.sleep(200);
+		
+		assertThat(cut.isPleCalled(), is(true));
 	}
+	
+	@Test
+	public void testFailToWriteFile() throws Exception {
+		when(ddl.download(any(URL.class))).thenThrow(new IOException("Failed to write"));
+		
+		cut.add(new URL("http://example.com"), "foo");
+		
+		Thread.sleep(200);
+		
+		assertThat(cut.isIoeCalled(), is(true));
+	}
+}
