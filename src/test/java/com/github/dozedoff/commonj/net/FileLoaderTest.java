@@ -23,7 +23,7 @@ public class FileLoaderTest {
 		private LinkedList<byte[]> data = new LinkedList<byte[]>();
 		private LinkedList<File> files = new LinkedList<File>();
 		private LinkedList<URL> urls = new LinkedList<URL>();
-
+		
 		public LinkedList<byte[]> getData() {
 			return data;
 		}
@@ -46,8 +46,8 @@ public class FileLoaderTest {
 			this.files.add(fullpath);
 			this.urls.add(url);
 		}
-	}
-
+		}
+		
 	@Before
 	public void setUp() throws Exception {
 		DataDownloader ddl = mock(DataDownloader.class);
@@ -77,14 +77,14 @@ public class FileLoaderTest {
 	
 	@Test
 	public void testAddAlreadyInQueue() throws Exception {
-		cut.setDownloadSleep(100);
+		cut.setDownloadSleep(70);
 		cut.add(new URL("http://example.com"), "foo");
 		cut.add(new URL("http://example.com"), "foo");
-		cut.setDownloadSleep(0);
+		cut.add(new URL("http://example.com"), "foo");
 
 		Thread.sleep(200);
 		
-		assertThat(cut.getUrls().size(), is(1));
+		assertThat(cut.getUrls().size(), is(2));
 	}
 
 	@Test
@@ -134,4 +134,4 @@ public class FileLoaderTest {
 		
 		assertThat(cut.getUrls().size(), is(1));
 	}
-}
+	}
