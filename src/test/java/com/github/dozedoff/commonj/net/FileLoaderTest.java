@@ -22,9 +22,27 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 public class FileLoaderTest {
-	FileLoader cut;
-	DataDownloader ddl;
-	FileLoaderAction actions;
+	private static final int DEFAULT_TIMEOUT = 200;
+
+	private FileLoader cut;
+	private DataDownloader ddl;
+	private FileLoaderAction actions;
+
+	private void addDefaultSet() throws MalformedURLException {
+		addSingleEntry();
+		cut.add(new URL("http://example.com/bar"), "bar");
+		cut.add(new URL("http://example.com/baz"), "baz");
+	}
+
+	private void addNumberOfInstance(URL url, String filename, int noOfCopies) throws MalformedURLException {
+		for (int i = 0; i < noOfCopies; i++) {
+			cut.add(url, filename);
+		}
+	}
+
+	private void addSingleEntry() throws MalformedURLException {
+		addNumberOfInstance(new URL("http://example.com"), "foo", 1);
+	}
 
 	@Before
 	public void setUp() throws Exception {
