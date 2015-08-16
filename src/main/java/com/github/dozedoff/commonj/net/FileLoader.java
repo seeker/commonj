@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Class for downloading files from the Internet.
  */
-public abstract class FileLoader {
+public class FileLoader {
 	private static final Logger logger = LoggerFactory.getLogger(FileLoader.class);
 
 	protected LinkedBlockingQueue<DownloadItem> downloadList = new LinkedBlockingQueue<DownloadItem>();
@@ -28,6 +28,7 @@ public abstract class FileLoader {
 	protected int fileQueueWorkers;
 
 	private DataDownloader dataDownloader;
+	private FileLoaderAction actions;
 
 	protected File workingDir;
 
@@ -41,10 +42,17 @@ public abstract class FileLoader {
 		this(workingDir,fileQueueWorkers,new GetBinary());
 	}
 	
+	@Deprecated
 	public FileLoader(File workingDir, int fileQueueWorkers, DataDownloader dataDownloader) {
+		// TODO when this constructor is removed, change the protected methods to private
+		this(workingDir, fileQueueWorkers, dataDownloader, new FileLoaderActionDefault());
+	}
+	
+	public FileLoader(File workingDir, int fileQueueWorkers, DataDownloader dataDownloader, FileLoaderAction actions) {
 		this.workingDir = workingDir;
 		this.fileQueueWorkers = fileQueueWorkers;
 		this.dataDownloader = dataDownloader;
+		this.actions = actions;
 		setUp(fileQueueWorkers);
 	}
 
@@ -58,8 +66,8 @@ public abstract class FileLoader {
 	 * @return if true operation will continue
 	 */
 	protected boolean beforeFileAdd(URL url, String fileName) {
-		return true;
-	} // code to run before adding a file to the list
+		return actions.beforeFileAdd(url, fileName);
+	}
 
 	/**
 	 * Run after a file was added to the list.
@@ -70,7 +78,8 @@ public abstract class FileLoader {
 	 *            relative path to working directory
 	 */
 	protected void afterFileAdd(URL url, String fileName) {
-	} // code to run after adding a file to the list
+		actions.afterFileAdd(url, fileName);
+	}
 
 	public void add(URL url, String fileName) {
 		if (!beforeFileAdd(url, fileName)) {
@@ -109,6 +118,7 @@ public abstract class FileLoader {
 	 * Called after the queue has been cleared.
 	 */
 	protected void afterClearQueue() {
+		actions.afterClearQueue();
 	}
 
 	/**
@@ -145,7 +155,7 @@ public abstract class FileLoader {
 	 *            the PageLoadException that was thrown
 	 */
 	protected void onPageLoadException(PageLoadException ple) {
-		logger.warn("Unable to load {} , response is {}", ple.getUrl(), ple.getResponseCode());
+		actions.onPageLoadException(ple);
 	}
 
 	/**
@@ -155,7 +165,7 @@ public abstract class FileLoader {
 	 *            the IOException that was thrown
 	 */
 	protected void onIOException(IOException ioe) {
-		logger.warn("Unable to load page {}", ioe.getMessage());
+		actions.onIOException(ioe);
 	}
 
 	/**
@@ -168,7 +178,9 @@ public abstract class FileLoader {
 	 * @param url
 	 *            the url of the file
 	 */
-	abstract protected void afterFileDownload(byte[] data, File fullpath, URL url);
+	protected void afterFileDownload(byte[] data, File fullpath, URL url) {
+		actions.afterFileDownload(data, fullpath, url);
+	}
 
 	private void setUp(int fileWorkers) {
 		logger.debug("Setting up FileLoader with {} workers", fileWorkers);
@@ -214,6 +226,7 @@ public abstract class FileLoader {
 	 *            the DownloadItem that was processed
 	 */
 	protected void afterProcessItem(DownloadItem di) {
+		actions.afterProcessItem(di);
 	}
 
 	/**
@@ -224,7 +237,7 @@ public abstract class FileLoader {
 	 * @return return true if the item should be processed, or false to discard
 	 */
 	protected boolean beforeProcessItem(DownloadItem di) {
-		return true;
+		return actions.beforeProcessItem(di);
 	}
 
 	class DownloadWorker extends Thread {
