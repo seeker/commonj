@@ -90,11 +90,9 @@ public class FileLoaderTest {
 	
 	@Test
 	public void testAddAlreadyInQueue() throws Exception {
-		cut.setDownloadSleep(70);
+		addNumberOfInstance(new URL("http://example.com"), "foo", 5);
 
-		addNumberOfInstance(new URL("http://example.com"), "foo", 3);
-
-		verify(actions, timeout(DEFAULT_TIMEOUT).times(2)).afterFileAdd(any(URL.class), any(String.class));
+		verify(actions, after(DEFAULT_TIMEOUT).atMost(2)).afterFileAdd(any(URL.class), any(String.class));
 	}
 
 	@Test
@@ -131,7 +129,6 @@ public class FileLoaderTest {
 		cut.shutdown();
 		
 		verify(actions).afterClearQueue();
-		verify(actions, after(DEFAULT_TIMEOUT)).afterFileDownload(any(byte[].class), any(File.class), any(URL.class));
 	}
 	
 	@Test
