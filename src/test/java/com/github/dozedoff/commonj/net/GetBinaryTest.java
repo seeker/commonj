@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.junit.AfterClass;
@@ -40,7 +41,7 @@ public class GetBinaryTest {
 	static final int SERVER_PORT = 5400;
 
 	private static enum Pages {
-		data, data2, range, wait
+		data, data2, range, wait, notok
 	};
 
 	HashMap<Pages, URL> pageURLs = new HashMap<>();
@@ -77,11 +78,23 @@ public class GetBinaryTest {
 		byte[] data = getBinary.getViaHttp(getURL(Pages.data));
 		assertThat(data, is(testData));
 	}
+	
+	@Test
+	public void testGetViaHttpString() throws IOException {
+		testData = generateRandomData(25);
+		byte[] data = getBinary.getViaHttp(getURL(Pages.data).toString());
+		assertThat(data, is(testData));
+	}
 
 	@Test(timeout = READ_TIMEOUT_TEST, expected = SocketTimeoutException.class)
 	public void testGetViaHttpTimeout() throws IOException {
 		getBinary.setReadTimeout(READ_TIMEOUT_CLASS);
 		getBinary.getViaHttp(getURL(Pages.wait));
+	}
+	
+	@Test(expected=PageLoadException.class)
+	public void testGetViaHttpBadRequest() throws IOException {
+		getBinary.getViaHttp(getURL(Pages.notok));
 	}
 
 	@Test
@@ -141,7 +154,7 @@ public class GetBinaryTest {
 		server.stop();
 		getBinary.getViaHttp(getURL(Pages.data));
 	}
-
+	
 	static class TestHandler extends AbstractHandler {
 		@Override
 		public void handle(String arg0, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException,
@@ -178,7 +191,11 @@ public class GetBinaryTest {
 				} catch (InterruptedException e) {
 				}
 				break;
-
+				
+			case notok:
+				response.setStatus(Response.SC_BAD_REQUEST);
+				break;
+				
 			default:
 				throw new IllegalArgumentException("Unknown page");
 			}
