@@ -6,6 +6,8 @@
 package com.github.dozedoff.commonj.net;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
@@ -14,6 +16,7 @@ import java.net.MalformedURLException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -160,6 +163,41 @@ public class GetBinaryTest {
 		getBinary.getViaHttp(getURL(Pages.data));
 	}
 	
+	@Test
+	public void testRetry() throws Exception {
+		int dataSize = 25;
+		testData = generateRandomData(dataSize);
+		URL url = getURL(Pages.data);
+		
+		ByteBuffer buffer = ByteBuffer.allocate(dataSize);
+		
+		boolean response = getBinary.retry(url, buffer, dataSize);
+		byte[] data = bufferToArray(buffer, dataSize);
+		
+		assertThat(response, is(true));
+		assertThat(data, is(equalTo(testData)));
+	}
+	
+	@Test
+	public void testRetryOutOfRetries() throws Exception {
+		int dataSize = 25;
+		testData = generateRandomData(dataSize);
+		URL url = getURL(Pages.notok);
+		
+		ByteBuffer buffer = ByteBuffer.allocate(dataSize);
+		
+		boolean response = getBinary.retry(url, buffer, dataSize);
+		
+		assertThat(response, is(false));
+	}
+	
+	private byte[] bufferToArray(ByteBuffer buffer, int dataSize) {
+		buffer.flip();
+		byte[] data = new byte[dataSize];
+		buffer.get(data);
+		return data;
+	}
+
 	static class TestHandler extends AbstractHandler {
 		@Override
 		public void handle(String arg0, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException,

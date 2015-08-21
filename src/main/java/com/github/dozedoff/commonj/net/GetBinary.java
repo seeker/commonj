@@ -182,7 +182,8 @@ public class GetBinary implements DataDownloader {
 		}
 	}
 
-	private boolean retry(URL url, ByteBuffer buffer, long contentLength) throws PageLoadException, IOException {
+	//TODO change this back to private once refactoring is done
+	protected boolean retry(URL url, ByteBuffer buffer, long contentLength) throws PageLoadException, IOException {
 
 		int failCount = 0;
 
