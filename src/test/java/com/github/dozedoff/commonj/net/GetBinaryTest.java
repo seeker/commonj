@@ -156,13 +156,6 @@ public class GetBinaryTest {
 		getBinary.getViaHttp(getURL(Pages.wait));
 	}
 
-	@Test(timeout = 10000, expected = SocketException.class)
-	public void testConnectionFail() throws Exception {
-		getBinary.setMaxRetry(0);
-		server.stop();
-		getBinary.getViaHttp(getURL(Pages.data));
-	}
-	
 	@Test
 	public void testRetry() throws Exception {
 		int dataSize = 25;
