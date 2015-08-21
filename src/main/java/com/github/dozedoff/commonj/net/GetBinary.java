@@ -33,7 +33,7 @@ public class GetBinary implements DataDownloader {
 	private int maxRetry = 3;
 	private int readTimeoutInMilli = 10000;
 	private final static Logger logger = LoggerFactory.getLogger(GetBinary.class);
-	private final static String userAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:2.0) Gecko/20100101 Firefox/4.0";
+	private final static String userAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.0";
 
 	private HttpClient httpClient;
 
