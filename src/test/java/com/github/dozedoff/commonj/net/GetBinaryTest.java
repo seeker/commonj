@@ -6,14 +6,12 @@
 package com.github.dozedoff.commonj.net;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.nio.ByteBuffer;
@@ -223,7 +221,7 @@ public class GetBinaryTest {
 
 			case wait:
 				try {
-					Thread.sleep(12000);
+					Thread.sleep(2000);
 				} catch (InterruptedException e) {
 				}
 				break;
