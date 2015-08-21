@@ -41,7 +41,7 @@ public class GetBinaryTest {
 	static final int SERVER_PORT = 5400;
 
 	private static enum Pages {
-		data, data2, range, wait, notok
+		data, data2, range, wait, notok, error
 	};
 
 	HashMap<Pages, URL> pageURLs = new HashMap<>();
@@ -95,6 +95,11 @@ public class GetBinaryTest {
 	@Test(expected=PageLoadException.class)
 	public void testGetViaHttpBadRequest() throws IOException {
 		getBinary.getViaHttp(getURL(Pages.notok));
+	}
+	
+	@Test(expected=IOException.class)
+	public void testGetViaHttpIOExceptiom() throws IOException {
+		getBinary.getViaHttp(getURL(Pages.error));
 	}
 
 	@Test
@@ -194,6 +199,10 @@ public class GetBinaryTest {
 				
 			case notok:
 				response.setStatus(Response.SC_BAD_REQUEST);
+				break;
+				
+			case error:
+				response.sendError(Response.SC_BAD_REQUEST);
 				break;
 				
 			default:
