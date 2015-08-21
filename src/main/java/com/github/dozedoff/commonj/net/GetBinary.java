@@ -193,7 +193,7 @@ public class GetBinary implements DataDownloader {
 
 			try {
 				failCount++;
-				byte[] data = getRange(url, buffer.position(), contentLength - 1);
+				byte[] data = getRange(url, buffer.position(), contentLength);
 				buffer.put(data);
 				failCount--;
 			} catch (PageLoadException ple) {
