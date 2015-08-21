@@ -81,7 +81,7 @@ public class GetBinary implements DataDownloader {
 		try {
 			ContentResponse response = getDefaultRequest(url).method(HttpMethod.GET).header("Range", "bytes=" + start + "-" + l).send();
 			
-			if (response.getStatus() != 206) {
+			if (response.getStatus() != Response.SC_PARTIAL_CONTENT) {
 				throw new PageLoadException(response.getReason(), response.getStatus());
 			}
 			

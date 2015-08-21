@@ -34,20 +34,19 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class GetBinaryTest {
-	GetBinary getBinary;
-	static Server server;
-	static TestHandler testHandler;
-	
 	static final int SERVER_PORT = 5400;
-
+	static final int TEST_DATA_SIZE = 25;
+	static final int READ_TIMEOUT_CLASS = 100;
+	static final int READ_TIMEOUT_TEST = 1500;
+	
 	private static enum Pages {
 		data, range, wait, notok, error
 	};
-
+	
+	GetBinary getBinary;
+	static Server server;
+	static TestHandler testHandler;
 	HashMap<Pages, URL> pageURLs = new HashMap<>();
-
-	static final int READ_TIMEOUT_CLASS = 100;
-	static final int READ_TIMEOUT_TEST = 1500;
 
 	@BeforeClass
 	public static void startServer() throws Exception {
@@ -76,14 +75,14 @@ public class GetBinaryTest {
 
 	@Test
 	public void testGetViaHttp() throws IOException {
-		testHandler.setTestData(generateRandomData(25));
+		testHandler.setTestData(generateRandomData(TEST_DATA_SIZE));
 		byte[] data = getBinary.getViaHttp(getURL(Pages.data));
 		assertThat(data, is(testHandler.getTestData()));
 	}
 	
 	@Test
 	public void testGetViaHttpString() throws IOException {
-		testHandler.setTestData(generateRandomData(25));
+		testHandler.setTestData(generateRandomData(TEST_DATA_SIZE));
 		byte[] data = getBinary.getViaHttp(getURL(Pages.data).toString());
 		assertThat(data, is(testHandler.getTestData()));
 	}
@@ -106,7 +105,7 @@ public class GetBinaryTest {
 
 	@Test
 	public void testGetLenght() throws Exception {
-		testHandler.setTestData(generateRandomData(25));
+		testHandler.setTestData(generateRandomData(TEST_DATA_SIZE));
 		Long size = getBinary.getLenght(getURL(Pages.data));
 		assertThat(size, is((long) testHandler.getTestData().length));
 	}
@@ -119,26 +118,29 @@ public class GetBinaryTest {
 
 	@Test
 	public void testGetHeader() throws Exception {
-		testHandler.setTestData(generateRandomData(5000));
+		int dataLength = 5000;
+		testHandler.setTestData(generateRandomData(dataLength));
 		Map<String, List<String>> header = getBinary.getHeader(getURL(Pages.data));
 
 		assertThat(header.containsKey("Content-Length"), is(true));
-		assertThat(header.get("Content-Length").get(0), is("5000"));
+		assertThat(header.get("Content-Length").get(0), is(Integer.toString(dataLength)));
 	}
 
 	@Test
 	public void testGetRange() throws Exception {
-		testHandler.setTestData(generateRandomData(25));
-		byte[] subSet = Arrays.copyOfRange(testHandler.getTestData(), 10, 25);
+		int dataOffset = 10;
+		testHandler.setTestData(generateRandomData(TEST_DATA_SIZE));
+		byte[] subSet = Arrays.copyOfRange(testHandler.getTestData(), dataOffset, TEST_DATA_SIZE);
 
-		byte[] data = getBinary.getRange(getURL(Pages.data), 10, 15);
+		byte[] data = getBinary.getRange(getURL(Pages.data), dataOffset, TEST_DATA_SIZE-dataOffset);
 		assertThat(data, is(subSet));
 	}
 
 	@Test(timeout = READ_TIMEOUT_TEST, expected = SocketTimeoutException.class)
 	public void testGetRangeTimeout() throws Exception {
+		int dataOffset = 10;
 		getBinary.setReadTimeout(READ_TIMEOUT_CLASS);
-		getBinary.getRange(getURL(Pages.wait), 10, 15);
+		getBinary.getRange(getURL(Pages.wait), dataOffset, TEST_DATA_SIZE-dataOffset);
 	}
 
 	@Test(timeout = 5000)
@@ -146,7 +148,7 @@ public class GetBinaryTest {
 		int iterations = 3;
 		
 		for (int i=0; i<iterations; i++){
-			testHandler.setTestData(generateRandomData(25));
+			testHandler.setTestData(generateRandomData(TEST_DATA_SIZE));
 			assertThat(getBinary.getViaHttp(getURL(Pages.data)), is(testHandler.getTestData()));
 		}
 	}
@@ -160,14 +162,13 @@ public class GetBinaryTest {
 
 	@Test
 	public void testRetry() throws Exception {
-		int dataSize = 25;
-		testHandler.setTestData(generateRandomData(dataSize));
+		testHandler.setTestData(generateRandomData(TEST_DATA_SIZE));
 		URL url = getURL(Pages.data);
 		
-		ByteBuffer buffer = ByteBuffer.allocate(dataSize);
+		ByteBuffer buffer = ByteBuffer.allocate(TEST_DATA_SIZE);
 		
-		boolean response = getBinary.retry(url, buffer, dataSize);
-		byte[] data = bufferToArray(buffer, dataSize);
+		boolean response = getBinary.retry(url, buffer, TEST_DATA_SIZE);
+		byte[] data = bufferToArray(buffer, TEST_DATA_SIZE);
 		
 		assertThat(response, is(true));
 		assertThat(data, is(equalTo(testHandler.getTestData())));
@@ -175,13 +176,12 @@ public class GetBinaryTest {
 	
 	@Test
 	public void testRetryOutOfRetries() throws Exception {
-		int dataSize = 25;
-		testHandler.setTestData(generateRandomData(dataSize));
+		testHandler.setTestData(generateRandomData(TEST_DATA_SIZE));
 		URL url = getURL(Pages.notok);
 		
-		ByteBuffer buffer = ByteBuffer.allocate(dataSize);
+		ByteBuffer buffer = ByteBuffer.allocate(TEST_DATA_SIZE);
 		
-		boolean response = getBinary.retry(url, buffer, dataSize);
+		boolean response = getBinary.retry(url, buffer, TEST_DATA_SIZE);
 		
 		assertThat(response, is(false));
 	}
@@ -203,8 +203,6 @@ public class GetBinaryTest {
 		public void setTestData(byte[] testData) {
 			this.testData = testData;
 		}
-
-
 
 		@Override
 		public void handle(String arg0, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException,
