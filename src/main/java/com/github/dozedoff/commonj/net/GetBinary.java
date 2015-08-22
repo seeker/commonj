@@ -8,7 +8,6 @@ package com.github.dozedoff.commonj.net;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
-import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -111,17 +110,8 @@ public class GetBinary implements DataDownloader {
 			
 			return response.getContent();
 		} catch (InterruptedException | TimeoutException | ExecutionException e) {
-			// TODO replace this legacy code with a better solution
-			long contentLenght = getLenght(url);
-			ByteBuffer dataBuffer = ByteBuffer.allocate((int)contentLenght);
-			
-			retry(url, dataBuffer, contentLenght);
-			
-			dataBuffer.flip();
-			byte[] varBuffer = new byte[dataBuffer.limit()];
-			dataBuffer.get(varBuffer);
-			dataBuffer.clear();
-			return varBuffer;
+			DownloadWithRetry downloadRetry = new DownloadWithRetry(this);
+			return downloadRetry.download(url, maxRetry);
 		}
 	}
 	
@@ -132,39 +122,6 @@ public class GetBinary implements DataDownloader {
 	private Request getDefaultRequest(URL url) {
 		return httpClient.newRequest(url.toString()).agent(userAgent)
 				.timeout(readTimeoutInMilli, TimeUnit.MILLISECONDS);
-	}
-
-	//TODO change this back to private once refactoring is done
-	protected boolean retry(URL url, ByteBuffer buffer, long contentLength) throws PageLoadException, IOException {
-		int failCount = 0;
-
-		while (failCount < maxRetry) {
-			Object[] logData = { url, maxRetry - failCount, buffer.position(), buffer.limit() };
-			logger.info("Retrying {}, {} tries left, got {} of {} bytes", logData);
-
-			try {
-				failCount++;
-				byte[] data = getRange(url, buffer.position(), contentLength);
-				buffer.put(data);
-				failCount--;
-			} catch (PageLoadException ple) {
-				logger.warn("Failed to load page with {} during retry for {}", ple.getMessage(), url);
-			} catch (IOException ioe) {
-				logger.warn("Connection issue ({}) during retry for {}", ioe.getMessage(), url);
-			}
-
-			if (!buffer.hasRemaining()) {
-				// all data received
-				break;
-			}
-
-			if (failCount >= maxRetry) {
-				logger.warn("Out of retries for {}, giving up...", url);
-				return false;
-			}
-		}
-
-		return true;
 	}
 
 	public int getMaxRetry() {
