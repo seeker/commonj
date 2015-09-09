@@ -11,19 +11,11 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.http.HttpFields;
-import org.eclipse.jetty.http.HttpMethod;
-import org.eclipse.jetty.server.Response;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Class for downloading binary data from the Internet.
@@ -31,26 +23,29 @@ import org.slf4j.LoggerFactory;
 public class GetBinary implements DataDownloader {
 	private int maxRetry = 3;
 	private int readTimeoutInMilli = 10000;
-	private final static Logger logger = LoggerFactory.getLogger(GetBinary.class);
-	private final static String userAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.0";
 
-	private HttpClient httpClient;
-
+	private IHttpClient httpClient;
+	/**
+	 * Use {@link GetBinary#GetBinary(HttpClient)} instead.
+	 */
+	@Deprecated
 	public GetBinary() {
-		httpClient = new HttpClient();
-		httpClient.setConnectTimeout(readTimeoutInMilli);
-		
 		try {
-			httpClient.start();
+			this.httpClient = new JettyHttpClient();
+			httpClient.setTimeout(readTimeoutInMilli, TimeUnit.MILLISECONDS);
 		} catch (Exception e) {
 			throw new RuntimeException("Failed to start HttpClient");
 		}
 	}
+	
+	public GetBinary(IHttpClient httpClient) throws Exception {
+		this.httpClient = httpClient;
+		httpClient.setTimeout(readTimeoutInMilli, TimeUnit.MILLISECONDS);
+	}
 
 	public Long getLenght(URL url) throws IOException, PageLoadException {
 		try {
-			ContentResponse response = getHeaderResponse(url);
-			return response.getHeaders().getLongField("content-length");
+			return httpClient.getLenght(url);
 		} catch (TimeoutException toe) {
 			throw new SocketTimeoutException(toe.getMessage()); // re-throw exception for API compatibility
 		} catch (InterruptedException | ExecutionException e) {
@@ -59,33 +54,16 @@ public class GetBinary implements DataDownloader {
 	}
 
 	public Map<String, List<String>> getHeader(URL url) throws IOException {
-			Map<String, List<String>> headers = new HashMap<String, List<String>>();
-		
 			try {
-				ContentResponse response = getHeaderResponse(url);
-				HttpFields fields = response.getHeaders();
-				Set<String> fieldKeys = fields.getFieldNamesCollection();
-				
-				for (String key : fieldKeys) {
-					headers.put(key, fields.getValuesList(key));
-				}
-			} catch (InterruptedException | TimeoutException| ExecutionException e) {
-				logger.error("Failed to get headers due to {}", e);
+				return httpClient.getHeader(url);
+			} catch (InterruptedException | TimeoutException | ExecutionException e) {
+				return new HashMap<String, List<String>>();
 			}
-			
-			return headers;
 	}
 
 	public byte[] getRange(URL url, int start, long l) throws IOException, PageLoadException {
 		try {
-			ContentResponse response = getDefaultRequest(url).method(HttpMethod.GET).header("Range", "bytes=" + start + "-" + l).send();
-			
-			if (response.getStatus() != Response.SC_PARTIAL_CONTENT) {
-				throw new PageLoadException(response.getReason(), response.getStatus());
-			}
-			
-			return response.getContent();
-			
+			return httpClient.getDataRange(url, start, l);
 		} catch (TimeoutException toe) {
 			throw new SocketTimeoutException(toe.getMessage());
 		} catch (InterruptedException | ExecutionException e1) {
@@ -98,30 +76,12 @@ public class GetBinary implements DataDownloader {
 	}
 
 	public byte[] getViaHttp(URL url) throws IOException, PageLoadException {
-		Request request = getDefaultRequest(url).method(HttpMethod.GET);
-		ContentResponse response;
-		
 		try {
-			response = request.send();
-			
-			if(response.getStatus() != Response.SC_OK) {
-				throw new PageLoadException(response.getReason(), response.getStatus());
-			}
-			
-			return response.getContent();
+			return httpClient.getData(url);
 		} catch (InterruptedException | TimeoutException | ExecutionException e) {
 			DownloadWithRetry downloadRetry = new DownloadWithRetry(this);
 			return downloadRetry.download(url, maxRetry);
 		}
-	}
-	
-	private ContentResponse getHeaderResponse(URL url) throws InterruptedException, TimeoutException, ExecutionException {
-		return getDefaultRequest(url).method(HttpMethod.HEAD).send();
-	}
-	
-	private Request getDefaultRequest(URL url) {
-		return httpClient.newRequest(url.toString()).agent(userAgent)
-				.timeout(readTimeoutInMilli, TimeUnit.MILLISECONDS);
 	}
 
 	public int getMaxRetry() {
@@ -135,8 +95,7 @@ public class GetBinary implements DataDownloader {
 	public boolean setReadTimeout(int milliSeconds) {
 		if (milliSeconds >= 0) {
 			this.readTimeoutInMilli = milliSeconds;
-			httpClient.setConnectTimeout(milliSeconds);
-			httpClient.setIdleTimeout(milliSeconds);
+			httpClient.setTimeout(milliSeconds, TimeUnit.MILLISECONDS);
 			return true;
 		} else {
 			return false;

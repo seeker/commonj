@@ -61,7 +61,8 @@ public class GetBinaryTest {
 
 	@Before
 	public void setUp() throws Exception {
-		getBinary = new GetBinary();
+		JettyHttpClient httpClient = new JettyHttpClient();
+		getBinary = new GetBinary(httpClient);
 		testHandler.setTestData(new byte[0]);
 		server.start();
 	}
