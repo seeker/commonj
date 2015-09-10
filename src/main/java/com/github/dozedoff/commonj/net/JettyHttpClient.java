@@ -56,7 +56,7 @@ public class JettyHttpClient implements IHttpClient {
 
 		ContentResponse response = getHeaderResponse(url);
 		HttpFields fields = response.getHeaders();
-		Set<String> fieldKeys = fields.getFieldNamesCollection();
+		Set<String> fieldKeys = (Set<String>) fields.getFieldNamesCollection();
 
 		for (String key : fieldKeys) {
 			headers.put(key, fields.getValuesList(key));
