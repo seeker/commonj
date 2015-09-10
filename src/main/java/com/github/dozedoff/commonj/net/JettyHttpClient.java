@@ -14,12 +14,14 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpMethod;
-import org.eclipse.jetty.server.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class JettyHttpClient implements IHttpClient {
 	private static final Logger logger = LoggerFactory.getLogger(JettyHttpClient.class);
+
+	private static final int RESPONSE_OK = 200;
+	private static final int RESPONSE_PARTIAL_CONTENT = 206;
 	
 	private HttpClient httpClient;
 	
@@ -67,7 +69,7 @@ public class JettyHttpClient implements IHttpClient {
 	public byte[] getDataRange(URL url, int start, long l) throws InterruptedException, TimeoutException, ExecutionException, PageLoadException {
 		ContentResponse response = getDefaultRequest(url).method(HttpMethod.GET).header("Range", "bytes=" + start + "-" + l).send();
 		
-		if (response.getStatus() != Response.SC_PARTIAL_CONTENT) {
+		if (response.getStatus() != RESPONSE_PARTIAL_CONTENT) {
 			throw new PageLoadException(response.getReason(), response.getStatus());
 		}
 		
@@ -81,7 +83,7 @@ public class JettyHttpClient implements IHttpClient {
 		
 		response = request.send();
 		
-		if(response.getStatus() != Response.SC_OK) {
+		if(response.getStatus() != RESPONSE_OK) {
 			throw new PageLoadException(response.getReason(), response.getStatus());
 		}
 		
