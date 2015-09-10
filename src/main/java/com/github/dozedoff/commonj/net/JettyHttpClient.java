@@ -91,7 +91,11 @@ public class JettyHttpClient implements IHttpClient {
 	}
 
 	@Override
-	public void setUserAgent(String userAgent) {
+	public void setUserAgent(String userAgent) throws IllegalArgumentException {
+		if (userAgent == null) {
+			throw new IllegalArgumentException("User Agent cannot be null");
+		}
+
 		this.userAgent = userAgent;
 	}
 
@@ -101,7 +105,11 @@ public class JettyHttpClient implements IHttpClient {
 	}
 
 	@Override
-	public void setTimeout(long value, TimeUnit timeUnit) {
+	public void setTimeout(long value, TimeUnit timeUnit) throws IllegalArgumentException{
+		if(value < 0){
+			throw new IllegalArgumentException("Timeout value must be 0 or greater");
+		}
+		
 		this.timeoutInMilliseconds = TimeUnit.MILLISECONDS.convert(value, timeUnit);
 		httpClient.setIdleTimeout(timeoutInMilliseconds);
 		httpClient.setConnectTimeout(timeoutInMilliseconds);
