@@ -14,6 +14,7 @@ import com.github.dozedoff.commonj.net.DownloadWithRetryTest;
 import com.github.dozedoff.commonj.net.FileLoaderTest;
 import com.github.dozedoff.commonj.net.GetBinaryTest;
 import com.github.dozedoff.commonj.net.GetHtmlTest;
+import com.github.dozedoff.commonj.net.JettyHttpClientTest;
 
 @RunWith(Suite.class)
 @SuiteClasses({ 
@@ -21,7 +22,8 @@ import com.github.dozedoff.commonj.net.GetHtmlTest;
 	GetHtmlTest.class,
 	DownloadItemTest.class,
 	FileLoaderTest.class,
-	DownloadWithRetryTest.class
+	DownloadWithRetryTest.class,
+	JettyHttpClientTest.class
 })
 public class NetTests {
 
