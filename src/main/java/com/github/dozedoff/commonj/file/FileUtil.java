@@ -20,7 +20,17 @@ import java.util.Scanner;
 public class FileUtil {
 	private static final String[] ILLEGAL_FILENAME_CHARS = { "/", "\\", ":", "?", "\"", "<", ">", "|" };
 
+	/**
+	 * Use {@link FileUtil#workingDir() instead}
+	 * 
+	 * @return
+	 */
+	@Deprecated
 	public static File WorkingDir() {
+		return workingDir();
+	}
+
+	public static File workingDir() {
 		return new File(System.getProperty("user.dir"));
 	}
 
