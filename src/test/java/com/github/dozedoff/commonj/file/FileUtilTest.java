@@ -20,10 +20,35 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.LinkedList;
 
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
 public class FileUtilTest {
+	private LinkedList<Path> srcDirs;
+	private LinkedList<Path> srcFiles;
+	private LinkedList<Path> dstDirs;
+	private LinkedList<Path> dstFiles;
+	
+	private Path baseDir;
+	private Path srcDir;
+	private Path dstDir;
+	
+	@Before
+	public void setUp() throws Exception {
+		srcDirs = new LinkedList<>();
+		srcFiles = new LinkedList<>();
+		dstDirs = new LinkedList<>();
+		dstFiles = new LinkedList<>();
+
+		baseDir = Files.createTempDirectory("testFileUtil");
+
+		srcDir = baseDir.resolve("src").resolve("test");
+		srcDirs.add(srcDir);
+
+		dstDir = baseDir.resolve("dst").resolve("test");
+		dstDirs.add(dstDir);
+	}
 
 	@Test
 	public void testPathTokenList_LocalFileName() {
@@ -52,21 +77,6 @@ public class FileUtilTest {
 		/*
 		 * \test │ a.txt │ └───dir1 │ b.txt │ └───dir2 c.txt
 		 */
-		Path baseDir = Files.createTempDirectory("testDirectoryMover");
-
-		LinkedList<Path> srcDirs, srcFiles;
-		LinkedList<Path> dstDirs, dstFiles;
-
-		srcDirs = new LinkedList<>();
-		srcFiles = new LinkedList<>();
-		dstDirs = new LinkedList<>();
-		dstFiles = new LinkedList<>();
-
-		Path srcDir = baseDir.resolve("src").resolve("test");
-		srcDirs.add(srcDir);
-
-		Path dstDir = baseDir.resolve("dst").resolve("test");
-		dstDirs.add(dstDir);
 
 		buildStructure(srcDirs, srcFiles, srcDir);
 
@@ -87,21 +97,6 @@ public class FileUtilTest {
 
 	@Test
 	public void testCopyFile() throws IOException {
-		Path baseDir = Files.createTempDirectory("testFileMover");
-
-		LinkedList<Path> srcDirs, srcFiles;
-		LinkedList<Path> dstDirs;
-
-		srcDirs = new LinkedList<>();
-		srcFiles = new LinkedList<>();
-		dstDirs = new LinkedList<>();
-
-		Path srcDir = baseDir.resolve("src").resolve("test");
-		srcDirs.add(srcDir);
-
-		Path dstDir = baseDir.resolve("dst").resolve("test");
-		dstDirs.add(dstDir);
-
 		buildStructure(srcDirs, srcFiles, srcDir);
 
 		createFiles(srcDirs, srcFiles);
