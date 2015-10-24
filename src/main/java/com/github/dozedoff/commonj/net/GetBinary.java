@@ -15,18 +15,18 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.eclipse.jetty.client.HttpClient;
-
 /**
  * Class for downloading binary data from the Internet.
+ * Use {@link IHttpClient} instead.
  */
+@Deprecated
 public class GetBinary implements DataDownloader {
 	private int maxRetry = 3;
 	private int readTimeoutInMilli = 10000;
 
 	private IHttpClient httpClient;
 	/**
-	 * Use {@link GetBinary#GetBinary(HttpClient)} instead.
+	 * Use {@link IHttpClient} instead.
 	 */
 	@Deprecated
 	public GetBinary() {
@@ -38,11 +38,19 @@ public class GetBinary implements DataDownloader {
 		}
 	}
 	
+	/**
+	 * Use {@link IHttpClient} instead.
+	 */
+	@Deprecated
 	public GetBinary(IHttpClient httpClient) throws Exception {
 		this.httpClient = httpClient;
 		httpClient.setTimeout(readTimeoutInMilli, TimeUnit.MILLISECONDS);
 	}
 
+	/**
+	 * Use {@link IHttpClient#getLenght(URL)} instead.
+	 */
+	@Deprecated
 	public Long getLenght(URL url) throws IOException, PageLoadException {
 		try {
 			return httpClient.getLenght(url);
@@ -53,6 +61,10 @@ public class GetBinary implements DataDownloader {
 		}
 	}
 
+	/**
+	 * Use {@link IHttpClient#getHeader(URL)} instead.
+	 */
+	@Deprecated
 	public Map<String, List<String>> getHeader(URL url) throws IOException {
 			try {
 				return httpClient.getHeader(url);
@@ -61,6 +73,10 @@ public class GetBinary implements DataDownloader {
 			}
 	}
 
+	/**
+	 * Use {@link IHttpClient#getDataRange(URL, int, long)} instead.
+	 */
+	@Deprecated
 	public byte[] getRange(URL url, int start, long l) throws IOException, PageLoadException {
 		try {
 			return httpClient.getDataRange(url, start, l);
@@ -71,10 +87,18 @@ public class GetBinary implements DataDownloader {
 		}
 	}
 
+	/**
+	 * Use {@link IHttpClient#getData(URL)} instead.
+	 */
+	@Deprecated
 	public byte[] getViaHttp(String url) throws PageLoadException, IOException {
 		return getViaHttp(new URL(url));
 	}
 
+	/**
+	 * Use {@link IHttpClient#getData(URL)} instead.
+	 */
+	@Deprecated
 	public byte[] getViaHttp(URL url) throws IOException, PageLoadException {
 		try {
 			return httpClient.getData(url);
@@ -84,14 +108,26 @@ public class GetBinary implements DataDownloader {
 		}
 	}
 
+	/**
+	 * Use {@link IHttpClient} instead.
+	 */
+	@Deprecated
 	public int getMaxRetry() {
 		return maxRetry;
 	}
 
+	/**
+	 * Use {@link IHttpClient} instead.
+	 */
+	@Deprecated
 	public void setMaxRetry(int maxRetry) {
 		this.maxRetry = maxRetry;
 	}
 
+	/**
+	 * Use {@link IHttpClient#setTimeout(long, TimeUnit)} instead.
+	 */
+	@Deprecated
 	public boolean setReadTimeout(int milliSeconds) {
 		if (milliSeconds >= 0) {
 			this.readTimeoutInMilli = milliSeconds;
@@ -102,6 +138,10 @@ public class GetBinary implements DataDownloader {
 		}
 	}
 
+	/**
+	 * Use {@link IHttpClient#getData(URL)} instead.
+	 */
+	@Deprecated
 	@Override
 	public byte[] download(URL url) throws PageLoadException, IOException {
 		return getViaHttp(url);
