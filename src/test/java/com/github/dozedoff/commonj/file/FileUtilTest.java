@@ -7,6 +7,7 @@ package com.github.dozedoff.commonj.file;
 
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -20,10 +21,40 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.LinkedList;
 
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
 public class FileUtilTest {
+	private LinkedList<Path> srcDirs;
+	private LinkedList<Path> srcFiles;
+	private LinkedList<Path> dstDirs;
+	private LinkedList<Path> dstFiles;
+	
+	private Path baseDir;
+	private Path srcDir;
+	private Path dstDir;
+	private Path simplePath;
+	
+	private static final String SIMPLE_PATH = "C:\\foo\\bar\\";
+	
+	@Before
+	public void setUp() throws Exception {
+		srcDirs = new LinkedList<>();
+		srcFiles = new LinkedList<>();
+		dstDirs = new LinkedList<>();
+		dstFiles = new LinkedList<>();
+
+		baseDir = Files.createTempDirectory("testFileUtil");
+
+		srcDir = baseDir.resolve("src").resolve("test");
+		srcDirs.add(srcDir);
+
+		dstDir = baseDir.resolve("dst").resolve("test");
+		dstDirs.add(dstDir);
+		
+		simplePath = Paths.get(SIMPLE_PATH);
+	}
 
 	@Test
 	public void testPathTokenList_LocalFileName() {
@@ -52,21 +83,6 @@ public class FileUtilTest {
 		/*
 		 * \test │ a.txt │ └───dir1 │ b.txt │ └───dir2 c.txt
 		 */
-		Path baseDir = Files.createTempDirectory("testDirectoryMover");
-
-		LinkedList<Path> srcDirs, srcFiles;
-		LinkedList<Path> dstDirs, dstFiles;
-
-		srcDirs = new LinkedList<>();
-		srcFiles = new LinkedList<>();
-		dstDirs = new LinkedList<>();
-		dstFiles = new LinkedList<>();
-
-		Path srcDir = baseDir.resolve("src").resolve("test");
-		srcDirs.add(srcDir);
-
-		Path dstDir = baseDir.resolve("dst").resolve("test");
-		dstDirs.add(dstDir);
 
 		buildStructure(srcDirs, srcFiles, srcDir);
 
@@ -87,21 +103,6 @@ public class FileUtilTest {
 
 	@Test
 	public void testCopyFile() throws IOException {
-		Path baseDir = Files.createTempDirectory("testFileMover");
-
-		LinkedList<Path> srcDirs, srcFiles;
-		LinkedList<Path> dstDirs;
-
-		srcDirs = new LinkedList<>();
-		srcFiles = new LinkedList<>();
-		dstDirs = new LinkedList<>();
-
-		Path srcDir = baseDir.resolve("src").resolve("test");
-		srcDirs.add(srcDir);
-
-		Path dstDir = baseDir.resolve("dst").resolve("test");
-		dstDirs.add(dstDir);
-
 		buildStructure(srcDirs, srcFiles, srcDir);
 
 		createFiles(srcDirs, srcFiles);
@@ -115,6 +116,22 @@ public class FileUtilTest {
 
 		FileUtil.moveFileWithStructure(srcFiles.get(2), dstDir);
 		assertTrue(Files.exists(dstDir.resolve(srcFiles.get(2).getRoot().relativize(srcFiles.get(2)))));
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void testCopyFileSourceNull() throws IOException {
+		FileUtil.moveFileWithStructure(null, dstDir);
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void testCopyFileDestinationNull() throws IOException {
+		FileUtil.moveFileWithStructure(srcDir, null);
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void testCopyFileDestinationNoRootComponent() throws IOException {
+		Path noRoot = Paths.get("foo/");
+		FileUtil.moveFileWithStructure(noRoot, dstDir);
 	}
 
 	private void buildStructure(LinkedList<Path> dirs, LinkedList<Path> files, Path base) {
@@ -215,6 +232,13 @@ public class FileUtilTest {
 
 		assertThat(path, is("\\test\\me\\now\\squirrel.jpg"));
 	}
+	
+	@Test
+	public void testRemoveDriveLetterOnlyDirString() {
+		String path = FileUtil.removeDriveLetter("\\test\\me\\now\\");
+
+		assertThat(path, is("\\test\\me\\now\\"));
+	}
 
 	@Test
 	public void testRemoveDriveLetterNullString() {
@@ -266,5 +290,21 @@ public class FileUtilTest {
 	@Test
 	public void testHasValidWindowsFilenameString() {
 		assertThat(FileUtil.hasValidWindowsFilename("C:\foobar"), is(true));
+	}
+
+	@Test
+	public void testConvertDirPathToString() throws Exception {
+		assertThat(FileUtil.convertDirPathToString(simplePath), is(SIMPLE_PATH.toLowerCase()));
+	}
+	
+	@Test
+	public void testConvertDirPathToStringNoEndingSlashes() throws Exception {
+		String noSlashes = "c:\\foo\\bar";
+		assertThat(FileUtil.convertDirPathToString(Paths.get(noSlashes)), is(SIMPLE_PATH.toLowerCase()));
+	}
+	
+	@Test
+	public void testConvertDirPathToStringNull() throws Exception {
+		assertThat(FileUtil.convertDirPathToString(null), is(nullValue()));
 	}
 }

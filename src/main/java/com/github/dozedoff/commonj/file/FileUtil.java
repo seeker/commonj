@@ -17,10 +17,24 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class FileUtil {
 	private static final String[] ILLEGAL_FILENAME_CHARS = { "/", "\\", ":", "?", "\"", "<", ">", "|" };
+	private static final Logger logger = LoggerFactory.getLogger(FileUtil.class);
 
+	/**
+	 * Use {@link FileUtil#workingDir() instead}
+	 * 
+	 * @return
+	 */
+	@Deprecated
 	public static File WorkingDir() {
+		return workingDir();
+	}
+
+	public static File workingDir() {
 		return new File(System.getProperty("user.dir"));
 	}
 
@@ -73,10 +87,24 @@ public class FileUtil {
 	}
 
 	public static void moveFileWithStructure(Path source, Path dstDirectory) throws IOException {
-		Path relativeSource = source.getRoot().relativize(source);
+		if (source == null) {
+			throw new IllegalArgumentException("Source cannot be null");
+		}
+		
+		if (dstDirectory == null) {
+			throw new IllegalArgumentException("Destination directory cannot be null");
+		}
+		
+		Path relativeSource = relativizeToRoot(source);
 		Path destinationPath = dstDirectory.resolve(relativeSource);
+		
+		Path destinationParent = destinationPath.getParent();
 
-		Files.createDirectories(destinationPath.getParent());
+		if(destinationParent == null) {
+			throw new IllegalArgumentException("Destination path does not have a parent");
+		}
+		
+		Files.createDirectories(destinationParent);
 
 		Files.move(source, destinationPath);
 	}
@@ -84,7 +112,7 @@ public class FileUtil {
 	static public String convertDirPathToString(Path directory) {
 		if (directory == null) {
 			return null;
-		} else if ((directory.getRoot() != null) && (directory.getRoot().equals(directory))) {
+		} else if ((directory.getRoot() != null) && (directory.equals(directory.getRoot()))) {
 			return directory.toString().toLowerCase();
 		} else {
 			return directory.toString().toLowerCase() + "\\";
@@ -105,10 +133,20 @@ public class FileUtil {
 		}
 
 		if (path.isAbsolute()) {
-			return Paths.get(path.getRoot().relativize(path).toString());
+			return relativizeToRoot(path);
 		} else {
 			return path;
 		}
+	}
+	
+	private static Path relativizeToRoot(Path path) {
+		Path root = path.getRoot();
+		
+		if(root == null) {
+			throw new IllegalArgumentException("Path does not have a root component");
+		}
+		
+		return root.relativize(path);
 	}
 
 	static public String removeDriveLetter(String path) {
@@ -117,7 +155,14 @@ public class FileUtil {
 		}
 
 		Path relPath = removeDriveLetter(Paths.get(path));
-		String filename = relPath.getFileName().toString();
+		
+		Path filenamePath = relPath.getFileName();
+		
+		if(filenamePath == null) {
+			throw new IllegalArgumentException("Filename was null, path had zero elements.");
+		}
+		
+		String filename = filenamePath.toString();
 
 		if (filename.contains(".")) {
 			return relPath.toString();
@@ -168,7 +213,12 @@ public class FileUtil {
 		@Override
 		public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
 			File f = new File(dstDir.toFile(), srcDir.relativize(dir).toString());
-			f.mkdirs(); // create new directory with identical name in the destination directory
+			
+			 // create new directory with identical name in the destination directory
+			if(f.mkdirs() == false){
+				logger.error("Failed to create directory {}", f);
+			}
+			
 			currMoveDir = f.toPath();
 			return super.preVisitDirectory(dir, attrs);
 		}
