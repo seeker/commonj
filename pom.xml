@@ -49,6 +49,7 @@
 					<threshold>Low</threshold>
 					<xmlOutput>true</xmlOutput>
 					<includeTests>true</includeTests>
+					<failOnError>false</failOnError>
 				</configuration>
 				<executions>
 					<execution>
