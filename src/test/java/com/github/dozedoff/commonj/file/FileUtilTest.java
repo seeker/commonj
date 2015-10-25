@@ -25,6 +25,9 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
+@SuppressFBWarnings("DMI_HARDCODED_ABSOLUTE_FILENAME")
 public class FileUtilTest {
 	private LinkedList<Path> srcDirs;
 	private LinkedList<Path> srcFiles;
