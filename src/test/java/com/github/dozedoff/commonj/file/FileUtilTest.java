@@ -38,6 +38,7 @@ public class FileUtilTest {
 	
 	private static final String SIMPLE_PATH = "C:\\foo\\bar\\";
 	
+	
 	@Before
 	public void setUp() throws Exception {
 		srcDirs = new LinkedList<>();
@@ -145,13 +146,16 @@ public class FileUtilTest {
 
 	private void createFiles(LinkedList<Path> dirs, LinkedList<Path> files) throws IOException {
 		for (Path p : dirs) {
-			p.toFile().mkdirs();
+			if(p.toFile().mkdirs() ==false) {
+				throw new IOException("Folder setup failed");
+			}
 		}
 
 		for (Path p : files) {
-			p.toFile().createNewFile();
+			if (p.toFile().createNewFile()) {
+				throw new IOException("File setup failed");
+			}
 		}
-
 	}
 
 	@Test
