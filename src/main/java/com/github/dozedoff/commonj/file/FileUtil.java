@@ -114,7 +114,7 @@ public class FileUtil {
 	static public String convertDirPathToString(Path directory) {
 		if (directory == null) {
 			return null;
-		} else if ((directory.getRoot() != null) && (directory.getRoot().equals(directory))) {
+		} else if ((directory.getRoot() != null) && (directory.equals(directory.getRoot()))) {
 			return directory.toString().toLowerCase();
 		} else {
 			return directory.toString().toLowerCase() + "\\";

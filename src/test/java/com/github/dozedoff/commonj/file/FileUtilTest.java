@@ -7,6 +7,7 @@ package com.github.dozedoff.commonj.file;
 
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -33,6 +34,9 @@ public class FileUtilTest {
 	private Path baseDir;
 	private Path srcDir;
 	private Path dstDir;
+	private Path simplePath;
+	
+	private static final String SIMPLE_PATH = "C:\\foo\\bar\\";
 	
 	@Before
 	public void setUp() throws Exception {
@@ -48,6 +52,8 @@ public class FileUtilTest {
 
 		dstDir = baseDir.resolve("dst").resolve("test");
 		dstDirs.add(dstDir);
+		
+		simplePath = Paths.get(SIMPLE_PATH);
 	}
 
 	@Test
@@ -277,5 +283,21 @@ public class FileUtilTest {
 	@Test
 	public void testHasValidWindowsFilenameString() {
 		assertThat(FileUtil.hasValidWindowsFilename("C:\foobar"), is(true));
+	}
+
+	@Test
+	public void testConvertDirPathToString() throws Exception {
+		assertThat(FileUtil.convertDirPathToString(simplePath), is(SIMPLE_PATH.toLowerCase()));
+	}
+	
+	@Test
+	public void testConvertDirPathToStringNoEndingSlashes() throws Exception {
+		String noSlashes = "c:\\foo\\bar";
+		assertThat(FileUtil.convertDirPathToString(Paths.get(noSlashes)), is(SIMPLE_PATH.toLowerCase()));
+	}
+	
+	@Test
+	public void testConvertDirPathToStringNull() throws Exception {
+		assertThat(FileUtil.convertDirPathToString(null), is(nullValue()));
 	}
 }
