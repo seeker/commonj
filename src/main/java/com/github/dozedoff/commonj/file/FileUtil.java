@@ -151,7 +151,14 @@ public class FileUtil {
 		}
 
 		Path relPath = removeDriveLetter(Paths.get(path));
-		String filename = relPath.getFileName().toString();
+		
+		Path filenamePath = relPath.getFileName();
+		
+		if(filenamePath == null) {
+			throw new IllegalArgumentException("Filename was null, path had zero elements.");
+		}
+		
+		String filename = filenamePath.toString();
 
 		if (filename.contains(".")) {
 			return relPath.toString();
