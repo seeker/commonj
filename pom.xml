@@ -46,7 +46,7 @@
 				<version>3.0.1</version>
 				<configuration>
 					<effort>Max</effort>
-					<threshold>low</threshold>
+					<threshold>Low</threshold>
 					<xmlOutput>true</xmlOutput>
 				</configuration>
 				<executions>
