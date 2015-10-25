@@ -90,14 +90,8 @@ public class FileUtil {
 		if (dstDirectory == null) {
 			throw new IllegalArgumentException("Destination directory cannot be null");
 		}
-
-		Path sourceRoot = source.getRoot();
 		
-		if(sourceRoot == null) {
-			throw new IllegalArgumentException("Source does not have a root component");
-		}
-		
-		Path relativeSource = sourceRoot.relativize(source);
+		Path relativeSource = relativizeToRoot(source);
 		Path destinationPath = dstDirectory.resolve(relativeSource);
 		
 		Path destinationParent = destinationPath.getParent();
@@ -135,10 +129,20 @@ public class FileUtil {
 		}
 
 		if (path.isAbsolute()) {
-			return Paths.get(path.getRoot().relativize(path).toString());
+			return relativizeToRoot(path);
 		} else {
 			return path;
 		}
+	}
+	
+	private static Path relativizeToRoot(Path path) {
+		Path root = path.getRoot();
+		
+		if(root == null) {
+			throw new IllegalArgumentException("Path does not have a root component");
+		}
+		
+		return root.relativize(path);
 	}
 
 	static public String removeDriveLetter(String path) {
