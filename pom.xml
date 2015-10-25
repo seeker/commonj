@@ -48,6 +48,7 @@
 					<effort>Max</effort>
 					<threshold>Low</threshold>
 					<xmlOutput>true</xmlOutput>
+					<includeTests>true</includeTests>
 				</configuration>
 				<executions>
 					<execution>
