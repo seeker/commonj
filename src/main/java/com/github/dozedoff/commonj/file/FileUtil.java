@@ -83,10 +83,30 @@ public class FileUtil {
 	}
 
 	public static void moveFileWithStructure(Path source, Path dstDirectory) throws IOException {
-		Path relativeSource = source.getRoot().relativize(source);
-		Path destinationPath = dstDirectory.resolve(relativeSource);
+		if (source == null) {
+			throw new IllegalArgumentException("Source cannot be null");
+		}
+		
+		if (dstDirectory == null) {
+			throw new IllegalArgumentException("Destination directory cannot be null");
+		}
 
-		Files.createDirectories(destinationPath.getParent());
+		Path sourceRoot = source.getRoot();
+		
+		if(sourceRoot == null) {
+			throw new IllegalArgumentException("Source does not have a root component");
+		}
+		
+		Path relativeSource = sourceRoot.relativize(source);
+		Path destinationPath = dstDirectory.resolve(relativeSource);
+		
+		Path destinationParent = destinationPath.getParent();
+
+		if(destinationParent == null) {
+			throw new IllegalArgumentException("Destination path does not have a parent");
+		}
+		
+		Files.createDirectories(destinationParent);
 
 		Files.move(source, destinationPath);
 	}

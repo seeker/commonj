@@ -111,6 +111,22 @@ public class FileUtilTest {
 		FileUtil.moveFileWithStructure(srcFiles.get(2), dstDir);
 		assertTrue(Files.exists(dstDir.resolve(srcFiles.get(2).getRoot().relativize(srcFiles.get(2)))));
 	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void testCopyFileSourceNull() throws IOException {
+		FileUtil.moveFileWithStructure(null, dstDir);
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void testCopyFileDestinationNull() throws IOException {
+		FileUtil.moveFileWithStructure(srcDir, null);
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void testCopyFileDestinationNoRootComponent() throws IOException {
+		Path noRoot = Paths.get("foo/");
+		FileUtil.moveFileWithStructure(noRoot, dstDir);
+	}
 
 	private void buildStructure(LinkedList<Path> dirs, LinkedList<Path> files, Path base) {
 		dirs.add(base.resolve("dir1"));
