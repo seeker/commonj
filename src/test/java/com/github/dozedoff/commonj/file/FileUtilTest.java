@@ -24,6 +24,8 @@ import java.util.LinkedList;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -40,6 +42,7 @@ public class FileUtilTest {
 	private Path simplePath;
 	
 	private static final String SIMPLE_PATH = "C:\\foo\\bar\\";
+	private static final Logger logger = LoggerFactory.getLogger(FileUtilTest.class);
 	
 	
 	@Before
@@ -150,13 +153,13 @@ public class FileUtilTest {
 	private void createFiles(LinkedList<Path> dirs, LinkedList<Path> files) throws IOException {
 		for (Path p : dirs) {
 			if(p.toFile().mkdirs() ==false) {
-				throw new IOException("Folder setup failed");
+				logger.error("Failed to create directory {}", p);
 			}
 		}
 
 		for (Path p : files) {
 			if (p.toFile().createNewFile()) {
-				throw new IOException("File setup failed");
+				logger.error("Failed to create file {}", p);
 			}
 		}
 	}
