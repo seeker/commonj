@@ -17,8 +17,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class FileUtil {
 	private static final String[] ILLEGAL_FILENAME_CHARS = { "/", "\\", ":", "?", "\"", "<", ">", "|" };
+	private static final Logger logger = LoggerFactory.getLogger(FileUtil.class);
 
 	/**
 	 * Use {@link FileUtil#workingDir() instead}
@@ -209,7 +213,12 @@ public class FileUtil {
 		@Override
 		public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
 			File f = new File(dstDir.toFile(), srcDir.relativize(dir).toString());
-			f.mkdirs(); // create new directory with identical name in the destination directory
+			
+			 // create new directory with identical name in the destination directory
+			if(f.mkdirs() == false){
+				logger.error("Failed to create directory {}", f);
+			}
+			
 			currMoveDir = f.toPath();
 			return super.preVisitDirectory(dir, attrs);
 		}
