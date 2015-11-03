@@ -21,11 +21,11 @@ import org.junit.Test;
 public class FileInfoTest {
 	private FileInfo fi;
 
-	private final String testFile1 = "/foo/bar/test.dat";
-	private final String testFile2 = "/foo/bar.dat";
+	private static final String testFile1 = "/foo/bar/test.dat";
+	private static final String testFile2 = "/foo/bar.dat";
 
-	private final String testHash1 = "ABCDEF";
-	private final String testHash2 = "ABC";
+	private static final String testHash1 = "ABCDEF";
+	private static final String testHash2 = "ABC";
 
 	@Before
 	public void setUp() throws Exception {
