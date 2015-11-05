@@ -6,6 +6,7 @@
 package com.github.dozedoff.commonj.file;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.matchers.JUnitMatchers.hasItem;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
@@ -88,6 +90,10 @@ public class FileWalkerTest {
 	@Test
 	public void testGetCurrentDirectorySubdirectories() {
 		assertThat(FileWalker.getCurrentDirectorySubdirectories(rootPath), hasItems(folders[0].toPath(), folders[1].toPath()));
+
+		List<Path> result = FileWalker.getCurrentDirectorySubdirectories(rootPath);
+		assertThat(result, hasItems(folders[0].toPath(), folders[1].toPath()));
+		assertThat(result, not(hasItem(folders[2].toPath())));
 	}
 
 	@Test
