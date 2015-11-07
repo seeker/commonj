@@ -22,7 +22,7 @@ import com.github.dozedoff.commonj.util.FileIO;
  */
 public class HashMaker {
 	private static Logger logger = LoggerFactory.getLogger(HashMaker.class);
-	private final String DEFAULT_ALGORITHM = "SHA-256";
+	private static final String DEFAULT_ALGORITHM = "SHA-256";
 	MessageDigest md = null;
 
 	public HashMaker() {

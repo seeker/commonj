@@ -47,10 +47,10 @@ public class DirectoryHasher {
 
 		// check if the directory exists
 		if (!dir.exists()) {
-			throw new FileNotFoundException("Directory " + dir.toString() + " does not exist");
+			throw new FileNotFoundException("Directory " + dir + " does not exist");
 		}
 
-		logger.info("Starting to walk " + dir.toString());
+		logger.info("Starting to walk {}", dir);
 		java.nio.file.Files.walkFileTree(dir.toPath(), new DirectoryVisitor(filter));
 	}
 

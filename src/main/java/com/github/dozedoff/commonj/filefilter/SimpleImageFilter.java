@@ -9,8 +9,8 @@ import java.io.File;
 import java.io.FileFilter;
 
 public class SimpleImageFilter implements FileFilter {
-	private final String[] imageExtensions = { "jpg", "png", "gif" };
-	private final FileExtensionFilter fef = new FileExtensionFilter(imageExtensions);
+	private static final String[] IMAGE_EXTENSIONS = { "jpg", "png", "gif" };
+	private final FileExtensionFilter fef = new FileExtensionFilter(IMAGE_EXTENSIONS);
 
 	@Override
 	public boolean accept(File pathname) {

@@ -13,28 +13,48 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.github.dozedoff.commonj.filefilter.DirectoryFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.github.dozedoff.commonj.filefilter.SimpleImageFilter;
 
 /**
  * This class will search all folders and the respective subfolders for files and return them as a List of File items.
  */
 public class FileWalker {
+	private static final Logger logger = LoggerFactory.getLogger(FileWalker.class);
+
 	public static LinkedList<Path> getAllDirectories(Path startDirectory) throws IOException {
 		LinkedList<Path> directoryList = new LinkedList<>();
 		Files.walkFileTree(startDirectory, new DirectoryVisitor(directoryList));
 		return directoryList;
 	}
 
+	/**
+	 * Returns all directories in the given directory.
+	 * 
+	 * @param currentDirectory
+	 *            path to check
+	 * @return a list of paths for directories
+	 */
 	public static LinkedList<Path> getCurrentDirectorySubdirectories(Path currentDirectory) {
 		LinkedList<Path> subDirectories = new LinkedList<>();
-		File[] foundDirectories = currentDirectory.toFile().listFiles(new DirectoryFilter());
+		// TODO change return type to interface
+		try {
+			Iterator<Path> iter = Files.list(currentDirectory).iterator();
 
-		for (File file : foundDirectories) {
-			subDirectories.add(file.toPath());
+			while (iter.hasNext()) {
+				Path path = iter.next();
+				if (Files.isDirectory(path)) {
+					subDirectories.add(path);
+				}
+			}
+		} catch (IOException e) {
+			logger.error("Filewalk for {} failed with {}", currentDirectory, e);
 		}
 
 		return subDirectories;
@@ -46,11 +66,16 @@ public class FileWalker {
 
 	public static LinkedList<Path> getCurrentFolderImages(Path currentFolder) throws IOException {
 		LinkedList<Path> imageList = new LinkedList<>();
+		Iterator<Path> iter = Files.list(currentFolder).iterator();
 
-		File[] foundImages = currentFolder.toFile().listFiles(new SimpleImageFilter());
+		SimpleImageFilter sif = new SimpleImageFilter();
 
-		for (File file : foundImages) {
-			imageList.add(file.toPath());
+		while (iter.hasNext()) {
+			Path path = iter.next();
+
+			if (sif.accept(path.toFile())) {
+				imageList.add(path);
+			}
 		}
 
 		return imageList;
