@@ -49,7 +49,7 @@ public class DirectoryFilterTest {
 
 	@Test
 	public void testNull() {
-		assertFalse(df.accept(null));
+		assertFalse(df.accept((File) null));
 	}
 
 }
