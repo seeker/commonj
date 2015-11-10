@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -19,6 +20,7 @@ import org.junit.Test;
 
 import com.github.dozedoff.commonj.helper.DataGenerator;
 
+@SuppressWarnings("deprecation")
 public class BinaryFileReaderTest {
 	private static byte testData[];
 	private static File testFile;
@@ -49,6 +51,11 @@ public class BinaryFileReaderTest {
 	@Test
 	public void testGetString() throws Exception {
 		assertArrayEquals(testData, bfr.get(testFile.toString()));
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testGetPathNull() throws Exception {
+		bfr.get((Path) null);
 	}
 
 	@Test
