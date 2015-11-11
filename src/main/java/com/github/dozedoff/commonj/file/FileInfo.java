@@ -8,6 +8,8 @@ package com.github.dozedoff.commonj.file;
 import java.io.File;
 import java.nio.file.Path;
 
+// TODO move to aid project
+
 /**
  * A simple storage class for file information.
  */
