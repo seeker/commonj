@@ -31,11 +31,11 @@ public class FileUtil {
 	 */
 	@Deprecated
 	public static File WorkingDir() {
-		return workingDir();
+		return workingDir().toFile();
 	}
 
-	public static File workingDir() {
-		return new File(System.getProperty("user.dir"));
+	public static Path workingDir() {
+		return Paths.get(System.getProperty("user.dir"));
 	}
 
 	public static List<String> pathTokenList(String path) {
@@ -172,11 +172,11 @@ public class FileUtil {
 	}
 
 	static public boolean hasValidWindowsFilename(String filename) {
-		return hasValidWindowsFilename(new File(filename));
+		return hasValidWindowsFilename(Paths.get(filename));
 	}
 
-	static public boolean hasValidWindowsFilename(File fullpath) {
-		String filename = fullpath.getName();
+	static public boolean hasValidWindowsFilename(Path fullpath) {
+		String filename = fullpath.getFileName().toString();
 
 		if (filename.isEmpty()) {
 			return false;
@@ -189,6 +189,11 @@ public class FileUtil {
 		}
 
 		return true;
+	}
+
+	@Deprecated
+	static public boolean hasValidWindowsFilename(File fullpath) {
+		return hasValidWindowsFilename(fullpath.toPath());
 	}
 
 	static public String sanitizeFilenameForWindows(String filename) {

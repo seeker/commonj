@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
+@SuppressWarnings("deprecation")
 @SuppressFBWarnings("DMI_HARDCODED_ABSOLUTE_FILENAME")
 public class FileUtilTest {
 	private LinkedList<Path> srcDirs;
