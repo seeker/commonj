@@ -24,6 +24,7 @@ import org.mockito.Mockito;
 
 import com.github.dozedoff.commonj.file.BinaryFileWriter;
 
+@SuppressWarnings("deprecation")
 public class FileIOTest {
 	private final int SAMPLE_SIZE = 10;
 	private byte[] randomData;

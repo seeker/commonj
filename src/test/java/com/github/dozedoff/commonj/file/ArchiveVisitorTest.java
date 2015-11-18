@@ -12,31 +12,31 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 
 public class ArchiveVisitorTest {
 	private ArchiveVisitor av;
-	private LinkedList<Path> archiveList;
+	private List<Path> archiveList;
 	private Path testDir;
 	private Path[] valid = new Path[2];
 
 	@Before
 	public void setUp() throws Exception {
-		archiveList = new LinkedList<>();
+		archiveList = new LinkedList<Path>();
 		av = new ArchiveVisitor(archiveList);
 		buildFileStructure();
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testArchiveVisitorNullList() {
-		av = new ArchiveVisitor(null);
+		new ArchiveVisitor(null);
 	}
 
 	@Test
 	public void testArchiveVisitor() throws IOException {
-		av = new ArchiveVisitor(archiveList);
 		Files.walkFileTree(testDir, av);
 		assertThat(archiveList, hasItems(valid));
 	}

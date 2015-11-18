@@ -14,6 +14,7 @@ import java.nio.file.Files;
 import org.junit.Before;
 import org.junit.Test;
 
+@SuppressWarnings("deprecation")
 public class ArchiveFilterTest {
 	private ArchiveFilter af;
 

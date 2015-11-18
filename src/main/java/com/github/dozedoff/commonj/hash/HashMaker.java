@@ -5,9 +5,12 @@
 
 package com.github.dozedoff.commonj.hash;
 
+import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.nio.MappedByteBuffer;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -15,7 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.dozedoff.commonj.string.Convert;
-import com.github.dozedoff.commonj.util.FileIO;
 
 /**
  * Generates a SHA-2 Hash (default) for binary data, and formats the value into a Hex representation.
@@ -50,49 +52,58 @@ public class HashMaker {
 	 * @return hash Hash as a hex value
 	 */
 	public String hash(byte[] data) {
-		byte[] rawHash;
-
 		if (data == null) {
 			logger.error("No data");
 			return null;
 		}
 
 		md.update(data);
-		rawHash = md.digest();
+		byte[] rawHash = md.digest();
 
 		return Convert.byteToHex(rawHash);
 	}
 
-	public String hashFile(File file) {
+	public String hashFile(Path file) {
 		byte[] rawHash;
 
-		if (file == null || !file.exists()) {
+		if (file == null || !Files.exists(file)) {
 			return null;
 		}
 
-		FileInputStream stream;
+		try (InputStream stream = new BufferedInputStream(Files.newInputStream(file))) {
+			while (true) {
+				int data = stream.read();
 
-		stream = null;
+				if (data == -1) {
+					break;
+				}
 
-		final MappedByteBuffer buffer;
-		final int fileSize;
+				md.update((byte) data);
+			}
 
-		buffer = FileIO.openReadOnlyBuffer(file);
+			rawHash = md.digest();
 
-		if (buffer == null) {
+			return Convert.byteToHex(rawHash);
+		} catch (IOException e) {
+			logger.error("Failed to generate hash for {}, reason: {}", file, e);
+		}
+
+		return null;
+	}
+
+	/**
+	 * Use {@link HashMaker#hashFile(Path)} instead.
+	 * 
+	 * @param file
+	 *            to hash
+	 * @return Hexadecimal encoded hash
+	 */
+	@Deprecated
+	public String hashFile(File file) {
+		if (file == null) {
 			return null;
 		}
 
-		fileSize = (int) file.length();
-
-		for (int i = 0; i < fileSize; i++) {
-			md.update(buffer.get());
-		}
-
-		FileIO.closeFileInputStream(stream);
-
-		rawHash = md.digest();
-
-		return Convert.byteToHex(rawHash);
+		return hashFile(file.toPath());
 	}
 }

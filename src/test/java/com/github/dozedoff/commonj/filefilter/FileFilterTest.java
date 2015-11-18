@@ -49,6 +49,6 @@ public class FileFilterTest {
 
 	@Test
 	public void testNull() {
-		assertFalse(ff.accept(null));
+		assertFalse(ff.accept((File) null));
 	}
 }
