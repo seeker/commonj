@@ -18,6 +18,9 @@ import org.junit.Test;
 
 import com.github.dozedoff.commonj.util.Random;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
+@SuppressFBWarnings("FCBL_FIELD_COULD_BE_LOCAL")
 public class BinaryFileWriterTest {
 	private final int SAMPLE_SIZE = 16384;
 

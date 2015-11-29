@@ -111,11 +111,11 @@ public class GetHtml {
 	 * @throws IOException
 	 * @throws PageLoadException
 	 */
-	public String get(URL url) throws IOException, PageLoadException {
+	public String get(URL url) throws IOException {
 		return loadHtml(connect(url));
 	}
 
-	public String get(String url, long lastModificationTimestamp) throws PageLoadException, ProtocolException, IOException {
+	public String get(String url, long lastModificationTimestamp) throws IOException {
 		return get(new URL(url), lastModificationTimestamp);
 	}
 
@@ -131,7 +131,7 @@ public class GetHtml {
 	 * @throws ProtocolException
 	 * @throws IOException
 	 */
-	public String get(URL url, long lastModificationTimestamp) throws PageLoadException, ProtocolException, IOException {
+	public String get(URL url, long lastModificationTimestamp) throws IOException {
 		HttpURLConnection connection = prepareHttpConnection(url, null);
 
 		connection.setIfModifiedSince(lastModificationTimestamp);
@@ -153,7 +153,7 @@ public class GetHtml {
 		}
 	}
 
-	private String loadHtml(HttpURLConnection connection) throws PageLoadException, IOException {
+	private String loadHtml(HttpURLConnection connection) throws IOException {
 		StringBuilder classString = new StringBuilder();
 		BufferedReader in = null;
 		String inputLine = "";
@@ -187,11 +187,11 @@ public class GetHtml {
 		return classString.toString();
 	}
 
-	private HttpURLConnection connect(URL url) throws IOException, ProtocolException {
+	private HttpURLConnection connect(URL url) throws IOException {
 		return connect(url, null);
 	}
 
-	private HttpURLConnection connect(URL url, HashMap<String, String> requestProperties) throws IOException, ProtocolException {
+	private HttpURLConnection connect(URL url, HashMap<String, String> requestProperties) throws IOException {
 		HttpURLConnection httpCon = prepareHttpConnection(url, requestProperties);
 
 		httpCon.connect();
@@ -216,7 +216,7 @@ public class GetHtml {
 		return httpCon;
 	}
 
-	private String reTry(URL url, HttpURLConnection httpCon, IOException ex) throws IOException, PageLoadException {
+	private String reTry(URL url, HttpURLConnection httpCon, IOException ex) throws IOException {
 		if (failCount < maxRetry) {
 			failCount++;
 			httpCon.disconnect();

@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -14,7 +15,7 @@ public class StreamGobblerTest {
 
 	@Before
 	public void setUp() throws Exception {
-		ByteArrayInputStream bais = new ByteArrayInputStream(TEST_TEXT.getBytes("UTF-8"));
+		ByteArrayInputStream bais = new ByteArrayInputStream(TEST_TEXT.getBytes(StandardCharsets.UTF_8));
 		cut = new StreamGobbler(bais);
 		cut.start();
 	}

@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
 import org.junit.After;
@@ -47,7 +48,7 @@ public class FileLoaderTest {
 	public void setUp() throws Exception {
 		ddl = mock(DataDownloader.class);
 		assertThat(ddl, notNullValue());
-		when(ddl.download(any(URL.class))).thenReturn("42".getBytes());
+		when(ddl.download(any(URL.class))).thenReturn("42".getBytes(StandardCharsets.UTF_8));
 		
 		actions = mock(FileLoaderAction.class);
 		assertThat(actions, notNullValue());

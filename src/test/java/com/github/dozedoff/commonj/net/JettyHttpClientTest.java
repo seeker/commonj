@@ -11,8 +11,8 @@ import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -167,7 +167,7 @@ public class JettyHttpClientTest {
 		cut.setUserAgent(newAgent);
 		
 		byte[] data = cut.getData(getURL(Pages.agent));
-		String decoded = new String(data);
+		String decoded = new String(data, StandardCharsets.UTF_8);
 		
 		assertThat(decoded, is(newAgent));
 	}
@@ -236,7 +236,7 @@ public class JettyHttpClientTest {
 				break;
 				
 			case agent:
-				processDataRequest(request, response, request.getHeader("user-agent").getBytes());
+				processDataRequest(request, response, request.getHeader("user-agent").getBytes(StandardCharsets.UTF_8));
 				break;
 				
 			default:

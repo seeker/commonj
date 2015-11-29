@@ -34,10 +34,8 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 public class FileUtilTest {
 	private LinkedList<Path> srcDirs;
 	private LinkedList<Path> srcFiles;
-	private LinkedList<Path> dstDirs;
 	private LinkedList<Path> dstFiles;
 	
-	private Path baseDir;
 	private Path srcDir;
 	private Path dstDir;
 	private Path simplePath;
@@ -50,16 +48,14 @@ public class FileUtilTest {
 	public void setUp() throws Exception {
 		srcDirs = new LinkedList<>();
 		srcFiles = new LinkedList<>();
-		dstDirs = new LinkedList<>();
 		dstFiles = new LinkedList<>();
 
-		baseDir = Files.createTempDirectory("testFileUtil");
+		Path baseDir = Files.createTempDirectory("testFileUtil");
 
 		srcDir = baseDir.resolve("src").resolve("test");
 		srcDirs.add(srcDir);
 
 		dstDir = baseDir.resolve("dst").resolve("test");
-		dstDirs.add(dstDir);
 		
 		simplePath = Paths.get(SIMPLE_PATH);
 	}
@@ -307,13 +303,13 @@ public class FileUtilTest {
 	@Ignore("tests will fail on Linux systems")
 	@Test
 	public void testConvertDirPathToString() throws Exception {
-		assertThat(FileUtil.convertDirPathToString(simplePath), is(SIMPLE_PATH.toLowerCase()));
+		assertThat(FileUtil.convertDirPathToString(simplePath), is(new String(SIMPLE_PATH).toLowerCase()));
 	}
 	
 	@Test
 	public void testConvertDirPathToStringNoEndingSlashes() throws Exception {
 		String noSlashes = "c:\\foo\\bar";
-		assertThat(FileUtil.convertDirPathToString(Paths.get(noSlashes)), is(SIMPLE_PATH.toLowerCase()));
+		assertThat(FileUtil.convertDirPathToString(Paths.get(noSlashes)), is(new String(SIMPLE_PATH).toLowerCase()));
 	}
 	
 	@Test

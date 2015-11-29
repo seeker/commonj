@@ -15,7 +15,7 @@ public class DownloadWithRetry {
 		this.getBinary = getBinary;
 	}
 	
-	public byte[] download(URL url, int maxRetries) throws PageLoadException, IOException {
+	public byte[] download(URL url, int maxRetries) throws IOException {
 		long contentLenght = getBinary.getLenght(url);
 		ByteBuffer dataBuffer = ByteBuffer.allocate((int)contentLenght);
 		
@@ -28,7 +28,7 @@ public class DownloadWithRetry {
 		return varBuffer;
 	}
 	
-	private boolean retry(URL url, ByteBuffer buffer, int maxRetries, long contentLength) throws PageLoadException, IOException {
+	private boolean retry(URL url, ByteBuffer buffer, int maxRetries, long contentLength) throws IOException {
 		int failCount = 0;
 
 		while (true) {
