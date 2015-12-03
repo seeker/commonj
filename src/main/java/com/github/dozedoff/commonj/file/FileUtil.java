@@ -176,7 +176,17 @@ public class FileUtil {
 	}
 
 	static public boolean hasValidWindowsFilename(Path fullpath) {
-		String filename = fullpath.getFileName().toString();
+		if (fullpath == null) {
+			return false;
+		}
+
+		Path fileNameElement = fullpath.getFileName();
+
+		if (fileNameElement == null) {
+			return false;
+		}
+
+		String filename = fileNameElement.toString();
 
 		if (filename.isEmpty()) {
 			return false;

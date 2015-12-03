@@ -58,15 +58,21 @@ public class FileExtensionFilter implements FileFilter, Filter<Path> {
 			return false;
 		}
 
-		String filename = pathname.getFileName().toString();
+		Path filename = pathname.getFileName();
 
-		int extensionIndex = filename.lastIndexOf(".") + 1;
+		if (filename == null) {
+			return false;
+		}
+
+		String name = filename.toString();
+
+		int extensionIndex = name.lastIndexOf(".") + 1;
 
 		if (extensionIndex <= 0) {
 			return false;
 		}
 
-		String fileExtension = filename.substring(extensionIndex).toLowerCase();
+		String fileExtension = name.substring(extensionIndex).toLowerCase();
 
 		if (Collections.binarySearch(validExtensions, fileExtension) >= 0) {
 			return true;

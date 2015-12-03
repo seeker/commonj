@@ -32,6 +32,7 @@ public class DirectoryHasher {
 	private FilenameFilter filter = null;
 
 	public DirectoryHasher(LinkedBlockingQueue<FileInfo> outputQueue) {
+		this.filter = new AcceptAllFilter();
 		this.outputQueue = outputQueue;
 		hashWorker = new HashWorker();
 		hashWorker.setDaemon(true);
@@ -54,6 +55,13 @@ public class DirectoryHasher {
 		java.nio.file.Files.walkFileTree(dir.toPath(), new DirectoryVisitor(filter));
 	}
 
+	class AcceptAllFilter implements FilenameFilter {
+		@Override
+		public boolean accept(File dir, String name) {
+			return true;
+		}
+	}
+
 	class DirectoryVisitor extends SimpleFileVisitor<Path> {
 		FilenameFilter filter;
 
@@ -63,15 +71,27 @@ public class DirectoryHasher {
 
 		@Override
 		public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-			if (filter != null) {
-				if (filter.accept(file.getParent().toFile(), file.getFileName().toString())) {
+			if (file == null) {
+				return FileVisitResult.CONTINUE;
+			}
+			
+			Path dir = file.getParent();
+			
+			if(dir == null) {
+				return FileVisitResult.CONTINUE;
+			}
+			
+			Path filename = file.getFileName();
+
+			if (filename == null) {
+				return FileVisitResult.CONTINUE;
+			}
+					
+
+			if (filter.accept(dir.toFile(), filename.toString())) {
 					FileInfo fi = new FileInfo(file.toFile(), null);
 					hashWorker.addFile(fi);
 				}
-			} else {
-				FileInfo fi = new FileInfo(file.toFile(), null);
-				hashWorker.addFile(fi);
-			}
 			return super.visitFile(file, attrs);
 		}
 	}

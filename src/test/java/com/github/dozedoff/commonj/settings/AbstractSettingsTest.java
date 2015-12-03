@@ -27,6 +27,7 @@ public class AbstractSettingsTest {
 	private AbstractSettings abstractSettings;
 	private static Properties testProperties;
 	private static Path propertiesPath;
+	private static Path filename;
 
 	private static final String TEST_KEY = "test";
 
@@ -36,6 +37,8 @@ public class AbstractSettingsTest {
 		testProperties.put(TEST_KEY, Integer.toString(42));
 
 		propertiesPath = Files.createTempFile(AbstractSettingsTest.class.getCanonicalName(), "properties");
+		filename = propertiesPath.getFileName();
+
 		Files.newOutputStream(propertiesPath);
 
 		testProperties.store(Files.newOutputStream(propertiesPath), "");
@@ -67,7 +70,7 @@ public class AbstractSettingsTest {
 
 	@Test
 	public void testLoadPropertiesFromFilePathString() throws Exception {
-		abstractSettings.loadPropertiesFromFile(propertiesPath.getParent(), propertiesPath.getFileName().toString());
+		abstractSettings.loadPropertiesFromFile(propertiesPath.getParent(), filename.toString());
 		assertThat(abstractSettings.properties.containsKey(TEST_KEY), is(true));
 	}
 
