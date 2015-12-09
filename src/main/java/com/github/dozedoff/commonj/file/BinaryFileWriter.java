@@ -5,31 +5,45 @@
 
 package com.github.dozedoff.commonj.file;
 
+import static java.nio.file.StandardOpenOption.CREATE;
+import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
+
 import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class BinaryFileWriter {
+	/**
+	 * Use {@link BinaryFileWriter#write(byte[], Path)} instead.
+	 */
+	@Deprecated
 	public void write(byte[] byteData, String savePath) throws IllegalArgumentException, IOException {
 
-		if (savePath == null || savePath.equals("")) {
+		if (savePath == null || "".equals(savePath)) {
 			throw new IllegalArgumentException("Filepath is invalid");
+		}
+
+		write(byteData, Paths.get(savePath));
+	}
+
+	public void write(byte[] byteData, Path savePath) throws IllegalArgumentException, IOException {
+		if (savePath == null) {
+			throw new IllegalArgumentException("Path cannot be null");
 		}
 
 		if (byteData == null) {
 			throw new IllegalArgumentException("Data cannot be null");
 		}
 
-		File myFile = new File(savePath);
+		if (savePath != null && savePath.getParent() != null) {
+			Files.createDirectories(savePath.getParent());
+		}
 
-		new File(myFile.getParent()).mkdirs(); // create all directories
-		myFile.createNewFile();
-
-		FileOutputStream writeMe = new FileOutputStream(myFile);
-		BufferedOutputStream buffOut = new BufferedOutputStream(writeMe, 1024);
-		buffOut.write(byteData);
-
-		buffOut.close();
+		try (OutputStream os = new BufferedOutputStream(Files.newOutputStream(savePath, CREATE, TRUNCATE_EXISTING))) {
+			os.write(byteData);
+		}
 	}
 }
