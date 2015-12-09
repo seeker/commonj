@@ -20,6 +20,7 @@ public class ArchiveFilter implements FileFilter, Filter<Path> {
 	/**
 	 * Use {@link ArchiveFilter#accept(Path)} instead.
 	 */
+	// TODO REMOVE after 0.1.1
 	@Deprecated
 	@Override
 	public boolean accept(File pathname) {

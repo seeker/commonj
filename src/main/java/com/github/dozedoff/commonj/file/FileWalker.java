@@ -103,6 +103,7 @@ public class FileWalker {
 		return walkFileTree(list.toArray(new Path[1]));
 	}
 
+	// TODO REMOVE after 0.1.1
 	@Deprecated
 	public static LinkedList<Path> walkFileTree(File... directories) throws IOException {
 		Path[] paths = new Path[directories.length];

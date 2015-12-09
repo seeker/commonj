@@ -19,6 +19,7 @@ public class BinaryFileWriter {
 	/**
 	 * Use {@link BinaryFileWriter#write(byte[], Path)} instead.
 	 */
+	// TODO REMOVE after 0.1.1
 	@Deprecated
 	public void write(byte[] byteData, String savePath) throws IllegalArgumentException, IOException {
 

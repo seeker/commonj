@@ -126,7 +126,6 @@ public class ImagePHash {
 	/**
 	 * This method should not be public, there will be no replacement.
 	 */
-
 	@Deprecated
 	// TODO DEPRECATED remove after 0.1.1
 	public double[][] calculateDctMap(InputStream is) throws IOException {

@@ -37,11 +37,13 @@ public class FileLoader {
 	 * @param workingDir
 	 * @param fileQueueWorkers
 	 */
+	// TODO REMOVE after 0.1.1
 	@Deprecated
 	public FileLoader(File workingDir, int fileQueueWorkers) {
 		this(workingDir,fileQueueWorkers,new GetBinary());
 	}
 	
+	// TODO REMOVE after 0.1.1
 	@Deprecated
 	public FileLoader(File workingDir, int fileQueueWorkers, DataDownloader dataDownloader) {
 		// TODO when this constructor is removed, change the protected methods to private

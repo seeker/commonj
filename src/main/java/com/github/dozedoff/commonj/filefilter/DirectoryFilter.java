@@ -16,6 +16,7 @@ public class DirectoryFilter implements FileFilter, Filter<Path> {
 	/**
 	 * Use {@link DirectoryFilter#accept(Path)} instead.
 	 */
+	// TODO REMOVE after 0.1.1
 	@Deprecated
 	@Override
 	public boolean accept(File pathname) {

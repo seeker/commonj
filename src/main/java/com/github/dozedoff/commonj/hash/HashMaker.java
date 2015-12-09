@@ -98,6 +98,7 @@ public class HashMaker {
 	 *            to hash
 	 * @return Hexadecimal encoded hash
 	 */
+	// TODO REMOVE after 0.1.1
 	@Deprecated
 	public String hashFile(File file) {
 		if (file == null) {

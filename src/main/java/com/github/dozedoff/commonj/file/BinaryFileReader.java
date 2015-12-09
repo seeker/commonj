@@ -19,6 +19,7 @@ import java.nio.file.Paths;
 /**
  * Deprecated Use file access provided by the language
  */
+// TODO REMOVE after 0.1.1
 @Deprecated
 public class BinaryFileReader {
 	private static final String ERROR_MSG_NULL = "Null is not a valid argument";

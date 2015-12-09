@@ -29,6 +29,7 @@ public class FileUtil {
 	 * 
 	 * @return
 	 */
+	// TODO REMOVE after 0.1.1
 	@Deprecated
 	public static File WorkingDir() {
 		return workingDir().toFile();
@@ -201,6 +202,7 @@ public class FileUtil {
 		return true;
 	}
 
+	// TODO REMOVE after 0.1.1
 	@Deprecated
 	static public boolean hasValidWindowsFilename(File fullpath) {
 		return hasValidWindowsFilename(fullpath.toPath());

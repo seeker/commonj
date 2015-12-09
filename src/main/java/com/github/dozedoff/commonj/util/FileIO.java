@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 public class FileIO {
 	private static final Logger logger = LoggerFactory.getLogger(FileIO.class);
 
+	// TODO REMOVE after 0.1.1
 	@Deprecated
 	public static FileInputStream openAsFileInputStream(File file) {
 		FileInputStream fis = null;
@@ -31,6 +32,7 @@ public class FileIO {
 		return fis;
 	}
 
+	// TODO REMOVE after 0.1.1
 	@Deprecated
 	public static MappedByteBuffer openReadOnlyBuffer(File file) {
 		FileInputStream fis = openAsFileInputStream(file);
