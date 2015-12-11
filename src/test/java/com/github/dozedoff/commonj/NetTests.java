@@ -9,13 +9,21 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
+import com.github.dozedoff.commonj.net.DownloadItemTest;
+import com.github.dozedoff.commonj.net.DownloadWithRetryTest;
+import com.github.dozedoff.commonj.net.FileLoaderTest;
 import com.github.dozedoff.commonj.net.GetBinaryTest;
 import com.github.dozedoff.commonj.net.GetHtmlTest;
+import com.github.dozedoff.commonj.net.JettyHttpClientTest;
 
 @RunWith(Suite.class)
 @SuiteClasses({ 
 	GetBinaryTest.class, 
-	GetHtmlTest.class
+	GetHtmlTest.class,
+	DownloadItemTest.class,
+	FileLoaderTest.class,
+	DownloadWithRetryTest.class,
+	JettyHttpClientTest.class
 })
 public class NetTests {
 

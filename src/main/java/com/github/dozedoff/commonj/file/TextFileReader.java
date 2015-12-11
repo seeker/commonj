@@ -22,7 +22,7 @@ public class TextFileReader {
 		String readData = readData(fr);
 		fr.close();
 
-		return readData.toString();
+		return readData;
 	}
 
 	public String read(InputStream is) throws IOException {

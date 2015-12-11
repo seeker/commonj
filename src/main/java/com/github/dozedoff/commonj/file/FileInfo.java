@@ -8,6 +8,8 @@ package com.github.dozedoff.commonj.file;
 import java.io.File;
 import java.nio.file.Path;
 
+// TODO move to aid project
+
 /**
  * A simple storage class for file information.
  */
@@ -28,12 +30,20 @@ public class FileInfo {
 		this.hash = hash;
 	}
 
+	private static final Path convertToPath(File file) {
+		if (file == null) {
+			return null;
+		} else {
+			return file.toPath();
+		}
+	}
+
 	public FileInfo(File file) {
-		setFile(file);
+		this.file = convertToPath(file);
 	}
 
 	public FileInfo(Path path) {
-		setFile(path);
+		this.file = path;
 	}
 
 	public File getFile() {
@@ -53,11 +63,7 @@ public class FileInfo {
 	}
 
 	public void setFile(File file) {
-		if (file == null) {
-			this.file = null;
-		} else {
-			this.file = file.toPath();
-		}
+		this.file = convertToPath(file);
 	}
 
 	public void setFile(Path file) {

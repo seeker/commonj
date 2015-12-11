@@ -10,14 +10,25 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
+/**
+ * Deprecated Use file access provided by the language
+ */
+// TODO REMOVE after 0.1.1
+@Deprecated
 public class BinaryFileReader {
+	private static final String ERROR_MSG_NULL = "Null is not a valid argument";
 	int blockLength = 8192;
 
 	ByteBuffer classBuffer;
 	byte[] c = new byte[blockLength];
 
+	@Deprecated
 	public BinaryFileReader() {
 		classBuffer = ByteBuffer.allocate(31457280); // 30mb
 	}
@@ -28,27 +39,35 @@ public class BinaryFileReader {
 	 * @param buffersize
 	 *            size in bytes
 	 */
+	@Deprecated
 	public BinaryFileReader(int buffersize) {
 		classBuffer = ByteBuffer.allocate(buffersize);
 	}
 
+	@Deprecated
 	public BinaryFileReader(int buffersize, int blocklength) {
 		classBuffer = ByteBuffer.allocate(buffersize);
 		this.blockLength = blocklength;
 	}
 
+	@Deprecated
 	public byte[] get(String path) throws Exception {
-		return get(new File(path));
+		return get(Paths.get(path));
 	}
-
-	public byte[] get(File path) throws IOException {
-
+	
+	@Deprecated
+	public byte[] get(Path path) throws IOException, IllegalArgumentException {
+		if(path == null) {
+			throw new IllegalArgumentException(ERROR_MSG_NULL);
+		}
+		
 		BufferedInputStream binary = null;
+		long fileSize = Files.size(path);
 
-		if (path.length() > classBuffer.capacity())
-			classBuffer = ByteBuffer.allocate((int) path.length());
+		if (fileSize > classBuffer.capacity())
+			classBuffer = ByteBuffer.allocate((int) fileSize);
 
-		FileInputStream fileStream = new FileInputStream(path);
+		InputStream fileStream = Files.newInputStream(path);
 		binary = new BufferedInputStream(fileStream);
 		classBuffer.clear();
 
@@ -68,6 +87,15 @@ public class BinaryFileReader {
 		return varBuffer;
 	}
 
+	/**
+	 * Use {@link BinaryFileReader#get(Path)} instead.
+	 */
+	@Deprecated
+	public byte[] get(File path) throws IOException {
+		return get(path.toPath());
+	}
+
+	@Deprecated
 	public byte[] getViaDataInputStream(File path) throws IOException {
 
 		DataInputStream dis;
@@ -82,5 +110,4 @@ public class BinaryFileReader {
 
 		return data;
 	}
-
 }

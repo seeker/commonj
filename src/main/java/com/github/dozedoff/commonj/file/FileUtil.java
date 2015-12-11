@@ -17,11 +17,26 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class FileUtil {
 	private static final String[] ILLEGAL_FILENAME_CHARS = { "/", "\\", ":", "?", "\"", "<", ">", "|" };
+	private static final Logger logger = LoggerFactory.getLogger(FileUtil.class);
 
+	/**
+	 * Use {@link FileUtil#workingDir() instead}
+	 * 
+	 * @return
+	 */
+	// TODO REMOVE after 0.1.1
+	@Deprecated
 	public static File WorkingDir() {
-		return new File(System.getProperty("user.dir"));
+		return workingDir().toFile();
+	}
+
+	public static Path workingDir() {
+		return Paths.get(System.getProperty("user.dir"));
 	}
 
 	public static List<String> pathTokenList(String path) {
@@ -73,10 +88,24 @@ public class FileUtil {
 	}
 
 	public static void moveFileWithStructure(Path source, Path dstDirectory) throws IOException {
-		Path relativeSource = source.getRoot().relativize(source);
+		if (source == null) {
+			throw new IllegalArgumentException("Source cannot be null");
+		}
+		
+		if (dstDirectory == null) {
+			throw new IllegalArgumentException("Destination directory cannot be null");
+		}
+		
+		Path relativeSource = relativizeToRoot(source);
 		Path destinationPath = dstDirectory.resolve(relativeSource);
+		
+		Path destinationParent = destinationPath.getParent();
 
-		Files.createDirectories(destinationPath.getParent());
+		if(destinationParent == null) {
+			throw new IllegalArgumentException("Destination path does not have a parent");
+		}
+		
+		Files.createDirectories(destinationParent);
 
 		Files.move(source, destinationPath);
 	}
@@ -84,7 +113,7 @@ public class FileUtil {
 	static public String convertDirPathToString(Path directory) {
 		if (directory == null) {
 			return null;
-		} else if ((directory.getRoot() != null) && (directory.getRoot().equals(directory))) {
+		} else if ((directory.getRoot() != null) && (directory.equals(directory.getRoot()))) {
 			return directory.toString().toLowerCase();
 		} else {
 			return directory.toString().toLowerCase() + "\\";
@@ -105,10 +134,20 @@ public class FileUtil {
 		}
 
 		if (path.isAbsolute()) {
-			return Paths.get(path.getRoot().relativize(path).toString());
+			return relativizeToRoot(path);
 		} else {
 			return path;
 		}
+	}
+	
+	private static Path relativizeToRoot(Path path) {
+		Path root = path.getRoot();
+		
+		if(root == null) {
+			throw new IllegalArgumentException("Path does not have a root component");
+		}
+		
+		return root.relativize(path);
 	}
 
 	static public String removeDriveLetter(String path) {
@@ -117,7 +156,14 @@ public class FileUtil {
 		}
 
 		Path relPath = removeDriveLetter(Paths.get(path));
-		String filename = relPath.getFileName().toString();
+		
+		Path filenamePath = relPath.getFileName();
+		
+		if(filenamePath == null) {
+			throw new IllegalArgumentException("Filename was null, path had zero elements.");
+		}
+		
+		String filename = filenamePath.toString();
 
 		if (filename.contains(".")) {
 			return relPath.toString();
@@ -127,11 +173,21 @@ public class FileUtil {
 	}
 
 	static public boolean hasValidWindowsFilename(String filename) {
-		return hasValidWindowsFilename(new File(filename));
+		return hasValidWindowsFilename(Paths.get(filename));
 	}
 
-	static public boolean hasValidWindowsFilename(File fullpath) {
-		String filename = fullpath.getName();
+	static public boolean hasValidWindowsFilename(Path fullpath) {
+		if (fullpath == null) {
+			return false;
+		}
+
+		Path fileNameElement = fullpath.getFileName();
+
+		if (fileNameElement == null) {
+			return false;
+		}
+
+		String filename = fileNameElement.toString();
 
 		if (filename.isEmpty()) {
 			return false;
@@ -144,6 +200,12 @@ public class FileUtil {
 		}
 
 		return true;
+	}
+
+	// TODO REMOVE after 0.1.1
+	@Deprecated
+	static public boolean hasValidWindowsFilename(File fullpath) {
+		return hasValidWindowsFilename(fullpath.toPath());
 	}
 
 	static public String sanitizeFilenameForWindows(String filename) {
@@ -168,7 +230,12 @@ public class FileUtil {
 		@Override
 		public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
 			File f = new File(dstDir.toFile(), srcDir.relativize(dir).toString());
-			f.mkdirs(); // create new directory with identical name in the destination directory
+			
+			 // create new directory with identical name in the destination directory
+			if(f.mkdirs() == false){
+				logger.error("Failed to create directory {}", f);
+			}
+			
 			currMoveDir = f.toPath();
 			return super.preVisitDirectory(dir, attrs);
 		}

@@ -7,6 +7,8 @@ package com.github.dozedoff.commonj.io;
 
 import java.util.AbstractQueue;
 
+//TODO REMOVE after 0.1.1
+@Deprecated
 public abstract class SimpleConcurrentWorker<E, T> extends Thread {
 	private AbstractQueue<E> input;
 	private AbstractQueue<T> output;

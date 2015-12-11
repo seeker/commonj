@@ -46,10 +46,8 @@ public class ResourcePoolTest {
 
 	@Test
 	public void testGetResourceMax() throws Exception {
-		LinkedList<Integer> res = new LinkedList<Integer>();
-
 		for (int i = 0; i < MAX_RESOURCE; i++) {
-			res.add(pool.getResource(MAX_WAIT_MS));
+			pool.getResource(MAX_WAIT_MS);
 		}
 	}
 
@@ -68,11 +66,9 @@ public class ResourcePoolTest {
 
 	@Test(expected = ResourceCreationException.class)
 	public void testGetResourceMoreThanMax() throws Exception {
-		LinkedList<Integer> res = new LinkedList<Integer>();
-
 		final int max = MAX_RESOURCE + 1;
 		for (int i = 0; i < max; i++) {
-			res.add(pool.getResource(MAX_WAIT_MS));
+			pool.getResource(MAX_WAIT_MS);
 		}
 	}
 

@@ -9,15 +9,18 @@ import static org.junit.Assert.assertArrayEquals;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import com.github.dozedoff.commonj.util.Random;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
+@SuppressFBWarnings("FCBL_FIELD_COULD_BE_LOCAL")
 public class BinaryFileWriterTest {
 	private final int SAMPLE_SIZE = 16384;
 
@@ -67,7 +70,12 @@ public class BinaryFileWriterTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testWriteNullPath() throws Exception {
-		bfw.write(testData, null);
+		bfw.write(testData, (Path) null);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testWriteNullString() throws Exception {
+		bfw.write(testData, (String) null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -75,7 +83,7 @@ public class BinaryFileWriterTest {
 		bfw.write(null, testfile);
 	}
 
-	@Test(expected = FileNotFoundException.class)
+	@Test(expected = IOException.class)
 	public void testWriteFolder() throws IOException {
 		String directory = Files.createTempDirectory("BinaryFileWriterTest").toString();
 		bfw.write(testData, directory);

@@ -66,7 +66,7 @@ public class DirectoryHasherTest {
 
 	@Test(expected = IOException.class)
 	public void testInvalidDirectory() throws IOException {
-		dh.hashDirectory(tempDir.toString() + File.pathSeparator + "null");
+		dh.hashDirectory(tempDir + File.pathSeparator + "null");
 	}
 
 	class testFilter implements FilenameFilter {

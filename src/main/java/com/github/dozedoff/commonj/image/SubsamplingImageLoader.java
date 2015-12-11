@@ -46,14 +46,6 @@ public class SubsamplingImageLoader {
 		return imageLabel;
 	}
 
-	/**
-	 * Use {@link #loadAsLabel(Path imagepath, Dimension targetDimension) } instead.
-	 */
-	@Deprecated
-	public static JLabel loadImage(Path imagepath, Dimension targetDimension) throws ImageFormatException, IOException {
-		return loadAsLabel(imagepath, targetDimension);
-	}
-
 	private static Image subsampleRead(ImageInputStream iis, ImageReader reader, Dimension targetDimension) throws IOException {
 		ImageReadParam readerParameters = reader.getDefaultReadParam();
 		reader.setInput(iis, true, true);

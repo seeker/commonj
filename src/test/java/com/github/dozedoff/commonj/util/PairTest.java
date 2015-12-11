@@ -8,17 +8,19 @@ package com.github.dozedoff.commonj.util;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
+@SuppressFBWarnings("FCBL_FIELD_COULD_BE_LOCAL")
 public class PairTest {
 	private Pair<String, String> pair;
 
-	private final String testStringA = "A";
-	private final String testStringB = "B";
-	private final String testStringC = "C";
+	private static final String testStringA = "A";
+	private static final String testStringB = "B";
+	private static final String testStringC = "C";
 
 	@Before
 	public void setUp() throws Exception {
@@ -60,7 +62,7 @@ public class PairTest {
 	@Test
 	public void testEquals() {
 		Pair<String, String> other = new Pair<String, String>("A", "B");
-		assertTrue(pair.equals(other));
+		assertThat(pair.equals(other), is(true));
 	}
 
 	@Test

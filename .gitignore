@@ -1,4 +1,8 @@
 bin/
 bin_test/
-/.settings/
 /target
+
+#Eclipse IDE files
+/.settings/
+.project
+.classpath

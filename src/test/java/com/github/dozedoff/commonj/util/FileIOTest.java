@@ -24,8 +24,12 @@ import org.mockito.Mockito;
 
 import com.github.dozedoff.commonj.file.BinaryFileWriter;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
+@SuppressFBWarnings("FCBL_FIELD_COULD_BE_LOCAL")
+@SuppressWarnings("deprecation")
 public class FileIOTest {
-	private final int SAMPLE_SIZE = 10;
+	private static final int SAMPLE_SIZE = 10;
 	private byte[] randomData;
 	private File testFile;
 	private final BinaryFileWriter bfr = new BinaryFileWriter();

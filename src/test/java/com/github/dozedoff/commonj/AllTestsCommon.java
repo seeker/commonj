@@ -22,6 +22,7 @@ import org.junit.runners.Suite.SuiteClasses;
 	TimeTests.class,
 	FileFilterTests.class,
 	EncodingTests.class,
-	SettingsTests.class
+	SettingsTests.class,
+	ThreadTests.class
 })
 public class AllTestsCommon {}

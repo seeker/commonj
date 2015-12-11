@@ -14,9 +14,13 @@ import java.util.ArrayList;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
+
+@SuppressFBWarnings("FCBL_FIELD_COULD_BE_LOCAL")
 public class RandomTest {
 	private Byte[] expectedValues = { -128, 0, 127 };
-	private final int SAMPLE_SIZE = 100000;
+	private static final int SAMPLE_SIZE = 100000;
 
 	private ArrayList<Byte> arrayToList(byte[] data) {
 		ArrayList<Byte> dataList = new ArrayList<>(data.length);

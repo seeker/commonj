@@ -35,7 +35,7 @@ public abstract class DataProducer<I, O> {
 		startLoader();
 	}
 
-	public void startLoader() {
+	public final void startLoader() {
 		startLoader(1);
 	}
 

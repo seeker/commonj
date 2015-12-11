@@ -8,105 +8,25 @@ package com.github.dozedoff.commonj.file;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.nio.file.FileVisitOption;
-import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.github.dozedoff.commonj.filefilter.DirectoryFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.github.dozedoff.commonj.filefilter.SimpleImageFilter;
 
 /**
  * This class will search all folders and the respective subfolders for files and return them as a List of File items.
  */
 public class FileWalker {
-	/** output list for Files or Folders */
-	private LinkedList<File> resultList = new LinkedList<File>();
-	/** Directory's to process */
-	private LinkedList<File> dirToSearch = new LinkedList<File>();
-	private boolean noSub = false;
-	private boolean folderOnly = false;
-	private boolean imageOnly = false;
-
-	/**
-	 * Use {@link FileWalker#walkFileTree(File...)} instead.
-	 */
-	@Deprecated
-	public void addPath(File file) {
-		File[] f = { file };
-		addPath(f);
-	}
-
-	/**
-	 * Use {@link FileWalker#walkFileTree(File...)} instead.
-	 */
-	@Deprecated
-	public void addPath(File[] file) {
-		for (File f : file) {
-			if (!dirToSearch.contains(f)) {
-				dirToSearch.add(f);
-			}
-
-		}
-	}
-
-	/**
-	 * Use {@link FileWalker#walkFileTree(String...)} instead.
-	 */
-	@Deprecated
-	public void addPath(String string) {
-		File[] f = { new File(string) }; // make a 1 element array
-		addPath(f);
-	}
-
-	/**
-	 * Use {@link FileWalker#walkFileTree(String...)} instead.
-	 */
-	@Deprecated
-	public void addPath(String[] dirs) {
-		File[] conv = new File[dirs.length];
-		int i = 0;
-		for (String s : dirs) { // string to File
-			conv[i] = (new File(s));
-			i++;
-		}
-		addPath(conv);
-	}
-
-	/**
-	 * Use {@link FileWalker#walkFileTreeFileList(List)} instead.
-	 */
-	@Deprecated
-	public void addPath(List<File> dirs) {
-		File[] conv = new File[dirs.size()];
-		dirs.toArray(conv);
-		addPath(conv);
-	}
-
-	/**
-	 * Use {@link FileWalker#getCurrentDirectorySubdirectories(Path)} or {@link FileWalker#getCurrentFolderImages(Path)} instead.
-	 */
-	@Deprecated
-	public void setnoSub(boolean set) {
-		this.noSub = set;
-	}
-
-	/**
-	 * Use {@link FileWalker#getAllDirectories(Path)} or {@link FileWalker#getCurrentDirectorySubdirectories(Path)} instead.
-	 */
-	@Deprecated
-	public void setfolderOnly(boolean set) {
-		this.folderOnly = set;
-	}
+	private static final Logger logger = LoggerFactory.getLogger(FileWalker.class);
 
 	public static LinkedList<Path> getAllDirectories(Path startDirectory) throws IOException {
 		LinkedList<Path> directoryList = new LinkedList<>();
@@ -114,23 +34,30 @@ public class FileWalker {
 		return directoryList;
 	}
 
+	/**
+	 * Returns all directories in the given directory.
+	 * 
+	 * @param currentDirectory
+	 *            path to check
+	 * @return a list of paths for directories
+	 */
 	public static LinkedList<Path> getCurrentDirectorySubdirectories(Path currentDirectory) {
 		LinkedList<Path> subDirectories = new LinkedList<>();
-		File[] foundDirectories = currentDirectory.toFile().listFiles(new DirectoryFilter());
+		// TODO change return type to interface
+		try {
+			Iterator<Path> iter = Files.list(currentDirectory).iterator();
 
-		for (File file : foundDirectories) {
-			subDirectories.add(file.toPath());
+			while (iter.hasNext()) {
+				Path path = iter.next();
+				if (Files.isDirectory(path)) {
+					subDirectories.add(path);
+				}
+			}
+		} catch (IOException e) {
+			logger.error("Filewalk for {} failed with {}", currentDirectory, e);
 		}
 
 		return subDirectories;
-	}
-
-	/**
-	 * Use {@link FileWalker#getAllImages(Path)} or {@link FileWalker#getCurrentFolderImages(Path)} instead.
-	 */
-	@Deprecated
-	public void setImagesOnly(boolean set) {
-		this.imageOnly = set;
 	}
 
 	public static LinkedList<Path> getAllImages(Path startDirectory) throws IOException {
@@ -139,11 +66,16 @@ public class FileWalker {
 
 	public static LinkedList<Path> getCurrentFolderImages(Path currentFolder) throws IOException {
 		LinkedList<Path> imageList = new LinkedList<>();
+		Iterator<Path> iter = Files.list(currentFolder).iterator();
 
-		File[] foundImages = currentFolder.toFile().listFiles(new SimpleImageFilter());
+		SimpleImageFilter sif = new SimpleImageFilter();
 
-		for (File file : foundImages) {
-			imageList.add(file.toPath());
+		while (iter.hasNext()) {
+			Path path = iter.next();
+
+			if (sif.accept(path.toFile())) {
+				imageList.add(path);
+			}
 		}
 
 		return imageList;
@@ -155,35 +87,6 @@ public class FileWalker {
 		Files.walkFileTree(startDirectory, new FilenameFilterVisitor(foundFiles, fileFilter));
 
 		return foundFiles;
-	}
-
-	/**
-	 * Use {@link FileWalker#walkFileTree(Path...)} instead.
-	 */
-	@Deprecated
-	public List<File> fileWalkList() {
-		LinkedList<File> files = fileWalk();
-		ArrayList<File> list = new ArrayList<File>(100);
-
-		Iterator<File> ite = files.iterator();
-		while (ite.hasNext()) {
-			list.add(ite.next());
-		}
-		return list;
-	}
-
-	/**
-	 * No replacement available.
-	 */
-	@Deprecated
-	public List<String> fileWalkStringList() {
-		LinkedList<File> files = fileWalk();
-		List<String> list = new ArrayList<String>(100);
-		Iterator<File> ite = files.iterator();
-		while (ite.hasNext()) {
-			list.add(ite.next().toString());
-		}
-		return list;
 	}
 
 	public static LinkedList<Path> walkFileTree(Path... directories) throws IOException {
@@ -200,6 +103,8 @@ public class FileWalker {
 		return walkFileTree(list.toArray(new Path[1]));
 	}
 
+	// TODO REMOVE after 0.1.1
+	@Deprecated
 	public static LinkedList<Path> walkFileTree(File... directories) throws IOException {
 		Path[] paths = new Path[directories.length];
 
@@ -237,63 +142,6 @@ public class FileWalker {
 			if (index < 0) {
 				foundFiles.add(-index - 1, file);
 			}
-		}
-	}
-
-	/**
-	 * Use walkFileTree methods instead
-	 */
-	@Deprecated
-	public LinkedList<File> fileWalk() {
-		resultList.clear();
-		for (File f : dirToSearch) {
-			try {
-				if (noSub && folderOnly) {
-					Files.walkFileTree(f.toPath(), EnumSet.noneOf(FileVisitOption.class), 2, new FileVisitor());
-				} else if (noSub && !folderOnly) {
-					Files.walkFileTree(f.toPath(), EnumSet.noneOf(FileVisitOption.class), 1, new FileVisitor());
-				} else {
-					Files.walkFileTree(f.toPath(), new FileVisitor());
-				}
-			} catch (IOException e) {
-				e.printStackTrace(); // should not reach this...
-			}
-		}
-		dirToSearch.clear();
-		return new LinkedList<File>(resultList);
-	}
-
-	class FileVisitor extends SimpleFileVisitor<Path> {
-		SimpleImageFilter imageFilter = new SimpleImageFilter();
-
-		@Override
-		public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
-			if (!folderOnly && attrs.isRegularFile()) {
-				if (imageOnly) {
-
-					if (imageFilter.accept(path.toFile())) {
-						resultList.add(path.toFile());
-					}
-				} else {
-					resultList.add(path.toFile());
-				}
-			}
-			return FileVisitResult.CONTINUE;
-		}
-
-		@Override
-		public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-			if (folderOnly && attrs.isDirectory()) {
-				resultList.add(dir.toFile());
-			}
-
-			return FileVisitResult.CONTINUE;
-		}
-
-		@Override
-		public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
-			System.err.println("unable to access " + file.toString());
-			return FileVisitResult.CONTINUE;
 		}
 	}
 }

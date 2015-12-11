@@ -28,7 +28,7 @@ public class ProcessWatchDog extends Thread {
 			return; // all is well
 		}
 
-		logger.error("Process timed out. Description: " + processDescription);
+		logger.error("Process {} timed out.", processDescription);
 		process.destroy();
 	}
 }

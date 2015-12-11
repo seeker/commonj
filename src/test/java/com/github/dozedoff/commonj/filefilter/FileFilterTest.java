@@ -5,7 +5,9 @@
 
 package com.github.dozedoff.commonj.filefilter;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -37,12 +39,16 @@ public class FileFilterTest {
 
 	@Test
 	public void testNonExistantFile() {
-		File file = new File("test");
-		assertFalse(ff.accept(file));
+		File none = new File("foobar.txt");
+
+		// Guard condition
+		assertThat("The file must not exist", none.exists(), is(false));
+
+		assertFalse(ff.accept(none));
 	}
 
 	@Test
 	public void testNull() {
-		assertFalse(ff.accept(null));
+		assertFalse(ff.accept((File) null));
 	}
 }
