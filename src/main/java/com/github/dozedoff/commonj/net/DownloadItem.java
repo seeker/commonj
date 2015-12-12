@@ -11,8 +11,8 @@ import java.net.URL;
  * Storage class for an Image.
  */
 public class DownloadItem {
-	private URL imageUrl;
-	private String imageName;
+	private final URL imageUrl;
+	private final String imageName;
 
 	public DownloadItem(URL imageUrl, String imageName) {
 		this.imageUrl = imageUrl;
@@ -42,7 +42,7 @@ public class DownloadItem {
 			return true;
 		if (obj == null)
 			return false;
-		if (getClass() != obj.getClass())
+		if (! (obj instanceof DownloadItem))
 			return false;
 		DownloadItem other = (DownloadItem) obj;
 		if (imageName == null) {
