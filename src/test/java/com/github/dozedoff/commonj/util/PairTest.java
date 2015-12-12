@@ -8,12 +8,16 @@ package com.github.dozedoff.commonj.util;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import nl.jqno.equalsverifier.EqualsVerifier;
+import nl.jqno.equalsverifier.Warning;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
+@SuppressWarnings("deprecation")
 @SuppressFBWarnings("FCBL_FIELD_COULD_BE_LOCAL")
 public class PairTest {
 	private Pair<String, String> pair;
@@ -63,6 +67,12 @@ public class PairTest {
 	public void testEquals() {
 		Pair<String, String> other = new Pair<String, String>("A", "B");
 		assertThat(pair.equals(other), is(true));
+	}
+	
+	@Test
+	@Ignore("Need to remove setters to make fields final")
+	public void testEqualsWithVerify() {
+		EqualsVerifier.forClass(Pair.class).suppress(Warning.STRICT_INHERITANCE).verify();
 	}
 
 	@Test

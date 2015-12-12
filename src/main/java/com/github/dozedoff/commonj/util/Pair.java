@@ -18,6 +18,8 @@ public class Pair<V, T> {
 		return left;
 	}
 
+	//TODO DEPRECATED remove after 0.2.1
+	@Deprecated
 	public void setLeft(V left) {
 		this.left = left;
 	}
@@ -26,6 +28,8 @@ public class Pair<V, T> {
 		return right;
 	}
 
+	//TODO DEPRECATED remove after 0.2.1
+	@Deprecated
 	public void setRight(T right) {
 		this.right = right;
 	}
@@ -46,7 +50,7 @@ public class Pair<V, T> {
 			return true;
 		if (obj == null)
 			return false;
-		if (getClass() != obj.getClass())
+		if (!(obj instanceof Pair))
 			return false;
 		Pair other = (Pair) obj;
 		if (left == null) {
