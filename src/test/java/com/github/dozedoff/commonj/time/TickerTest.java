@@ -28,7 +28,7 @@ public class TickerTest {
 	@Test(timeout = 400)
 	public void testCancel() throws Exception {
 		dt = new DummyTicker(2, TimeUnit.SECONDS);
-		Thread.sleep(10);
+		Thread.sleep(100);
 		dt.cancel();
 		assertThat(dt.getTickCount(), is(1));
 	}
