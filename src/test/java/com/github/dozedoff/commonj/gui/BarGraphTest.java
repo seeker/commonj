@@ -57,6 +57,16 @@ public class BarGraphTest {
 	}
 
 	@Test
+	public void testAutoScale_one_value_grater_than_height() throws Exception {
+		barGraph.setAutoScale(true);
+		when(sampler.getSamples()).thenReturn(Arrays.asList(20));
+
+		barGraph.update(g);
+
+		verify(g).fillRect(anyInt(), anyInt(), anyInt(), eq(10));
+	}
+
+	@Test
 	public void testAutoScale_two_value() throws Exception {
 		barGraph.setAutoScale(true);
 		when(sampler.getSamples()).thenReturn(Arrays.asList(1, 2));

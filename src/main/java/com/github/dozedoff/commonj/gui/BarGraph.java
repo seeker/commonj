@@ -13,6 +13,7 @@ public class BarGraph implements Graph {
 	private final Sampler sampler;
 	private Color barColor;
 	private double scaleFactor = 1;
+	private boolean autoScale = false;
 
 	public BarGraph(JComponent component, Sampler sampler) {
 		this(component, sampler, Color.BLUE);
@@ -22,6 +23,10 @@ public class BarGraph implements Graph {
 		this.component = component;
 		this.sampler = sampler;
 		this.barColor = color;
+	}
+
+	public void setAutoScale(boolean autoScale) {
+		this.autoScale = autoScale;
 	}
 
 	@Override
@@ -50,16 +55,21 @@ public class BarGraph implements Graph {
 	}
 
 	private void calcScale(List<Integer> graphData) {
+		if (!autoScale) {
+			scaleFactor = 1;
+			return;
+		}
+		
 		int max = 0;
 
 		for (int i : graphData) {
 			max = Math.max(max, i);
 		}
 
-		if (max > this.component.getHeight()) {
-			scaleFactor = max / (double) this.component.getHeight();
+		if (max > component.getHeight()) {
+			scaleFactor = (double) max / (double) this.component.getHeight();
 		} else {
-			scaleFactor = 1;
+			scaleFactor = Math.pow((component.getHeight() / max), -1);
 		}
 	}
 }
