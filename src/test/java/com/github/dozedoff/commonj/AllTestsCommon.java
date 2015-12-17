@@ -23,6 +23,7 @@ import org.junit.runners.Suite.SuiteClasses;
 	FileFilterTests.class,
 	EncodingTests.class,
 	SettingsTests.class,
-	ThreadTests.class
+	ThreadTests.class,
+	GuiTests.class
 })
 public class AllTestsCommon {}
