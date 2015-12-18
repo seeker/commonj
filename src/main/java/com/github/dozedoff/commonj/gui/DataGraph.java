@@ -25,7 +25,7 @@ public class DataGraph extends JPanel {
 	private transient Ticker updater;
 	private transient Sampler sampler;
 	private boolean autoscale;
-	private Graph graph;
+	private transient Graph graph;
 
 	// TODO DEPRECATED remove after 0.2.1
 	@Deprecated

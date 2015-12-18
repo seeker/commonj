@@ -10,7 +10,7 @@ import com.github.dozedoff.commonj.util.Sampler;
 
 public class BarGraph implements Graph {
 	private final JComponent component;
-	private final Sampler sampler;
+	private transient final Sampler sampler;
 	private Color barColor;
 	private double scaleFactor = 1;
 	private boolean autoScale = false;
@@ -69,7 +69,7 @@ public class BarGraph implements Graph {
 		if (max > component.getHeight()) {
 			scaleFactor = (double) max / (double) this.component.getHeight();
 		} else {
-			scaleFactor = Math.pow((component.getHeight() / max), -1);
+			scaleFactor = Math.pow((component.getHeight() / (double) max), -1);
 		}
 	}
 }
