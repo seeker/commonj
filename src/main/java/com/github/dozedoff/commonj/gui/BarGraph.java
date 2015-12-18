@@ -31,16 +31,17 @@ public class BarGraph implements Graph {
 
 	@Override
 	public void update(Graphics g) {
-		calcScale(sampler.getSamples());
-		g.setColor(barColor);
 		List<Integer> graphData = sampler.getSamples();
-		int i = 0;
+		calcScale(graphData);
+		g.setColor(barColor);
 
-		int columWidth = columnWidth();
-		for (int currval : graphData) {
-			currval = (int) (currval / scaleFactor);
-			g.fillRect(i * columWidth, this.component.getHeight() - currval, columWidth, currval);
-			i++;
+		int columnOffset = 0;
+
+		int columnWidth = columnWidth();
+		for (int barValue : graphData) {
+			barValue = (int) (barValue / scaleFactor);
+			g.fillRect(columnOffset * columnWidth, this.component.getHeight() - barValue, columnWidth, barValue);
+			columnOffset++;
 		}
 	}
 

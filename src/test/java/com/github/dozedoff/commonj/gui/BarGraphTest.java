@@ -20,6 +20,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import com.github.dozedoff.commonj.util.Sampler;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 @RunWith(MockitoJUnitRunner.class)
 public class BarGraphTest {
 	private static final Integer test_values[] = { 1, 2, 3 };
@@ -36,6 +38,7 @@ public class BarGraphTest {
 	@InjectMocks
 	private BarGraph barGraph;
 
+	@SuppressFBWarnings("PRMC_POSSIBLY_REDUNDANT_METHOD_CALLS")
 	@Before
 	public void setUp() throws Exception {
 		when(component.getGraphics()).thenReturn(g);
