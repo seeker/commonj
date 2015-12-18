@@ -35,6 +35,7 @@ public class DataGraph extends JPanel {
 		this.columWidth = cWidth;
 		this.updateInterval = interval;
 		this.autoscale = autoscale;
+		this.timeUnit = TimeUnit.SECONDS;
 
 		sampler = new Sampler(noOfColums);
 		this.graph = new BarGraph(this, sampler);
@@ -63,7 +64,7 @@ public class DataGraph extends JPanel {
 			return;
 		}
 
-		updater = new Ticker("DataGraph updater", updateInterval, TimeUnit.SECONDS) {
+		updater = new Ticker("DataGraph updater", updateInterval, timeUnit) {
 			@Override
 			public void tickEvent() {
 				updateGui();
