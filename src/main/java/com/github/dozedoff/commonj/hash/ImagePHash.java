@@ -1,5 +1,9 @@
 package com.github.dozedoff.commonj.hash;
 
+import static org.bytedeco.javacpp.opencv_imgcodecs.CV_LOAD_IMAGE_GRAYSCALE;
+import static org.bytedeco.javacpp.opencv_imgcodecs.imread;
+import static org.bytedeco.javacpp.opencv_imgproc.resize;
+
 /*
  * pHash-like image hash.
  * Author: Elliot Shepherd (elliot@jarofworms.com)
@@ -11,8 +15,15 @@ package com.github.dozedoff.commonj.hash;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
 
 import javax.imageio.ImageIO;
+
+import org.bytedeco.javacpp.Loader;
+import org.bytedeco.javacpp.opencv_core.Mat;
+import org.bytedeco.javacpp.opencv_core.Size;
+import org.bytedeco.javacpp.opencv_objdetect;
+import org.bytedeco.javacpp.indexer.UByteBufferIndexer;
 
 import com.github.dozedoff.commonj.helper.TransformHelper;
 import com.github.dozedoff.commonj.util.Bits;
@@ -38,6 +49,7 @@ public class ImagePHash {
 
 		transformHelper = new TransformHelper(resizedImageSize);
 		ImageIO.setUseCache(false);
+		Loader.load(opencv_objdetect.class); // TODO is this needed?
 	}
 
 	/**
@@ -87,6 +99,30 @@ public class ImagePHash {
 		double[][] dct = calculateDctMapScaledDown(img);
 		double dctAvg = TransformHelper.dctAverage(dct, dctMatrixSize);
 		long hash = convertToLong(dct, dctAvg);
+		return hash;
+	}
+
+	public long getLongHash(Path filePath) throws IOException {
+		Mat image = imread(filePath.toString(), CV_LOAD_IMAGE_GRAYSCALE);
+		Size sz = new Size(this.resizedImageSize, this.resizedImageSize);
+		Mat resized = new Mat(sz);
+		resize(image, resized, sz);
+
+		int rows = resized.rows();
+		int cols = resized.cols();
+		double reducedValues[][] = new double[rows][cols];
+
+		UByteBufferIndexer idx = resized.createIndexer();
+
+		for (int row = 0; row < rows; row++) {
+			for (int col = 0; col < cols; col++) {
+				reducedValues[row][col] = idx.get(row, col);
+			}
+		}
+
+		double[][] dctMap = transformHelper.transformDCT(reducedValues);
+		double dctAvg = TransformHelper.dctAverage(dctMap, dctMatrixSize);
+		long hash = convertToLong(dctMap, dctAvg);
 		return hash;
 	}
 

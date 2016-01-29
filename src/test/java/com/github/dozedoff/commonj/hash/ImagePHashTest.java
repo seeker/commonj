@@ -138,6 +138,13 @@ public class ImagePHashTest {
 		assertThat(hash, is(-6261023631344080447L));
 	}
 
+	@Test
+	public void testGetLongHashOpenCV() throws Exception {
+		long hash = iph.getLongHash(testImageJPG);
+
+		assertThat(hash, is(-7276023159344816079L));
+	}
+
 	private int getHammingDistance(long a, long b) {
 		long xor = a ^ b;
 		int distance = Long.bitCount(xor);
