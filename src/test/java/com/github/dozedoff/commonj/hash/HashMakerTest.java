@@ -15,6 +15,7 @@ import java.nio.file.Paths;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 @SuppressWarnings("deprecation")
@@ -81,6 +82,7 @@ public class HashMakerTest {
 		assertNull(hm.hashFile((File) null));
 	}
 
+	@Ignore
 	@Test
 	public void testInvalidFile() {
 		assertNull(hm.hashFile(new File(".\fooBar")));
