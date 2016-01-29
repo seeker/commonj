@@ -49,7 +49,7 @@ public class ImagePHash {
 
 		transformHelper = new TransformHelper(resizedImageSize);
 		ImageIO.setUseCache(false);
-		Loader.load(opencv_objdetect.class); // TODO is this needed?
+		Loader.load(opencv_objdetect.class);
 	}
 
 	/**
@@ -62,16 +62,24 @@ public class ImagePHash {
 	}
 
 	/**
+	 * Use {@link ImagePHash#getLongHash(Path)} instead.
 	 * 
 	 * @param is
 	 *            file to hash
 	 * @return hash in as long
 	 * @throws IOException
 	 */
+	@Deprecated
+	// TODO DEPRECATED remove after 0.3.0
 	public long getLongHash(InputStream is) throws IOException {
 		return getLongHash(ImageUtil.readImage(is));
 	}
 
+	/**
+	 *  Use {@link ImagePHash#getLongHash(Path)} instead. 
+	 */
+	@Deprecated
+	// TODO DEPRECATED remove after 0.3.0
 	public long getLongHash(BufferedImage img) throws IOException {
 		double[][] dct = calculateDctMap(img);
 
@@ -133,6 +141,8 @@ public class ImagePHash {
 	 * @return a 'binary string' (like. 001010111011100010) which is easy to do a hamming distance on.
 	 * @throws Exception
 	 */
+	@Deprecated
+	// TODO DEPRECATED remove after 0.3.0
 	public String getStringHash(InputStream is) throws IOException {
 		/*
 		 * 6. Further reduce the DCT. This is the magic step. Set the 64 hash bits to 0 or 1 depending on whether each of the 64 DCT values
@@ -171,7 +181,7 @@ public class ImagePHash {
 		return calculateDctMap(img);
 	}
 
-	public double[][] calculateDctMap(BufferedImage img) throws IOException {
+	private double[][] calculateDctMap(BufferedImage img) throws IOException {
 		/*
 		 * 1. Reduce size. Like Average Hash, pHash starts with a small image. However, the image is larger than 8x8; 32x32 is a good size.
 		 * This is really done to simplify the DCT computation and not because it is needed to reduce the high frequencies.
@@ -180,7 +190,7 @@ public class ImagePHash {
 		return calculateDctMapScaledDown(img);
 	}
 
-	public double[][] calculateDctMapScaledDown(BufferedImage img) throws IOException {
+	private double[][] calculateDctMapScaledDown(BufferedImage img) throws IOException {
 		/*
 		 * 2. Reduce color. The image is reduced to a grayscale just to further simplify the number of computations.
 		 */
