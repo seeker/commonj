@@ -56,13 +56,13 @@ public class ImageUtil {
 	 * @return matrix with pixel values
 	 */
 	public static double[][] toDoubleMatrix(BufferedImage grayscaleImage) {
-		int width = grayscaleImage.getWidth();
-		int height = grayscaleImage.getHeight();
-		double reducedValues[][] = new double[width][height];
+		int cols = grayscaleImage.getWidth();
+		int rows = grayscaleImage.getHeight();
+		double reducedValues[][] = new double[cols][rows];
 
-		for (int x = 0; x < width; x++) {
-			for (int y = 0; y < height; y++) {
-				reducedValues[x][y] = getBlue(grayscaleImage, x, y);
+		for (int row = 0; row < rows; row++) {
+			for (int col = 0; col < cols; col++) {
+				reducedValues[row][col] = getBlue(grayscaleImage, col, row);
 			}
 		}
 

@@ -28,6 +28,10 @@ import com.github.dozedoff.commonj.util.ImageUtil;
 @SuppressWarnings("deprecation")
 public class ImagePHashTest {
 	private static Path testImageJPG, testImageSmallJPG, testImagePNG, testImageGIF, testImageBMP, testImagePNGtr, testImageGIFtr;
+	
+	private static final long TEST_IMAGE_HASH = -7271519559717445615L;
+	private static final int MAX_HAMMING_DIFF = 4;
+	
 	private int imageSize = 32;
 
 	private ImagePHash iph;
@@ -63,70 +67,70 @@ public class ImagePHashTest {
 		long normal = hashImage(testImageJPG);
 		long scaled = hashImage(testImageSmallJPG);
 
-		assertThat(getHammingDistance(normal, scaled), is(4));
+		assertThat(getHammingDistance(normal, scaled), is(MAX_HAMMING_DIFF));
 	}
 
 	@Test
 	public void testSourceImageHash() throws Exception {
 		long normal = hashImage(testImageJPG);
 
-		assertThat(normal, is(-6261023631344080447L));
+		assertThat(normal, is(TEST_IMAGE_HASH));
 	}
 
 	@Test
 	public void testSourceImageHashPNG() throws Exception {
 		long normal = hashImage(testImagePNG);
 
-		assertThat(normal, is(-6261023631344080447L));
+		assertThat(normal, is(TEST_IMAGE_HASH));
 	}
 
 	@Test
 	public void testSourceImageHashGIF() throws Exception {
 		long normal = hashImage(testImageGIF);
 
-		assertThat(normal, is(-6261023631344080447L));
+		assertThat(normal, is(TEST_IMAGE_HASH));
 	}
 
 	@Test
 	public void testSourceImageHashBMP() throws Exception {
 		long normal = hashImage(testImageBMP);
 
-		assertThat(normal, is(-6261023631344080447L));
+		assertThat(normal, is(TEST_IMAGE_HASH));
 	}
 
 	@Test
 	public void testSourceImageHashPNGtr() throws Exception {
 		long normal = hashImage(testImagePNGtr);
 
-		assertThat(normal, is(-6261023631344080447L));
+		assertThat(normal, is(TEST_IMAGE_HASH));
 	}
 
 	@Test
 	public void testSourceImageHashGIFtr() throws Exception {
 		long normal = hashImage(testImageGIFtr);
 
-		assertThat(getHammingDistance(normal, -6261023631344080447L), lessThanOrEqualTo(4));
+		assertThat(getHammingDistance(normal, TEST_IMAGE_HASH), lessThanOrEqualTo(MAX_HAMMING_DIFF));
 	}
 
 	@Test
 	public void testScaledSourceImageHash() throws Exception {
 		long scaled = hashImage(testImageSmallJPG);
 
-		assertThat(scaled, is(-6261023624918439487L));
+		assertThat(getHammingDistance(scaled, TEST_IMAGE_HASH), lessThanOrEqualTo(MAX_HAMMING_DIFF));
 	}
 
 	@Test
 	public void testGetStringHash() throws Exception {
 		String hash = iph.getStringHash(Files.newInputStream(testImageJPG));
 
-		assertThat(hash, is("1101010010001110001100000001011011111101101101000111010011100000"));
+		assertThat(hash, is("1100110110001011001011111011111001001000110111100101000000001000"));
 	}
 
 	@Test
 	public void testGetLongHashBufferedImage() throws Exception {
 		long normal = iph.getLongHash(ImageIO.read(Files.newInputStream(testImageJPG)));
 
-		assertThat(normal, is(-6261023631344080447L));
+		assertThat(normal, is(TEST_IMAGE_HASH));
 	}
 
 	@Test
@@ -136,7 +140,7 @@ public class ImagePHashTest {
 
 		long hash = iph.getLongHash(bi);
 
-		assertThat(hash, is(-6261023631344080447L));
+		assertThat(hash, is(TEST_IMAGE_HASH));
 	}
 
 	@Test
