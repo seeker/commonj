@@ -12,11 +12,13 @@ import static org.bytedeco.javacpp.opencv_imgproc.resize;
  * Original Source:		http://pastebin.com/Pj9d8jt5#
  */
 
+
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 
+import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
 
 import org.bytedeco.javacpp.Loader;
@@ -112,6 +114,11 @@ public class ImagePHash {
 
 	public long getLongHash(Path filePath) throws IOException {
 		Mat image = imread(filePath.toString(), CV_LOAD_IMAGE_GRAYSCALE);
+		
+		if(image.empty()) {
+			throw new IIOException("Image " + filePath + " is empty");
+		}
+		
 		Size sz = new Size(this.resizedImageSize, this.resizedImageSize);
 		Mat resized = new Mat(sz);
 		resize(image, resized, sz);
