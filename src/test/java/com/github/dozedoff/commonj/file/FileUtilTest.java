@@ -273,6 +273,7 @@ public class FileUtilTest {
 		assertThat(clean, is("foo_bar"));
 	}
 
+	@Ignore
 	@Test
 	public void testHasValidWindowsFilenameFileEmpty() {
 		assertThat(FileUtil.hasValidWindowsFilename(new File("")), is(false));
@@ -284,6 +285,7 @@ public class FileUtilTest {
 		assertThat(FileUtil.hasValidWindowsFilename(new File("C:\\foobar")), is(true));
 	}
 
+	@Ignore
 	@Test
 	public void testHasValidWindowsFilenameValidRelative() {
 		assertThat(FileUtil.hasValidWindowsFilename(new File("baz\\foobar")), is(true));
