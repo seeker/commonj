@@ -6,6 +6,8 @@
 package com.github.dozedoff.commonj.net;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.anyOf;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
@@ -17,6 +19,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -31,22 +34,36 @@ import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 public class JettyHttpClientTest {
 	static final int SERVER_PORT = 5400;
 	static final int TEST_DATA_SIZE = 25;
 	static final int READ_TIMEOUT_CLASS = 100;
 	static final int READ_TIMEOUT_TEST = 1500;
-	
+
 	private static enum Pages {
 		data, range, wait, notok, error, agent
 	};
-	
+
+	@Rule
+	public ExpectedException expected = ExpectedException.none();
+
 	JettyHttpClient cut;
 	static Server server;
 	static TestHandler testHandler;
 	HashMap<Pages, URL> pageURLs = new HashMap<>();
+
+	/**
+	 * Workaround for testing on Windows 10. On Linux and Windows 7, a
+	 * {@link TimeoutException} is thrown, however Windows 10 throws the
+	 * exception wrapped in a {@link ExecutionException}.
+	 */
+	private void windowsTenWorkaraound() {
+		expected.expect(anyOf(instanceOf(TimeoutException.class), instanceOf(ExecutionException.class)));
+	}
 
 	@BeforeClass
 	public static void startServer() throws Exception {
@@ -67,8 +84,8 @@ public class JettyHttpClientTest {
 		testHandler.setTestData(new byte[0]);
 		server.start();
 	}
-	
-	@Test(expected=IllegalArgumentException.class)
+
+	@Test(expected = IllegalArgumentException.class)
 	public void testSetTimeoutInvalid() {
 		cut.setTimeout(-100, TimeUnit.MILLISECONDS);
 	}
@@ -77,7 +94,7 @@ public class JettyHttpClientTest {
 	public void testSetTimeoutZero() {
 		cut.setTimeout(0, TimeUnit.MILLISECONDS);
 	}
-	
+
 	@Test
 	public void testSetTimeoutPositive() {
 		cut.setTimeout(10, TimeUnit.SECONDS);
@@ -89,19 +106,20 @@ public class JettyHttpClientTest {
 		byte[] data = cut.getData(getURL(Pages.data));
 		assertThat(data, is(testHandler.getTestData()));
 	}
-	
-	@Test(timeout = READ_TIMEOUT_TEST, expected = TimeoutException.class)
+
+	@Test(timeout = READ_TIMEOUT_TEST)
 	public void testGetDataTimeout() throws Exception {
+		windowsTenWorkaraound();
 		cut.setTimeout(READ_TIMEOUT_CLASS, TimeUnit.MILLISECONDS);
 		cut.getData(getURL(Pages.wait));
 	}
-	
-	@Test(expected=PageLoadException.class)
+
+	@Test(expected = PageLoadException.class)
 	public void testGetDataBadRequest() throws Exception {
 		cut.getData(getURL(Pages.notok));
 	}
-	
-	@Test(expected=IOException.class)
+
+	@Test(expected = IOException.class)
 	public void testGetDataIOExceptiom() throws Exception {
 		cut.getData(getURL(Pages.error));
 	}
@@ -113,8 +131,10 @@ public class JettyHttpClientTest {
 		assertThat(size, is((long) testHandler.getTestData().length));
 	}
 
-	@Test(timeout = READ_TIMEOUT_TEST, expected = TimeoutException.class)
+	@Test(timeout = READ_TIMEOUT_TEST)
 	public void testGetLenghtTimeOut() throws Exception {
+		windowsTenWorkaraound();
+
 		cut.setTimeout(READ_TIMEOUT_CLASS, TimeUnit.MILLISECONDS);
 		cut.getLenght(getURL(Pages.wait));
 	}
@@ -135,28 +155,30 @@ public class JettyHttpClientTest {
 		testHandler.setTestData(generateRandomData(TEST_DATA_SIZE));
 		byte[] subSet = Arrays.copyOfRange(testHandler.getTestData(), dataOffset, TEST_DATA_SIZE);
 
-		byte[] data = cut.getDataRange(getURL(Pages.data), dataOffset, TEST_DATA_SIZE-dataOffset);
+		byte[] data = cut.getDataRange(getURL(Pages.data), dataOffset, TEST_DATA_SIZE - dataOffset);
 		assertThat(data, is(subSet));
 	}
 
-	@Test(timeout = READ_TIMEOUT_TEST, expected = TimeoutException.class)
+	@Test(timeout = READ_TIMEOUT_TEST)
 	public void testGetDataRangeTimeout() throws Exception {
+		windowsTenWorkaraound();
 		int dataOffset = 10;
 		cut.setTimeout(READ_TIMEOUT_CLASS, TimeUnit.MILLISECONDS);
-		cut.getDataRange(getURL(Pages.wait), dataOffset, TEST_DATA_SIZE-dataOffset);
+
+		cut.getDataRange(getURL(Pages.wait), dataOffset, TEST_DATA_SIZE - dataOffset);
 	}
 
 	@Test(timeout = 5000)
 	public void testReUse() throws Exception {
 		int iterations = 3;
-		
-		for (int i=0; i<iterations; i++){
+
+		for (int i = 0; i < iterations; i++) {
 			testHandler.setTestData(generateRandomData(TEST_DATA_SIZE));
 			assertThat(cut.getData(getURL(Pages.data)), is(testHandler.getTestData()));
 		}
 	}
 
-	@Test(expected=IllegalArgumentException.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void testSetUserAgentNull() throws Exception {
 		cut.setUserAgent(null);
 	}
@@ -165,10 +187,10 @@ public class JettyHttpClientTest {
 	public void testSetUserAgent() throws Exception {
 		String newAgent = "Foobar";
 		cut.setUserAgent(newAgent);
-		
+
 		byte[] data = cut.getData(getURL(Pages.agent));
 		String decoded = new String(data, StandardCharsets.UTF_8);
-		
+
 		assertThat(decoded, is(newAgent));
 	}
 
@@ -180,13 +202,13 @@ public class JettyHttpClientTest {
 	@Test
 	public void testGetTimeoutInMilliseconds() throws Exception {
 		cut.setTimeout(2, TimeUnit.SECONDS);
-		
+
 		assertThat(cut.getTimeoutInMilliseconds(), is(2000L));
 	}
 
 	static class TestHandler extends AbstractHandler {
 		private byte[] testData;
-		
+
 		public byte[] getTestData() {
 			return testData;
 		}
@@ -196,8 +218,8 @@ public class JettyHttpClientTest {
 		}
 
 		@Override
-		public void handle(String arg0, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException,
-				ServletException {
+		public void handle(String arg0, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
+				throws IOException, ServletException {
 
 			response.setContentType("application/octet-stream");
 			response.setStatus(HttpServletResponse.SC_OK);
@@ -226,19 +248,19 @@ public class JettyHttpClientTest {
 				} catch (InterruptedException e) {
 				}
 				break;
-				
+
 			case notok:
 				response.setStatus(Response.SC_BAD_REQUEST);
 				break;
-				
+
 			case error:
 				response.sendError(Response.SC_BAD_REQUEST);
 				break;
-				
+
 			case agent:
 				processDataRequest(request, response, request.getHeader("user-agent").getBytes(StandardCharsets.UTF_8));
 				break;
-				
+
 			default:
 				throw new IllegalArgumentException("Unknown page");
 			}
@@ -249,7 +271,8 @@ public class JettyHttpClientTest {
 		return (request.getHeader("Range") != null && request.getHeader("Range").contains("bytes"));
 	}
 
-	private static void processRangeRequest(HttpServletRequest request, HttpServletResponse response, byte[] data) throws IOException {
+	private static void processRangeRequest(HttpServletRequest request, HttpServletResponse response, byte[] data)
+			throws IOException {
 		StringBuilder sb = new StringBuilder();
 		sb.append(request.getHeader("Range"));
 
@@ -265,7 +288,8 @@ public class JettyHttpClientTest {
 		response.getOutputStream().close();
 	}
 
-	private static void processDataRequest(HttpServletRequest request, HttpServletResponse response, byte[] data) throws IOException {
+	private static void processDataRequest(HttpServletRequest request, HttpServletResponse response, byte[] data)
+			throws IOException {
 		if (isRangeRequest(request)) {
 			processRangeRequest(request, response, data);
 		} else {
