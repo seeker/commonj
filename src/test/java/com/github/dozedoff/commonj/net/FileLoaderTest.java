@@ -22,7 +22,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class FileLoaderTest {
-	private static final int DEFAULT_TIMEOUT = 300;
+	private static final int DEFAULT_TIMEOUT = 400;
 
 	private FileLoader cut;
 	private DataDownloader ddl;
