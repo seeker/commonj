@@ -73,7 +73,7 @@ public class GetHtmlTest {
 	@Test(timeout = 1200, expected = SocketTimeoutException.class)
 	public void testConnectionTimeout() throws Exception {
 		getHtml.setMaxRetry(0);
-		getHtml.setReadTimeout(1000);
+		getHtml.setReadTimeout(200);
 		getHtml.get(urlWait);
 	}
 
