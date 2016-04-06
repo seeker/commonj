@@ -83,7 +83,7 @@ public class HashMakerTest {
 
 	@Test
 	public void testInvalidFile() {
-		assertNull(hm.hashFile(new File(".\fooBar")));
+		assertNull(hm.hashFile(Paths.get(".\\fooBar").toFile()));
 	}
 
 	@Test
