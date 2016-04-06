@@ -11,10 +11,23 @@ public class StopWatch {
 	final String format = "%1$02d:%2$02d:%3$02d.%4$03d";
 	boolean isRunning = false;
 	long startTime, stopTime;
+	private final Calendar calendar;
 
 	final long CONST_H = 3600000;
 	final long CONST_M = 60000;
 	final long CONST_S = 1000;
+
+	/**
+	 * Use {@link StopWatch#StopWatch(Calendar)} instead.
+	 */
+	@Deprecated
+	public StopWatch() {
+		calendar = Calendar.getInstance();
+	}
+
+	public StopWatch(Calendar calendar) {
+		this.calendar = calendar;
+	}
 
 	public boolean start() {
 		if (!isRunning) {
@@ -54,7 +67,7 @@ public class StopWatch {
 	}
 
 	private long getCurrentTime() {
-		return Calendar.getInstance().getTimeInMillis();
+		return this.calendar.getTimeInMillis();
 	}
 
 	protected String convertTime(long time) {
