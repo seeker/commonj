@@ -9,21 +9,12 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
+import com.github.dozedoff.commonj.net.GetHtmlTestNTS;
+import com.github.dozedoff.commonj.net.JettyHttpClientTestNTS;
+
 // @formatter:off
 @RunWith(Suite.class)
 @SuiteClasses({ 
-	FileTests.class, 
-	HashTests.class, 
-	NetTests.class,
-	ImageTests.class,
-	StringTests.class,
-	IoTests.class,
-	UtilTests.class,
-	TimeTests.class,
-	FileFilterTests.class,
-	EncodingTests.class,
-	SettingsTests.class,
-	ThreadTests.class,
-	GuiTests.class
+		AllUnitTests.class, JettyHttpClientTestNTS.class, GetHtmlTestNTS.class
 })
 public class AllTestsCommon {}
