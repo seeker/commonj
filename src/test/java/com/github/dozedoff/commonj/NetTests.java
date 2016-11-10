@@ -13,17 +13,17 @@ import com.github.dozedoff.commonj.net.DownloadItemTest;
 import com.github.dozedoff.commonj.net.DownloadWithRetryTest;
 import com.github.dozedoff.commonj.net.FileLoaderTest;
 import com.github.dozedoff.commonj.net.GetBinaryTest;
-import com.github.dozedoff.commonj.net.GetHtmlTest;
-import com.github.dozedoff.commonj.net.JettyHttpClientTest;
+import com.github.dozedoff.commonj.net.GetHtmlTestNTS;
+import com.github.dozedoff.commonj.net.JettyHttpClientTestNTS;
 
 @RunWith(Suite.class)
 @SuiteClasses({ 
 	GetBinaryTest.class, 
-	GetHtmlTest.class,
+		GetHtmlTestNTS.class,
 	DownloadItemTest.class,
 	FileLoaderTest.class,
 	DownloadWithRetryTest.class,
-	JettyHttpClientTest.class
+		JettyHttpClientTestNTS.class
 })
 public class NetTests {
 
