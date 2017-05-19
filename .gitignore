@@ -6,3 +6,4 @@ bin_test/
 /.settings/
 .project
 .classpath
+.checkstyle

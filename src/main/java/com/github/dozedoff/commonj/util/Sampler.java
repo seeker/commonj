@@ -9,9 +9,11 @@ import com.google.common.collect.EvictingQueue;
 public class Sampler {
 	private EvictingQueue<Integer> ringBuffer;
 	private AtomicInteger deltaSum = new AtomicInteger();
+	private int capacity;
 
 	public Sampler(int size) {
 		ringBuffer = EvictingQueue.create(size);
+		capacity = size;
 	}
 
 	public void addDelta(int delta) {
@@ -49,5 +51,9 @@ public class Sampler {
 		}
 
 		return Arrays.asList(samples);
+	}
+
+	public int getCapacity() {
+		return this.capacity;
 	}
 }

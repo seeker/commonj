@@ -5,9 +5,7 @@
 
 package com.github.dozedoff.commonj.gui;
 
-import java.awt.Color;
 import java.awt.Graphics;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.JPanel;
@@ -20,28 +18,43 @@ public class DataGraph extends JPanel {
 	 * Shows data over time
 	 */
 	private static final long serialVersionUID = 1L;
-	private int updateInterval = 1; // in Seconds
+	private int updateInterval = 1;
+	private TimeUnit timeUnit;
 	private int noOfColums = 20;
 	private int columWidth = 2;
 	private transient Ticker updater;
 	private transient Sampler sampler;
 	private boolean autoscale;
-	private double scaleFactor = 1;
+	private transient Graph graph;
 
+	// TODO DEPRECATED remove after 0.2.1
+	@Deprecated
 	public DataGraph(int hight, int width, int cNum, int cWidth, int interval, boolean autoscale) {
 		this.setSize(width, hight);
 		this.noOfColums = cNum;
 		this.columWidth = cWidth;
 		this.updateInterval = interval;
 		this.autoscale = autoscale;
+		this.timeUnit = TimeUnit.SECONDS;
 
 		sampler = new Sampler(noOfColums);
+		this.graph = new BarGraph(this, sampler);
 	}
 
+	// TODO DEPRECATED remove after 0.2.1
+	@Deprecated
 	public DataGraph(int hight, int width, int cNum, int cWidth, int interval) {
 		this(hight, width, cNum, cWidth, interval, false);
 	}
 
+	public DataGraph(Graph graph, int interval, TimeUnit timeUnit) {
+		this.graph = graph;
+		this.updateInterval = interval;
+		this.timeUnit = timeUnit;
+	}
+
+	// TODO DEPRECATED remove after 0.2.1
+	@Deprecated
 	public void add(int delta) {
 		sampler.addDelta(delta);
 	}
@@ -51,7 +64,7 @@ public class DataGraph extends JPanel {
 			return;
 		}
 
-		updater = new Ticker("DataGraph updater", updateInterval, TimeUnit.SECONDS) {
+		updater = new Ticker("DataGraph updater", updateInterval, timeUnit) {
 			@Override
 			public void tickEvent() {
 				updateGui();
@@ -62,34 +75,11 @@ public class DataGraph extends JPanel {
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		g.setColor(Color.BLUE);
-		List<Integer> graphData = sampler.getSamples();
-		int i = 0;
-
-		for (int currval : graphData) {
-			currval = (int) (currval / scaleFactor);
-			g.fillRect(i * columWidth, this.getHeight() - currval, columWidth, currval);
-			i++;
-		}
-	}
-
-	private void calcScale(List<Integer> graphData) {
-		int max = 0;
-
-		for (int i : graphData) {
-			max = Math.max(max, i);
-		}
-
-		if (max > this.getHeight()) {
-			scaleFactor = max / (double) this.getHeight();
-		} else {
-			scaleFactor = 1;
-		}
+		graph.update(g);
 	}
 
 	private void updateGui() {
 		sampler.sample();
-		calcScale(sampler.getSamples());
 		repaint();
 	}
 }

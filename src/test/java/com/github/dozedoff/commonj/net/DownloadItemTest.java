@@ -5,6 +5,9 @@ import static org.junit.Assert.assertThat;
 
 import java.net.URL;
 
+import nl.jqno.equalsverifier.EqualsVerifier;
+import nl.jqno.equalsverifier.Warning;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -38,9 +41,6 @@ public class DownloadItemTest {
 
 	@Test
 	public void testEquals() throws Exception {
-		DownloadItem cut2 = new DownloadItem(new URL(URL_STRING), FILE_NAME);
-
-		assertThat(cut.equals(cut2), is(true));
+		EqualsVerifier.forClass(DownloadItem.class).withPrefabValues(URL.class,new URL(URL_STRING), new URL(URL_STRING + "/about")).suppress(Warning.STRICT_INHERITANCE).verify();
 	}
-
 }

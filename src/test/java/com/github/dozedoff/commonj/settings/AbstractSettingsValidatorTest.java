@@ -93,4 +93,14 @@ public class AbstractSettingsValidatorTest {
 	public void testGetOkState() throws Exception {
 		assertThat(asv.getOkState(), is(true));
 	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testReversedBounds() throws Exception {
+		asv.checkRange(DUMMY_PARAMETER, 1, UPPER_BOUND, LOWER_BOUND);
+	}
+
+	public void testBoundsAreEqual() throws Exception {
+		asv.checkRange(DUMMY_PARAMETER, UPPER_BOUND, UPPER_BOUND, UPPER_BOUND);
+		assertThat(asv.getOkState(), is(true));
+	}
 }

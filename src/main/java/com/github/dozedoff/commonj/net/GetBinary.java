@@ -15,14 +15,10 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 /**
  * Class for downloading binary data from the Internet.
  * Use {@link IHttpClient} instead.
  */
-// TODO REMOVE after 0.1.1
-@SuppressFBWarnings
 @Deprecated
 public class GetBinary implements DataDownloader {
 	private int maxRetry = 3;
