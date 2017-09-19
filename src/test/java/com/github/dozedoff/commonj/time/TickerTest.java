@@ -1,7 +1,7 @@
 package com.github.dozedoff.commonj.time;
 
 import static org.awaitility.Awaitility.await;
-import static org.awaitility.Awaitility.to;
+import static org.awaitility.proxy.AwaitilityClassProxy.to;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.junit.Assert.assertThat;
