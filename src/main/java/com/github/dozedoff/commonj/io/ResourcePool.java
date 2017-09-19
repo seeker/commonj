@@ -5,11 +5,14 @@
 
 package com.github.dozedoff.commonj.io;
 
+import java.util.HashSet;
+
 /**
  * Default resource pool.
  */
 
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
@@ -17,6 +20,7 @@ import java.util.concurrent.TimeoutException;
 
 public abstract class ResourcePool<T> {
 
+	protected final Set<T> ownedByPool = new HashSet<T>();
 	protected final Queue<T> resources = new ConcurrentLinkedQueue<T>();
 	private final Semaphore semaphore;
 
@@ -49,7 +53,9 @@ public abstract class ResourcePool<T> {
 
 		// create a resource if none are available
 		try {
-			return createResource();
+			T createdResource = createResource();
+			ownedByPool.add(createdResource);
+			return createdResource;
 		} catch (Exception e) {
 			// in case of failure the Semaphore permit must be returned, or they will run out
 			semaphore.release();
@@ -61,6 +67,10 @@ public abstract class ResourcePool<T> {
 
 	// to allow checks and manipulation before return
 	public T processBeforReturn(T resource) {
+		if (!ownedByPool.contains(resource)) {
+			throw new IllegalArgumentException("Object was not created by the pool!");
+		}
+
 		return resource;
 	}
 

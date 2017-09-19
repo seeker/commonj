@@ -20,6 +20,10 @@ public abstract class AbstractSettingsValidator implements ISettingsValidator {
 	}
 
 	protected void checkRange(Object param, int value, int min, int max) {
+		if (max < min) {
+			throw new IllegalArgumentException("Upper bound must be equal or greater than the lower bound.");
+		}
+
 		if (!((value >= min) && (value <= max))) {
 			setOk(false);
 			Object loggerData[] = { param.toString(), min, max, value };

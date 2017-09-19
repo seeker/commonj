@@ -2,7 +2,7 @@ package com.github.dozedoff.commonj.io;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 import java.util.LinkedList;
 
@@ -35,13 +35,12 @@ public class ResourcePoolTest {
 	@Test
 	public void testGetResourceReused() throws Exception {
 		Integer resource = pool.getResource(MAX_WAIT_MS);
-		resource = new Integer(1);
 
 		pool.returnResource(resource);
 
-		resource = pool.getResource(MAX_WAIT_MS);
+		Integer resourceTwo = pool.getResource(MAX_WAIT_MS);
 
-		assertThat(resource, is(1));
+		assertThat(resource == resourceTwo, is(true));
 	}
 
 	@Test
@@ -84,5 +83,10 @@ public class ResourcePoolTest {
 
 		Integer foo = pool.getResource(MAX_WAIT_MS);
 		assertThat(foo, is(not(null)));
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testReturnObjectNotCreatedByPool() throws Exception {
+		pool.returnResource(new Integer(42));
 	}
 }
