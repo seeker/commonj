@@ -5,9 +5,9 @@
 
 package com.github.dozedoff.commonj.net;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -38,11 +39,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-public class JettyHttpClientTest {
+public class JettyHttpClientTestNTS {
 	static final int SERVER_PORT = 5400;
 	static final int TEST_DATA_SIZE = 25;
 	static final int READ_TIMEOUT_CLASS = 100;
 	static final int READ_TIMEOUT_TEST = 1500;
+
+	private static final AtomicInteger PORT_OFFSET = new AtomicInteger();
+	private int testPort = SERVER_PORT + PORT_OFFSET.incrementAndGet();
 
 	private static enum Pages {
 		data, range, wait, notok, error, agent
