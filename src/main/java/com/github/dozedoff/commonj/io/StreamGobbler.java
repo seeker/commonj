@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Class for consuming data provided by inputstreams.
- * 
  * Based on "When Runtime.exec() won't" from http://www.javaworld.com/javaworld/jw-12-2000/jw-1229-traps.html
  */
 public class StreamGobbler extends Thread {
@@ -25,6 +24,7 @@ public class StreamGobbler extends Thread {
 
 	public StreamGobbler(InputStream is) {
 		this.is = is;
+		this.messageBuffer = new StringBuilder();
 	}
 
 	public String getBuffer() {
@@ -32,9 +32,6 @@ public class StreamGobbler extends Thread {
 	}
 
 	public void run() {
-		// FIXME this can cause a race condition, move to class field
-		messageBuffer = new StringBuilder();
-
 		try {
 			InputStreamReader isr = new InputStreamReader(is);
 			BufferedReader br = new BufferedReader(isr);

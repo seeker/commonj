@@ -6,6 +6,7 @@
 package com.github.dozedoff.commonj.io;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.isEmptyString;
 import static org.junit.Assert.assertThat;
 
 import java.io.ByteArrayInputStream;
@@ -22,12 +23,20 @@ public class StreamGobblerTest {
 	public void setUp() throws Exception {
 		ByteArrayInputStream bais = new ByteArrayInputStream(TEST_TEXT.getBytes(StandardCharsets.UTF_8));
 		cut = new StreamGobbler(bais);
-		cut.start();
+
 	}
 
 	@Test
 	public void testGetBuffer() throws Exception {
+		cut.start();
+
 		Thread.sleep(100);
+
 		assertThat(cut.getBuffer(), is(TEST_TEXT));
+	}
+
+	@Test
+	public void testGetBufferOnThreadInNewState() throws Exception {
+		assertThat(cut.getBuffer(), isEmptyString());
 	}
 }
