@@ -28,7 +28,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class GetHtmlTestNTS {
+public class GetHtmlTest {
 	GetHtml getHtml;
 	static String testData = "<html><head><title>Test Page</title></head><body><p>Test Page</p></body></html>";
 	static String testData2 = "<!DOCTYPE html><html><head><title>Bestellformular</title></head><body><h1>Bestellung</h1><fieldset><legend>Kundendaten</legend></fieldset><fieldset><legend>Artikel</legend></fieldset></body></html>";
