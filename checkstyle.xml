@@ -119,8 +119,4 @@
   <module name="FileLength"/>
   <module name="NewlineAtEndOfFile"/>
   <module name="UniqueProperties"/>
-  <module name="Header">
-    <property name="headerFile" value="${config_loc}/licenseHeader"/>
-    <property name="fileExtensions" value="java"/>
-  </module>
 </module>
