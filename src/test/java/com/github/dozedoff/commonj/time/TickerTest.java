@@ -44,7 +44,7 @@ public class TickerTest {
 	}
 
 	private void assertThreadNames(Matcher<Iterable<? super String>> matcher) {
-		await().pollDelay(TICK_DURATION, TICK_UNIT).atMost(AWAIT_DURATION).until(new Callable<List<String>>() {
+		await().atMost(AWAIT_DURATION).until(new Callable<List<String>>() {
 			@Override
 			public List<String> call() throws Exception {
 				return getThreadNames();
@@ -56,7 +56,7 @@ public class TickerTest {
 	public void testTickEvent() throws Exception {
 		dt = new DummyTicker(TICK_DURATION, TICK_UNIT);
 
-		await().pollDelay(TICK_DURATION, TICK_UNIT).atMost(AWAIT_DURATION).until(new Callable<Integer>() {
+		await().atMost(AWAIT_DURATION).until(new Callable<Integer>() {
 
 			@Override
 			public Integer call() throws Exception {
