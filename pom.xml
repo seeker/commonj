@@ -77,6 +77,12 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.20.1</version>
 				<configuration>
+					<parallel>suitesAndClasses</parallel>
+					<threadCount>10</threadCount>
+					<excludes>
+						<exclude>**/learning*</exclude>
+						<exclude>AllUnitTests.java</exclude>
+					</excludes>
 					<!-- Travis build workaround, see https://github.com/travis-ci/travis-ci/issues/5631 -->
 					<argLine>${argLine} -Xms1024m -Xmx2048m</argLine>
 				</configuration>
