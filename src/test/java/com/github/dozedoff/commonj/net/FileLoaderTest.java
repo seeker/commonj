@@ -22,6 +22,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
+import org.eclipse.jetty.http.HttpStatus;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,6 +33,15 @@ public class FileLoaderTest {
 	private FileLoader cut;
 	private DataDownloader ddl;
 	private FileLoaderAction actions;
+
+	private static final String TEST_ADDRESS = "http://example.com";
+	private static final String TEST_FILE_NAME = "foo";
+	private static final int TEST_INSTANCES = 5;
+
+	private static final int SLEEP_SHORT_DURATION = 10;
+	private static final int SLEEP_LONG_DURATION = 80;
+
+	private static final int DOWNLOAD_COUNT = 3;
 
 	private void addDefaultSet() throws MalformedURLException {
 		addSingleEntry();
@@ -46,7 +56,7 @@ public class FileLoaderTest {
 	}
 
 	private void addSingleEntry() throws MalformedURLException {
-		addNumberOfInstance(new URL("http://example.com"), "foo", 1);
+		addNumberOfInstance(new URL(TEST_ADDRESS), TEST_FILE_NAME, 1);
 	}
 
 	@Before
@@ -96,24 +106,25 @@ public class FileLoaderTest {
 	
 	@Test
 	public void testAddAlreadyInQueue() throws Exception {
-		addNumberOfInstance(new URL("http://example.com"), "foo", 5);
+		addNumberOfInstance(new URL(TEST_ADDRESS), TEST_FILE_NAME, TEST_INSTANCES);
 
 		verify(actions, after(DEFAULT_TIMEOUT).atMost(2)).afterFileAdd(any(URL.class), any(String.class));
 	}
 
 	@Test
 	public void testSetDownloadSleepShort() throws Exception {
-		cut.setDownloadSleep(10);
+		cut.setDownloadSleep(SLEEP_SHORT_DURATION);
 
 		addDefaultSet();
 		
-		verify(actions, timeout(DEFAULT_TIMEOUT).times(3)).afterFileAdd(any(URL.class), any(String.class));
-		verify(actions, timeout(DEFAULT_TIMEOUT).times(3)).afterFileDownload(any(byte[].class), any(File.class), any(URL.class));
+		verify(actions, timeout(DEFAULT_TIMEOUT).times(DOWNLOAD_COUNT)).afterFileAdd(any(URL.class), any(String.class));
+		verify(actions, timeout(DEFAULT_TIMEOUT).times(DOWNLOAD_COUNT)).afterFileDownload(any(byte[].class),
+				any(File.class), any(URL.class));
 	}
 
 	@Test
 	public void testSetDownloadSleepLong() throws Exception {
-		cut.setDownloadSleep(80);
+		cut.setDownloadSleep(SLEEP_LONG_DURATION);
 		addDefaultSet();
 		
 		verify(actions, timeout(DEFAULT_TIMEOUT).atLeast(2)).afterFileAdd(any(URL.class), any(String.class));
@@ -140,7 +151,7 @@ public class FileLoaderTest {
 	
 	@Test
 	public void testFailToLoadPage() throws Exception {
-		when(ddl.download(any(URL.class))).thenThrow(new PageLoadException(404));
+		when(ddl.download(any(URL.class))).thenThrow(new PageLoadException(HttpStatus.NOT_FOUND_404));
 		cut.setDownloadSleep(0);
 		
 		addSingleEntry();
