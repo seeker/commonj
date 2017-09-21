@@ -4,17 +4,45 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Class that to call a given method at a regular interval.
+ * 
+ * @author Nicholas Wright
+ *
+ */
 public abstract class Ticker {
 	private Timer timer;
 
+	/**
+	 * Create a new {@link Ticker} that will execute it's {@link Ticker#tickEvent()} in the provided interval. The
+	 * {@link Ticker}s internal timer thread will be named 'Timer'.
+	 * 
+	 * @param time
+	 *            for the interval
+	 * @param timeUnit
+	 *            for the interval
+	 */
 	public Ticker(long time, TimeUnit timeUnit) {
 		createTimer("Timer", time, timeUnit);
 	}
 
+	/**
+	 * Create a new {@link Ticker} that will execute it's {@link Ticker#tickEvent()} in the provided interval.
+	 * 
+	 * @param tickerName
+	 *            name for the {@link Ticker}s internal timer thread
+	 * @param time
+	 *            for the interval
+	 * @param timeUnit
+	 *            for the interval
+	 */
 	public Ticker(String tickerName, long time, TimeUnit timeUnit) {
 		createTimer(tickerName, time, timeUnit);
 	}
 
+	/**
+	 * This Method is executed on each interval. Override this method to provide code to be executed at the intervals.
+	 */
 	abstract public void tickEvent();
 
 	private void createTimer(String name, long time, TimeUnit timeUnit) {
@@ -35,6 +63,9 @@ public abstract class Ticker {
 		};
 	}
 
+	/**
+	 * Cancel the execution of the {@link Ticker}. Calls the underlying {@link Timer}s {@link Timer#cancel()} method.
+	 */
 	public void cancel() {
 		timer.cancel();
 	}
