@@ -10,6 +10,8 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
@@ -30,27 +32,33 @@ public class AbstractSettingsTest {
 	private static Path filename;
 
 	private static final String TEST_KEY = "test";
+	private static final String TEST_KEY_UNKNOWN = "foo";
+
+	private static OutputStream outStream;
+
+	private static final int TEST_VALUE = 42;
 
 	@BeforeClass
 	public static void classSetup() throws Exception {
 		testProperties = new Properties();
-		testProperties.put(TEST_KEY, Integer.toString(42));
+		testProperties.put(TEST_KEY, Integer.toString(TEST_VALUE));
 
 		propertiesPath = Files.createTempFile(AbstractSettingsTest.class.getCanonicalName(), "properties");
 		filename = propertiesPath.getFileName();
 
-		Files.newOutputStream(propertiesPath);
+		outStream = Files.newOutputStream(propertiesPath);
 
-		testProperties.store(Files.newOutputStream(propertiesPath), "");
+		testProperties.store(outStream, "");
 	}
 
 	@AfterClass
 	public static void classTearDown() throws Exception {
+		outStream.close();
 		Files.deleteIfExists(propertiesPath);
 	}
 
 	@Before
-	public void setup() {
+	public void setUp() {
 		validator = mock(ISettingsValidator.class);
 		abstractSettings = new AbstractSettings(validator) {
 		};
@@ -58,7 +66,7 @@ public class AbstractSettingsTest {
 
 	@Test
 	public void testLoadPropertiesNoFile() throws Exception {
-		abstractSettings.loadPropertiesFromFile("foo");
+		abstractSettings.loadPropertiesFromFile(TEST_KEY_UNKNOWN);
 		assertThat(abstractSettings.properties.isEmpty(), is(true));
 	}
 
