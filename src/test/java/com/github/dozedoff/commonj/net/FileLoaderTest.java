@@ -27,7 +27,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class FileLoaderTest {
-	private static final int DEFAULT_TIMEOUT = 400;
+	private static final int DEFAULT_TIMEOUT = 1000;
 
 	private FileLoader cut;
 	private DataDownloader ddl;
@@ -126,7 +126,8 @@ public class FileLoaderTest {
 		cut.clearQueue();
 
 		verify(actions).afterClearQueue();
-		verify(actions, after(DEFAULT_TIMEOUT).never()).afterFileDownload(any(byte[].class), any(File.class), any(URL.class));
+		verify(actions, after(DEFAULT_TIMEOUT).atMost(1)).afterFileDownload(any(byte[].class), any(File.class),
+				any(URL.class));
 	}
 
 	@Test
