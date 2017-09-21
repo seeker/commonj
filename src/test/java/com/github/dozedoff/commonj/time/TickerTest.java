@@ -23,7 +23,7 @@ public class TickerTest {
 	private static final int TICK_DURATION = 10;
 	private static final TimeUnit TICK_UNIT = TimeUnit.MILLISECONDS;
 
-	private static final Duration AWAIT_DURATION = new Duration(100, TimeUnit.MILLISECONDS);
+	private static final Duration AWAIT_DURATION = new Duration(500, TimeUnit.MILLISECONDS);
 
 	private static final String THREAD_NAME = "Foobar";
 	private static final String DEFAULT_THREAD_NAME = "Timer";
