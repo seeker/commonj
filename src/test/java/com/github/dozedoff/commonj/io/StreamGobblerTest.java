@@ -25,7 +25,7 @@ import org.mockito.Mockito;
 public class StreamGobblerTest {
 	private StreamGobbler cut;
 	private static final String TEST_TEXT = "This is a test.";
-	private static final Duration DURATION = new Duration(200, TimeUnit.MILLISECONDS);
+	private static final Duration DURATION = new Duration(1000, TimeUnit.MILLISECONDS);
 
 	private InputStream failingIO;
 
