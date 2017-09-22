@@ -14,8 +14,8 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collection;
 
 public class FilenameFilterVisitor extends SimpleFileVisitor<Path> {
-	Collection<Path> resultOutputList;
-	FileFilter fileFilter;
+	private Collection<Path> resultOutputList;
+	private FileFilter fileFilter;
 
 	public FilenameFilterVisitor(Collection<Path> resultOutputList, FileFilter fileFilter) {
 		this.resultOutputList = resultOutputList;

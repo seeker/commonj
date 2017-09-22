@@ -26,10 +26,10 @@ import com.github.dozedoff.commonj.file.FileInfo;
  * Class for hashing files in a directory.
  */
 public class DirectoryHasher {
-	LinkedBlockingQueue<FileInfo> outputQueue = null;
-	final static Logger logger = LoggerFactory.getLogger(DirectoryHasher.class);
+	private LinkedBlockingQueue<FileInfo> outputQueue;
+	private final static Logger logger = LoggerFactory.getLogger(DirectoryHasher.class);
 	private HashWorker hashWorker;
-	private FilenameFilter filter = null;
+	private FilenameFilter filter;
 
 	public DirectoryHasher(LinkedBlockingQueue<FileInfo> outputQueue) {
 		this.filter = new AcceptAllFilter();
@@ -63,7 +63,7 @@ public class DirectoryHasher {
 	}
 
 	class DirectoryVisitor extends SimpleFileVisitor<Path> {
-		FilenameFilter filter;
+		private FilenameFilter filter;
 
 		public DirectoryVisitor(FilenameFilter filter) {
 			this.filter = filter;
@@ -100,9 +100,9 @@ public class DirectoryHasher {
 	 * This Tread hashes files and adds them to a queue.
 	 */
 	class HashWorker extends Thread {
-		LinkedBlockingQueue<FileInfo> inputQueue = new LinkedBlockingQueue<>();
-		LinkedList<FileInfo> workingList = new LinkedList<>();
-		HashMaker hash = new HashMaker();
+		private LinkedBlockingQueue<FileInfo> inputQueue = new LinkedBlockingQueue<>();
+		private LinkedList<FileInfo> workingList = new LinkedList<>();
+		private HashMaker hash = new HashMaker();
 
 		public void addFile(FileInfo file) {
 			inputQueue.add(file);

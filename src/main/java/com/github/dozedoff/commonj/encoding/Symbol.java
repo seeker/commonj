@@ -6,8 +6,8 @@
 package com.github.dozedoff.commonj.encoding;
 
 public class Symbol {
-	int count = 1;
-	char character;
+	private int count = 1;
+	private char character;
 
 	public Symbol(char character) {
 		this.character = character;

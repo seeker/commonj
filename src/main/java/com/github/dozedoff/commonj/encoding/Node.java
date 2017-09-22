@@ -6,14 +6,14 @@
 package com.github.dozedoff.commonj.encoding;
 
 public class Node {
-	Node leftChild;
-	Node rightChild;
-	Node parent;
+	private Node leftChild;
+	private Node rightChild;
+	private Node parent;
 
-	double probability = -1.0;
-	char symbol;
+	private double probability = -1.0;
+	private char symbol;
 
-	boolean coding;
+	private boolean coding;
 
 	public Node(Node leftChild, Node rightChild, Node parent) {
 		this.leftChild = leftChild;

@@ -15,7 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class EntropyTest {
-	Entropy entropy;
+	private Entropy entropy;
 
 	@Before
 	public void setup() {

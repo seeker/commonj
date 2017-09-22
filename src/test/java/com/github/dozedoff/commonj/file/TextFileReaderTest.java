@@ -18,7 +18,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class TextFileReaderTest {
-	TextFileReader tfr;
+	private TextFileReader tfr;
 	private static final String TEST_STRING = "The red fox\nfoo bar";
 	private static final String TEST_FILE_PATH = "testdata.txt";
 

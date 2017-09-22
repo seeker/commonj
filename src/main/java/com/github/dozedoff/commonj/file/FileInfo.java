@@ -14,9 +14,9 @@ import java.nio.file.Path;
  * A simple storage class for file information.
  */
 public class FileInfo {
-	Path file = null;
-	long size = -1L;
-	String hash = null;
+	private Path file;
+	private long size = -1L;
+	private String hash;
 
 	public FileInfo(File file, String hash) {
 		super();

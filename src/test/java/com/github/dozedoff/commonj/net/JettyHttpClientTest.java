@@ -40,10 +40,10 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 public class JettyHttpClientTest {
-	static final int SERVER_PORT = 5500;
-	static final int TEST_DATA_SIZE = 25;
-	static final int READ_TIMEOUT_CLASS = 100;
-	static final int READ_TIMEOUT_TEST = 1500;
+	private static final int SERVER_PORT = 5500;
+	private static final int TEST_DATA_SIZE = 25;
+	private static final int READ_TIMEOUT_CLASS = 100;
+	private static final int READ_TIMEOUT_TEST = 1500;
 
 	private static final AtomicInteger PORT_OFFSET = new AtomicInteger();
 	private int testPort = SERVER_PORT + PORT_OFFSET.incrementAndGet();
@@ -55,10 +55,10 @@ public class JettyHttpClientTest {
 	@Rule
 	public ExpectedException expected = ExpectedException.none();
 
-	JettyHttpClient cut;
-	static Server server;
-	static TestHandler testHandler;
-	HashMap<Pages, URL> pageURLs = new HashMap<>();
+	private JettyHttpClient cut;
+	private static Server server;
+	private static TestHandler testHandler;
+	private Map<Pages, URL> pageURLs = new HashMap<>();
 
 	/**
 	 * Workaround for testing on Windows 10. On Linux and Windows 7, a

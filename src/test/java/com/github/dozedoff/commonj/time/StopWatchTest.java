@@ -22,9 +22,9 @@ public class StopWatchTest {
 	private static final long SHORT_DURATION = 1000L;
 	private static final long LONG_DURATION = 3000L;
 
-	Calendar calendar;
+	private Calendar calendar;
 
-	StopWatch stopWatch;
+	private StopWatch stopWatch;
 
 	private void setElapsedTime(long timeInMillis, Long... more) {
 		when(calendar.getTimeInMillis()).thenReturn(timeInMillis, more);

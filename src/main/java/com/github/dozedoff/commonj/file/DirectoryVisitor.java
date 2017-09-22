@@ -13,7 +13,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.LinkedList;
 
 public class DirectoryVisitor extends SimpleFileVisitor<Path> {
-	LinkedList<Path> directoryList;
+	private LinkedList<Path> directoryList;
 
 	public DirectoryVisitor(LinkedList<Path> directoryList) {
 		this.directoryList = directoryList;

@@ -9,10 +9,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ProcessWatchDog extends Thread {
-	String processDescription;
-	Process process;
-	long timeout;
-	final static Logger logger = LoggerFactory.getLogger(ProcessWatchDog.class);
+	private String processDescription;
+	private Process process;
+	private long timeout;
+	private final static Logger logger = LoggerFactory.getLogger(ProcessWatchDog.class);
 
 	public ProcessWatchDog(String processDescription, Process process, long timeout) {
 		this.process = process;

@@ -24,11 +24,11 @@ public class BoneConnectionPool implements ConnectionPool {
 	private Properties dbProps;
 
 	static final Logger LOGGER = LoggerFactory.getLogger(BoneConnectionPool.class);
-	BoneCP connectionPool = null;
-	BoneCPConfig config = null;
-	DataSourceConnectionSource bcpConnSource = null;
-	Properties sqlConfig;
-	int maxResources;
+	private BoneCP connectionPool;
+	private BoneCPConfig config;
+	private DataSourceConnectionSource bcpConnSource;
+	private Properties sqlConfig;
+	private int maxResources;
 
 	public BoneConnectionPool(Properties dbProps, int maxResources) {
 		this.dbProps = dbProps;

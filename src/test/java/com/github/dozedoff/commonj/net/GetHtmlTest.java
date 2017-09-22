@@ -29,14 +29,15 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class GetHtmlTest {
-	GetHtml getHtml;
-	static String testData = "<html><head><title>Test Page</title></head><body><p>Test Page</p></body></html>";
-	static String testData2 = "<!DOCTYPE html><html><head><title>Bestellformular</title></head><body><h1>Bestellung</h1><fieldset><legend>Kundendaten</legend></fieldset><fieldset><legend>Artikel</legend></fieldset></body></html>";
-	String testString = null;
-	static Server server;
+	private GetHtml getHtml;
+	private static String testData = "<html><head><title>Test Page</title></head><body><p>Test Page</p></body></html>";
+	private static String testData2 = "<!DOCTYPE html><html><head><title>Bestellformular</title></head><body><h1>Bestellung</h1><fieldset><legend>Kundendaten</legend></fieldset><fieldset><legend>Artikel</legend></fieldset></body></html>";
+	private String testString;
+	private static Server server;
 
-	static final int SERVER_PORT = 5400;
-	String url = "http://localhost:" + SERVER_PORT + "/", url2 = "http://localhost:" + SERVER_PORT + "/2", urlWait = "http://localhost:"
+	private static final int SERVER_PORT = 5400;
+	private String url = "http://localhost:" + SERVER_PORT + "/", url2 = "http://localhost:" + SERVER_PORT + "/2",
+			urlWait = "http://localhost:"
 			+ SERVER_PORT + "/wait";
 
 	@BeforeClass

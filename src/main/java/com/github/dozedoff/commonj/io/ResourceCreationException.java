@@ -10,7 +10,7 @@ package com.github.dozedoff.commonj.io;
  */
 @SuppressWarnings("serial")
 public class ResourceCreationException extends Exception {
-	Exception e;
+	private Exception e;
 
 	public ResourceCreationException(Exception e) {
 		this.e = e;

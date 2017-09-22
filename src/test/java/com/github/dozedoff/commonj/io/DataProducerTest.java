@@ -15,7 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class DataProducerTest {
-	DataProducerDummy dummy;
+	private DataProducerDummy dummy;
 
 	private static final int TEST_TIMEOUT = 5000;
 

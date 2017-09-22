@@ -6,7 +6,7 @@
 package com.github.dozedoff.commonj.encoding;
 
 public class Huffman {
-	StringBuffer data = new StringBuffer();
+	private StringBuffer data = new StringBuffer();
 
 	public void addSymbol(char symbol) {
 		data.append(symbol);

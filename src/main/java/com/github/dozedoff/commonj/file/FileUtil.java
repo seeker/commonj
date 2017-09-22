@@ -203,7 +203,9 @@ public class FileUtil {
 	}
 
 	static class DirectoryMover extends SimpleFileVisitor<Path> {
-		Path currMoveDir, dstDir, srcDir;
+		private Path currMoveDir;
+		private Path dstDir;
+		private Path srcDir;
 
 		public DirectoryMover(Path srcDir, Path dstDir) {
 			this.dstDir = dstDir;

@@ -12,7 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class SymbolTest {
-	Symbol symbol;
+	private Symbol symbol;
 
 	@Before
 	public void setup() {
@@ -21,12 +21,12 @@ public class SymbolTest {
 
 	@Test
 	public void testGetCount() {
-		assertThat(symbol.count, is(1));
+		assertThat(symbol.getCount(), is(1));
 	}
 
 	@Test
 	public void testInc() {
 		symbol.inc();
-		assertThat(symbol.count, is(2));
+		assertThat(symbol.getCount(), is(2));
 	}
 }

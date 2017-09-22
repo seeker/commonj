@@ -15,8 +15,8 @@ import java.util.List;
 import com.github.dozedoff.commonj.filefilter.ArchiveFilter;
 
 public class ArchiveVisitor extends SimpleFileVisitor<Path> {
-	ArchiveFilter archiveFilter = new ArchiveFilter();
-	List<Path> archiveList;
+	private ArchiveFilter archiveFilter = new ArchiveFilter();
+	private List<Path> archiveList;
 
 	public ArchiveVisitor(List<Path> archiveList) {
 		if (archiveList == null) {
