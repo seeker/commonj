@@ -5,8 +5,6 @@
  */
 package com.github.dozedoff.commonj.filefilter;
 
-import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.nio.file.DirectoryStream.Filter;
 import java.nio.file.Files;
@@ -18,7 +16,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class FileExtensionFilter implements FileFilter, Filter<Path> {
+public class FileExtensionFilter implements Filter<Path> {
 	private final List<String> validExtensions;
 
 	public FileExtensionFilter(String... validExtensions) {
@@ -35,20 +33,6 @@ public class FileExtensionFilter implements FileFilter, Filter<Path> {
 			}
 
 			Collections.sort(this.validExtensions);
-		}
-	}
-
-	/**
-	 * Use {@link FileExtensionFilter#accept(Path) instead.}
-	 */
-	@Deprecated
-	@Override
-	public boolean accept(File pathname) {
-		try {
-			return accept(pathname.toPath());
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
 		}
 	}
 
