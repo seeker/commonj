@@ -137,12 +137,6 @@ public class FileWalkerTest {
 	}
 
 	@Test
-	public void testWalkFileTreeFileArray() throws IOException {
-		assertThat(FileWalker.walkFileTree(folders.get(0), folders.get(1)),
-				hasItems(convertFileToPath(files.get(1), files.get(2), files.get(3))));
-	}
-
-	@Test
 	public void testWalkFileTreeStringList() throws IOException {
 		LinkedList<String> sourceList = new LinkedList<>();
 		sourceList.add(folders.get(0).toString());

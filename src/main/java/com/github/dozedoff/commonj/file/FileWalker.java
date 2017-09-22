@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,17 +104,6 @@ public class FileWalker {
 		return walkFileTree(list.toArray(new Path[1]));
 	}
 
-	@Deprecated
-	public static LinkedList<Path> walkFileTree(File... directories) throws IOException {
-		Path[] paths = new Path[directories.length];
-
-		for (int i = 0; i < directories.length; i++) {
-			paths[i] = directories[i].toPath();
-		}
-
-		return walkFileTree(paths);
-	}
-
 	public static LinkedList<Path> walkFileTreeStringList(List<String> list) throws IOException {
 		return walkFileTree(list.toArray(new String[1]));
 	}
@@ -129,7 +119,7 @@ public class FileWalker {
 	}
 
 	public static LinkedList<Path> walkFileTreeFileList(List<File> list) throws IOException {
-		return walkFileTree(list.toArray(new File[1]));
+		return walkFileTreePathList(list.stream().map(file -> file.toPath()).collect(Collectors.toList()));
 	}
 
 	private static void addWithoutDuplicates(ArrayList<Path> foundFiles, LinkedList<Path> newFiles) {
