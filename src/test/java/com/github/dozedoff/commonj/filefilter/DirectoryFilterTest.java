@@ -11,12 +11,15 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.junit.Before;
 import org.junit.Test;
 
 public class DirectoryFilterTest {
-	DirectoryFilter df;
+	private static final String TEST_NAME = "test";
+
+	private DirectoryFilter df;
 
 	@Before
 	public void setUp() {
@@ -25,31 +28,30 @@ public class DirectoryFilterTest {
 
 	@Test
 	public void testNotDirectory() throws IOException {
-		File file = Files.createTempFile("test", ".dat").toFile();
+		Path file = Files.createTempFile(TEST_NAME, ".dat");
 		assertFalse(df.accept(file));
 	}
 
 	@Test
 	public void testDirectory() throws IOException {
-		File directory = Files.createTempDirectory("test").toFile();
+		Path directory = Files.createTempDirectory(TEST_NAME);
 		assertTrue(df.accept(directory));
 	}
 
 	@Test
-	public void testInaccessibleDirectory() {
-		File directory = new File(".");
+	public void testInaccessibleDirectory() throws Exception {
+		Path directory = new File(".").toPath();
 		assertTrue(df.accept(directory));
 	}
 
 	@Test
-	public void testNonExistantFile() {
-		File directory = new File("test");
+	public void testNonExistantFile() throws Exception {
+		Path directory = new File(TEST_NAME).toPath();
 		assertFalse(df.accept(directory));
 	}
 
 	@Test
-	public void testNull() {
-		assertFalse(df.accept((File) null));
+	public void testNull() throws Exception {
+		assertFalse(df.accept((Path) null));
 	}
-
 }
