@@ -93,7 +93,19 @@ public class FileWalker {
 	public static LinkedList<Path> walkFileTree(Path... directories) throws IOException {
 		ArrayList<Path> foundFiles = new ArrayList<Path>();
 		for (Path directory : directories) {
-			LinkedList<Path> newFiles = walkFileTreeWithFilter(directory, new com.github.dozedoff.commonj.filefilter.FileFilter());
+			LinkedList<Path> newFiles = walkFileTreeWithFilter(directory, new FileFilter() {
+				private com.github.dozedoff.commonj.filefilter.FileFilter ff = new com.github.dozedoff.commonj.filefilter.FileFilter();
+
+				@Override
+				public boolean accept(File pathname) {
+					try {
+						return ff.accept(pathname.toPath());
+					} catch (IOException e) {
+						logger.error("Failed to filter {}: ", pathname, e);
+						return false;
+					}
+				}
+			});
 			addWithoutDuplicates(foundFiles, newFiles);
 		}
 

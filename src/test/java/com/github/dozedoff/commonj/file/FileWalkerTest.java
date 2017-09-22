@@ -31,12 +31,10 @@ import com.github.dozedoff.commonj.filefilter.FileFilter;
 
 public class FileWalkerTest {
 
-	File rootFolder;
-	Path rootPath;
-	List<File> files;
-	List<File> folders;
-
-	FileWalker fw;
+	private File rootFolder;
+	private Path rootPath;
+	private List<File> files;
+	private List<File> folders;
 
 	@Before
 	public void setUp() throws Exception {
@@ -64,15 +62,11 @@ public class FileWalkerTest {
 		for (File f : files) {
 			f.createNewFile();
 		}
-
-		fw = new FileWalker();
-
 	}
 
 	@After
 	public void tearDown() throws Exception {
 		rootFolder.delete();
-		fw = null;
 	}
 
 	@Test
@@ -118,7 +112,18 @@ public class FileWalkerTest {
 
 	@Test
 	public void testWalkFileTreeWithFilter() throws IOException {
-		assertThat(FileWalker.walkFileTreeWithFilter(rootPath, new FileFilter()), hasItems(convertFileToPath(files)));
+		assertThat(FileWalker.walkFileTreeWithFilter(rootPath, new java.io.FileFilter() {
+			private FileFilter ff = new FileFilter();
+
+			@Override
+			public boolean accept(File pathname) {
+				try {
+					return ff.accept(pathname.toPath());
+				} catch (IOException e) {
+					return false;
+				}
+			}
+		}), hasItems(convertFileToPath(files)));
 	}
 
 	@Test
