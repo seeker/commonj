@@ -29,8 +29,9 @@ public class BinaryFileWriter {
 			throw new IllegalArgumentException("Filepath is invalid");
 		}
 
-		if (savePath != null && savePath.getParent() != null) {
-			Files.createDirectories(savePath.getParent());
+		Path parent = savePath.getParent();
+		if (parent != null) {
+			Files.createDirectories(parent);
 		}
 
 		try (OutputStream os = new BufferedOutputStream(Files.newOutputStream(savePath, CREATE, TRUNCATE_EXISTING))) {
