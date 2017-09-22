@@ -24,16 +24,6 @@ public class FileUtil {
 	private static final String[] ILLEGAL_FILENAME_CHARS = { "/", "\\", ":", "?", "\"", "<", ">", "|" };
 	private static final Logger logger = LoggerFactory.getLogger(FileUtil.class);
 
-	/**
-	 * Use {@link FileUtil#workingDir() instead}
-	 * 
-	 * @return
-	 */
-	@Deprecated
-	public static File WorkingDir() {
-		return workingDir().toFile();
-	}
-
 	public static Path workingDir() {
 		return Paths.get(System.getProperty("user.dir"));
 	}
@@ -199,11 +189,6 @@ public class FileUtil {
 		}
 
 		return true;
-	}
-
-	@Deprecated
-	static public boolean hasValidWindowsFilename(File fullpath) {
-		return hasValidWindowsFilename(fullpath.toPath());
 	}
 
 	static public String sanitizeFilenameForWindows(String filename) {

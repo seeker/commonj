@@ -51,7 +51,7 @@ public abstract class AbstractSettings {
 	 * @return
 	 */
 	public final void loadPropertiesFromFile(String propertyFilename) {
-		Path workingDir = FileUtil.WorkingDir().toPath();
+		Path workingDir = FileUtil.workingDir();
 		Path propertyfileAbsolute = workingDir.resolve(propertyFilename);
 		loadPropertiesFromFile(propertyfileAbsolute);
 	}
@@ -66,7 +66,7 @@ public abstract class AbstractSettings {
 	 * @return
 	 */
 	public final void loadPropertiesFromFile(Path subdirectory, String propertyFilename) {
-		Path workingDir = FileUtil.WorkingDir().toPath();
+		Path workingDir = FileUtil.workingDir();
 		Path propertyfileAbsolute = workingDir.resolve(subdirectory).resolve(propertyFilename);
 		loadPropertiesFromFile(propertyfileAbsolute);
 	}

@@ -274,30 +274,6 @@ public class FileUtilTest {
 		assertThat(clean, is("foo_bar"));
 	}
 
-	@Ignore
-	@Test
-	public void testHasValidWindowsFilenameFileEmpty() {
-		assertThat(FileUtil.hasValidWindowsFilename(new File("")), is(false));
-	}
-
-	@Ignore("tests will fail on Linux systems")
-	@Test
-	public void testHasValidWindowsFilenameValidAbsolute() {
-		assertThat(FileUtil.hasValidWindowsFilename(new File("C:\\foobar")), is(true));
-	}
-
-	@Ignore
-	@Test
-	public void testHasValidWindowsFilenameValidRelative() {
-		assertThat(FileUtil.hasValidWindowsFilename(new File("baz\\foobar")), is(true));
-	}
-
-	@Ignore
-	@Test
-	public void testHasValidWindowsFilenameFileInvalid() {
-		assertThat(FileUtil.hasValidWindowsFilename(new File("foo:bar")), is(false));
-	}
-
 	@Ignore("tests will fail on Linux systems")
 	@Test
 	public void testHasValidWindowsFilenameString() {
