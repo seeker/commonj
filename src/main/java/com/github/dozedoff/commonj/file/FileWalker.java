@@ -62,7 +62,19 @@ public class FileWalker {
 	}
 
 	public static LinkedList<Path> getAllImages(Path startDirectory) throws IOException {
-		return walkFileTreeWithFilter(startDirectory, new SimpleImageFilter());
+		return walkFileTreeWithFilter(startDirectory, new FileFilter() {
+			private SimpleImageFilter sif = new SimpleImageFilter();
+
+			@Override
+			public boolean accept(File pathname) {
+				try {
+					return sif.accept(pathname.toPath());
+				} catch (IOException e) {
+					logger.error("Failed to filter image {}: ", pathname, e);
+					return false;
+				}
+			}
+		});
 	}
 
 	public static LinkedList<Path> getCurrentFolderImages(Path currentFolder) throws IOException {
@@ -74,7 +86,7 @@ public class FileWalker {
 		while (iter.hasNext()) {
 			Path path = iter.next();
 
-			if (sif.accept(path.toFile())) {
+			if (sif.accept(path)) {
 				imageList.add(path);
 			}
 		}

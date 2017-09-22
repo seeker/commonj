@@ -7,35 +7,34 @@ package com.github.dozedoff.commonj.filefilter;
 
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.junit.Before;
 import org.junit.Test;
 
 public class SimpleImageFilterTest {
-	SimpleImageFilter sif;
+	private SimpleImageFilter sif;
 
 	@Before
 	public void setUp() {
 		sif = new SimpleImageFilter();
 	}
 
-	private File createTempFile(String suffix) throws IOException {
-		File file = Files.createTempFile("", suffix).toFile();
-		return file;
+	private Path createTempFile(String suffix) throws IOException {
+		return Files.createTempFile("", suffix);
 	}
 
 	@Test
 	public void testgif() throws IOException {
-		File file = createTempFile("test.gif");
+		Path file = createTempFile("test.gif");
 		assertTrue(sif.accept(file));
 	}
 
 	@Test
 	public void testjpg() throws IOException {
-		File file = createTempFile("test.jpg");
+		Path file = createTempFile("test.jpg");
 		assertTrue(sif.accept(file));
 	}
 }
