@@ -13,6 +13,7 @@ import java.net.ProtocolException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
 import org.slf4j.Logger;
@@ -163,7 +164,7 @@ public class GetHtml {
 				connection.disconnect();
 				throw new PageLoadException(String.valueOf(connection.getResponseCode()), connection.getResponseCode());
 			}
-			in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+			in = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
 			while ((inputLine = in.readLine()) != null)
 				classString.append(inputLine);
 

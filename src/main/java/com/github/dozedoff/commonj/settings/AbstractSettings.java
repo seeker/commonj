@@ -8,6 +8,8 @@ package com.github.dozedoff.commonj.settings;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
@@ -31,7 +33,7 @@ public abstract class AbstractSettings {
 		try {
 			if (Files.exists(filepath)) {
 				settingsPath = filepath;
-				FileReader fr = new FileReader(filepath.toFile());
+				Reader fr = Files.newBufferedReader(filepath, StandardCharsets.UTF_8);
 				properties.load(fr);
 				fr.close();
 				logger.info("Loaded property file {} with {} entries", filepath, properties.size());
