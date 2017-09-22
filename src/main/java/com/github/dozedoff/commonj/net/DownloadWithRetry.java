@@ -12,14 +12,17 @@ import java.nio.ByteBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Deprecated
 public class DownloadWithRetry {
 	private static final Logger logger = LoggerFactory.getLogger(DownloadWithRetry.class);
 	private GetBinary getBinary;
 
+	@Deprecated
 	public DownloadWithRetry(GetBinary getBinary) {
 		this.getBinary = getBinary;
 	}
 	
+	@Deprecated
 	public byte[] download(URL url, int maxRetries) throws IOException {
 		long contentLenght = getBinary.getLenght(url);
 		ByteBuffer dataBuffer = ByteBuffer.allocate((int)contentLenght);
