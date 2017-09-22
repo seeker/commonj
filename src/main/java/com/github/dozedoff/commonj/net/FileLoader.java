@@ -20,33 +20,17 @@ import org.slf4j.LoggerFactory;
 public class FileLoader {
 	private static final Logger logger = LoggerFactory.getLogger(FileLoader.class);
 
-	protected LinkedBlockingQueue<DownloadItem> downloadList = new LinkedBlockingQueue<DownloadItem>();
+	private LinkedBlockingQueue<DownloadItem> downloadList = new LinkedBlockingQueue<DownloadItem>();
 	private LinkedList<DownloadWorker> workers = new LinkedList<>();
 
 	/** Delay between downloads. This is used to limit the number of connections **/
-	protected int downloadSleep = 1000;
-	protected int fileQueueWorkers;
+	private int downloadSleep = 1000;
+	private int fileQueueWorkers;
 
 	private DataDownloader dataDownloader;
 	private FileLoaderAction actions;
 
-	protected File workingDir;
-
-	/**
-	 * Use {@link FileLoader#FileLoader(File, int, DataDownloader) instead.}
-	 * @param workingDir
-	 * @param fileQueueWorkers
-	 */
-	@Deprecated
-	public FileLoader(File workingDir, int fileQueueWorkers) {
-		this(workingDir,fileQueueWorkers,new GetBinary());
-	}
-	
-	@Deprecated
-	public FileLoader(File workingDir, int fileQueueWorkers, DataDownloader dataDownloader) {
-		// TODO when this constructor is removed, change the protected methods to private
-		this(workingDir, fileQueueWorkers, dataDownloader, new FileLoaderActionDefault());
-	}
+	private File workingDir;
 	
 	public FileLoader(File workingDir, int fileQueueWorkers, DataDownloader dataDownloader, FileLoaderAction actions) {
 		this.workingDir = workingDir;

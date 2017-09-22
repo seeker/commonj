@@ -18,20 +18,8 @@ public class Pair<V, T> {
 		return left;
 	}
 
-	//TODO DEPRECATED remove after 0.2.1
-	@Deprecated
-	public void setLeft(V left) {
-		this.left = left;
-	}
-
 	public T getRight() {
 		return right;
-	}
-
-	//TODO DEPRECATED remove after 0.2.1
-	@Deprecated
-	public void setRight(T right) {
-		this.right = right;
 	}
 
 	@Override

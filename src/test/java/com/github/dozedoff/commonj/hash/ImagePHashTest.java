@@ -50,14 +50,6 @@ public class ImagePHashTest {
 	}
 
 	@Test
-	public void testgetLongHashCompareScaledandUnscaled() throws Exception {
-		long normal = hashWithNoScale();
-		long scaled = hashWithScale();
-
-		assertThat(scaled, is(normal));
-	}
-
-	@Test
 	public void testCompareScaledSourceImage() throws Exception {
 		long normal = hashImage(testImageJPG);
 		long scaled = hashImage(testImageSmallJPG);
@@ -146,18 +138,6 @@ public class ImagePHashTest {
 
 	private long hashImage(Path path) throws IOException, Exception {
 		return iph.getLongHash(new BufferedInputStream(Files.newInputStream(path)));
-	}
-
-	private long hashWithNoScale() throws Exception {
-		return hashImage(testImageJPG);
-	}
-
-	@SuppressWarnings("deprecation")
-	private long hashWithScale() throws Exception {
-		BufferedImage bi = ImageIO.read(testImageJPG.toFile());
-		bi = ImageUtil.resizeImage(bi, imageSize, imageSize);
-
-		return iph.getLongHashScaledImage(bi);
 	}
 
 	private static Path findFilePath(String fileName) throws URISyntaxException {

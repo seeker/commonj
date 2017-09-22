@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +62,19 @@ public class FileWalker {
 	}
 
 	public static LinkedList<Path> getAllImages(Path startDirectory) throws IOException {
-		return walkFileTreeWithFilter(startDirectory, new SimpleImageFilter());
+		return walkFileTreeWithFilter(startDirectory, new FileFilter() {
+			private SimpleImageFilter sif = new SimpleImageFilter();
+
+			@Override
+			public boolean accept(File pathname) {
+				try {
+					return sif.accept(pathname.toPath());
+				} catch (IOException e) {
+					logger.error("Failed to filter image {}: ", pathname, e);
+					return false;
+				}
+			}
+		});
 	}
 
 	public static LinkedList<Path> getCurrentFolderImages(Path currentFolder) throws IOException {
@@ -73,7 +86,7 @@ public class FileWalker {
 		while (iter.hasNext()) {
 			Path path = iter.next();
 
-			if (sif.accept(path.toFile())) {
+			if (sif.accept(path)) {
 				imageList.add(path);
 			}
 		}
@@ -92,7 +105,19 @@ public class FileWalker {
 	public static LinkedList<Path> walkFileTree(Path... directories) throws IOException {
 		ArrayList<Path> foundFiles = new ArrayList<Path>();
 		for (Path directory : directories) {
-			LinkedList<Path> newFiles = walkFileTreeWithFilter(directory, new com.github.dozedoff.commonj.filefilter.FileFilter());
+			LinkedList<Path> newFiles = walkFileTreeWithFilter(directory, new FileFilter() {
+				private com.github.dozedoff.commonj.filefilter.FileFilter ff = new com.github.dozedoff.commonj.filefilter.FileFilter();
+
+				@Override
+				public boolean accept(File pathname) {
+					try {
+						return ff.accept(pathname.toPath());
+					} catch (IOException e) {
+						logger.error("Failed to filter {}: ", pathname, e);
+						return false;
+					}
+				}
+			});
 			addWithoutDuplicates(foundFiles, newFiles);
 		}
 
@@ -101,17 +126,6 @@ public class FileWalker {
 
 	public static LinkedList<Path> walkFileTreePathList(List<Path> list) throws IOException {
 		return walkFileTree(list.toArray(new Path[1]));
-	}
-
-	@Deprecated
-	public static LinkedList<Path> walkFileTree(File... directories) throws IOException {
-		Path[] paths = new Path[directories.length];
-
-		for (int i = 0; i < directories.length; i++) {
-			paths[i] = directories[i].toPath();
-		}
-
-		return walkFileTree(paths);
 	}
 
 	public static LinkedList<Path> walkFileTreeStringList(List<String> list) throws IOException {
@@ -129,7 +143,7 @@ public class FileWalker {
 	}
 
 	public static LinkedList<Path> walkFileTreeFileList(List<File> list) throws IOException {
-		return walkFileTree(list.toArray(new File[1]));
+		return walkFileTreePathList(list.stream().map(file -> file.toPath()).collect(Collectors.toList()));
 	}
 
 	private static void addWithoutDuplicates(ArrayList<Path> foundFiles, LinkedList<Path> newFiles) {

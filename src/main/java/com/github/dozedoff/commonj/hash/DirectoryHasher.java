@@ -10,6 +10,7 @@ import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -19,7 +20,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.dozedoff.commonj.file.BinaryFileReader;
 import com.github.dozedoff.commonj.file.FileInfo;
 
 /**
@@ -102,9 +102,7 @@ public class DirectoryHasher {
 	class HashWorker extends Thread {
 		LinkedBlockingQueue<FileInfo> inputQueue = new LinkedBlockingQueue<>();
 		LinkedList<FileInfo> workingList = new LinkedList<>();
-
 		HashMaker hash = new HashMaker();
-		BinaryFileReader bfr = new BinaryFileReader();
 
 		public void addFile(FileInfo file) {
 			inputQueue.add(file);
@@ -119,7 +117,7 @@ public class DirectoryHasher {
 				// process items
 				for (FileInfo f : workingList) {
 					try {
-						f.setHash(hash.hash(bfr.get(f.getFile())));
+						f.setHash(hash.hash(Files.readAllBytes(f.getFilePath())));
 						outputQueue.add(f);
 					} catch (IOException e) {
 						logger.warn("Could not hash file: " + e.getMessage());
