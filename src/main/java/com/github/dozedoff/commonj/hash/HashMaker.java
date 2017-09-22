@@ -6,7 +6,6 @@
 package com.github.dozedoff.commonj.hash;
 
 import java.io.BufferedInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -25,7 +24,7 @@ import com.github.dozedoff.commonj.string.Convert;
 public class HashMaker {
 	private static Logger logger = LoggerFactory.getLogger(HashMaker.class);
 	private static final String DEFAULT_ALGORITHM = "SHA-256";
-	MessageDigest md = null;
+	private MessageDigest md;
 
 	public HashMaker() {
 		createDigest(DEFAULT_ALGORITHM);
@@ -89,21 +88,5 @@ public class HashMaker {
 		}
 
 		return null;
-	}
-
-	/**
-	 * Use {@link HashMaker#hashFile(Path)} instead.
-	 * 
-	 * @param file
-	 *            to hash
-	 * @return Hexadecimal encoded hash
-	 */
-	@Deprecated
-	public String hashFile(File file) {
-		if (file == null) {
-			return null;
-		}
-
-		return hashFile(file.toPath());
 	}
 }
