@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.junit.Before;
@@ -40,8 +41,8 @@ public class DirectoryHasherTest {
 	@Before
 	public void setUp() throws Exception {
 		tempDir = Files.createTempDirectory("DirectoryHasherTest").toFile();
-		bfr.write(testData, new File(tempDir, "testFile1.txt").toString());
-		bfr.write(testData2, new File(tempDir, "testFile2.txt").toString());
+		bfr.write(testData, new File(tempDir, "testFile1.txt").toPath());
+		bfr.write(testData2, new File(tempDir, "testFile2.txt").toPath());
 
 		fileQueue = new LinkedBlockingQueue<>();
 		dh = new DirectoryHasher(fileQueue);

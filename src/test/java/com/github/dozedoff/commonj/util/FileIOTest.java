@@ -43,7 +43,7 @@ public class FileIOTest {
 	public void setup() throws Exception {
 		randomData = Random.createRandomByteArray(SAMPLE_SIZE);
 		testFile = Files.createTempFile("", "FileIOTest.dat").toFile();
-		bfr.write(randomData, testFile.toString());
+		bfr.write(randomData, testFile.toPath());
 	}
 
 	@Test

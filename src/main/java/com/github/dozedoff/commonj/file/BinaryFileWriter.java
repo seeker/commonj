@@ -16,19 +16,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class BinaryFileWriter {
-	/**
-	 * Use {@link BinaryFileWriter#write(byte[], Path)} instead.
-	 */
-	@Deprecated
-	public void write(byte[] byteData, String savePath) throws IllegalArgumentException, IOException {
-
-		if (savePath == null || "".equals(savePath)) {
-			throw new IllegalArgumentException("Filepath is invalid");
-		}
-
-		write(byteData, Paths.get(savePath));
-	}
-
 	public void write(byte[] byteData, Path savePath) throws IllegalArgumentException, IOException {
 		if (savePath == null) {
 			throw new IllegalArgumentException("Path cannot be null");
@@ -36,6 +23,10 @@ public class BinaryFileWriter {
 
 		if (byteData == null) {
 			throw new IllegalArgumentException("Data cannot be null");
+		}
+
+		if (savePath.equals(Paths.get(""))) {
+			throw new IllegalArgumentException("Filepath is invalid");
 		}
 
 		if (savePath != null && savePath.getParent() != null) {
