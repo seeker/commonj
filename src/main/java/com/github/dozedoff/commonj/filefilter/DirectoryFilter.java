@@ -10,7 +10,20 @@ import java.nio.file.DirectoryStream.Filter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+/**
+ * Path filter to filter directories.
+ * 
+ * @author Nicholas Wright
+ *
+ */
 public class DirectoryFilter implements Filter<Path> {
+
+	/**
+	 * A path is accepted if it is a directory.
+	 * 
+	 * @param entry
+	 *            {@inheritDoc}
+	 */
 	@Override
 	public boolean accept(Path entry) throws IOException {
 		if (entry == null) {
