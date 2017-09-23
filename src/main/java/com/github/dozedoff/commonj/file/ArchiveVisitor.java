@@ -15,7 +15,7 @@ import java.util.List;
 import com.github.dozedoff.commonj.filefilter.ArchiveFilter;
 
 /**
- * Convenience Visitor for finding archives. Usees {@link ArchiveFilter} to match files by extension.
+ * Convenience Visitor for finding archives. Uses {@link ArchiveFilter} to match files by extension.
  * 
  * @author Nicholas Wright
  *
