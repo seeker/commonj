@@ -15,9 +15,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+/**
+ * Convenience class to write binary data to files.
+ * 
+ * @author Nicholas Wright
+ *
+ */
 public class BinaryFileWriter {
 	/**
-	 * Write the given data to the specified path.
+	 * Write the given data to the specified path. Creates missing directories in the path.
 	 * 
 	 * @param byteData
 	 *            data to write
