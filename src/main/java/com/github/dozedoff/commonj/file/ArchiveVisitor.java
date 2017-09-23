@@ -14,10 +14,22 @@ import java.util.List;
 
 import com.github.dozedoff.commonj.filefilter.ArchiveFilter;
 
+/**
+ * Convenience Visitor for finding archives. Usees {@link ArchiveFilter} to match files by extension.
+ * 
+ * @author Nicholas Wright
+ *
+ */
 public class ArchiveVisitor extends SimpleFileVisitor<Path> {
 	private ArchiveFilter archiveFilter = new ArchiveFilter();
 	private List<Path> archiveList;
 
+	/**
+	 * Create a new {@link ArchiveVisitor}, storing all found archives in the given list.
+	 * 
+	 * @param archiveList
+	 *            to store archive paths
+	 */
 	public ArchiveVisitor(List<Path> archiveList) {
 		if (archiveList == null) {
 			throw new IllegalArgumentException("List cannot be null");
@@ -26,6 +38,16 @@ public class ArchiveVisitor extends SimpleFileVisitor<Path> {
 		this.archiveList = archiveList;
 	}
 
+	/**
+	 * Check a file against the {@link ArchiveFilter} and store it if accepted.
+	 * 
+	 * @param path
+	 *            {@inheritDoc}
+	 * @param attributes
+	 *            {@inheritDoc}
+	 * 
+	 * @return {@inheritDoc}
+	 */
 	@Override
 	public FileVisitResult visitFile(Path path, BasicFileAttributes attributes) throws IOException {
 		if (archiveFilter.accept(path)) {
