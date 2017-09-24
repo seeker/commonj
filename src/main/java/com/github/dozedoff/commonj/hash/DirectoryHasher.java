@@ -31,6 +31,13 @@ public class DirectoryHasher {
 	private HashWorker hashWorker;
 	private FilenameFilter filter;
 
+	/**
+	 * Create a new {@link DirectoryHasher} with the given queue to store results. A worker thread is created and
+	 * started.
+	 * 
+	 * @param outputQueue
+	 *            to store results for processed files
+	 */
 	public DirectoryHasher(LinkedBlockingQueue<FileInfo> outputQueue) {
 		this.filter = new AcceptAllFilter();
 		this.outputQueue = outputQueue;
@@ -39,10 +46,24 @@ public class DirectoryHasher {
 		hashWorker.start();
 	}
 
+	/**
+	 * Set the filter to use when hashing a directory.
+	 * 
+	 * @param filter
+	 *            to use for accepting files
+	 */
 	public void setFilter(FilenameFilter filter) {
 		this.filter = filter;
 	}
 
+	/**
+	 * Walk the directory and hash all files matching the set filter.
+	 * 
+	 * @param directory
+	 *            to recursively hash
+	 * @throws IOException
+	 *             if there is an error accessing the filesystem
+	 */
 	public void hashDirectory(String directory) throws IOException {
 		File dir = new File(directory);
 
@@ -55,20 +76,49 @@ public class DirectoryHasher {
 		java.nio.file.Files.walkFileTree(dir.toPath(), new DirectoryVisitor(filter));
 	}
 
+	/**
+	 * Default filter, accepts all files.
+	 * 
+	 * @author Nicholas Wright
+	 *
+	 */
 	class AcceptAllFilter implements FilenameFilter {
+		/**
+		 * Accept all files
+		 * 
+		 * @param dir
+		 *            {@inheritDoc}
+		 * @param name
+		 *            {@inheritDoc}
+		 */
 		@Override
 		public boolean accept(File dir, String name) {
 			return true;
 		}
 	}
 
+
 	class DirectoryVisitor extends SimpleFileVisitor<Path> {
 		private FilenameFilter filter;
 
+		/**
+		 * Create a new directory visitor with the given filter.
+		 * 
+		 * @param filter
+		 *            to use for filtering files
+		 */
 		public DirectoryVisitor(FilenameFilter filter) {
 			this.filter = filter;
 		}
 
+		/**
+		 * Add files that match the filter to the worker thread for processing.
+		 * 
+		 * @param file
+		 *            {@inheritDoc}
+		 * @param attrs
+		 *            {@inheritDoc}
+		 */
 		@Override
 		public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
 			if (file == null) {
@@ -104,6 +154,12 @@ public class DirectoryHasher {
 		private LinkedList<FileInfo> workingList = new LinkedList<>();
 		private HashMaker hash = new HashMaker();
 
+		/**
+		 * Add a file to the processing queue.
+		 * 
+		 * @param file
+		 *            to add to the queue
+		 */
 		public void addFile(FileInfo file) {
 			inputQueue.add(file);
 		}
