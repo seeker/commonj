@@ -22,9 +22,29 @@ import javax.swing.JLabel;
 
 import sun.awt.image.ImageFormatException;
 
+/**
+ * Class for loading images in a resized form by only reading a subset of pixels from the original image.
+ * 
+ * @author Nicholas Wright
+ *
+ */
 @SuppressWarnings("restriction")
 public class SubsamplingImageLoader {
 	// TODO throw exception for negative dimensions
+
+	/**
+	 * Load a image so it's size does not exceed the given dimensions.
+	 * 
+	 * @param imagepath
+	 *            of the image to load
+	 * @param targetDimension
+	 *            the resized images maximum size
+	 * @return he resized image
+	 * @throws ImageFormatException
+	 *             if the image could not be decoded
+	 * @throws IOException
+	 *             if there is a error reading the image
+	 */
 	public static Image loadAsImage(Path imagepath, Dimension targetDimension) throws ImageFormatException, IOException {
 		ImageInputStream iis = getImageInputStream(imagepath);
 		ImageReader reader = getImageReader(iis);
@@ -39,6 +59,20 @@ public class SubsamplingImageLoader {
 		return image;
 	}
 
+	/**
+	 * Load a image so it's size does not exceed the given dimensions. Convenience method to load the image as a
+	 * {@link JLabel}
+	 * 
+	 * @param imagepath
+	 *            of the image to load
+	 * @param targetDimension
+	 *            the resized images maximum size
+	 * @return he resized image as a {@link JLabel}
+	 * @throws ImageFormatException
+	 *             if the image could not be decoded
+	 * @throws IOException
+	 *             if there is a error reading the image
+	 */
 	public static JLabel loadAsLabel(Path imagepath, Dimension targetDimension) throws ImageFormatException, IOException {
 		Image image = loadAsImage(imagepath, targetDimension);
 		ImageIcon imageicon = new ImageIcon(image);
