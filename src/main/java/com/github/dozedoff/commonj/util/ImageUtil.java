@@ -17,6 +17,12 @@ import javax.imageio.ImageIO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Utility class for converting images.
+ * 
+ * @author Nicholas Wright
+ *
+ */
 public class ImageUtil {
 	private static final ColorConvertOp colorConverter = new ColorConvertOp(ColorSpace.getInstance(ColorSpace.CS_GRAY), null);
 	private static final Logger logger = LoggerFactory.getLogger(ImageUtil.class);
@@ -39,11 +45,30 @@ public class ImageUtil {
 		return BufferedImage.TYPE_INT_ARGB_PRE;
 	}
 
+	/**
+	 * Covnvert the image to gray-scale by using the JRE built-in
+	 * {@link ColorSpace} {@link ColorSpace#CS_GRAY}.
+	 * 
+	 * @param image
+	 *            to convert to gray-scale
+	 * @return the converted gray-scale image
+	 */
 	public static BufferedImage toGrayscale(BufferedImage image) {
 		colorConverter.filter(image, image);
 		return image;
 	}
 
+	/**
+	 * Resize a image to the given dimensions using Java AWT.
+	 * 
+	 * @param image
+	 *            to resize
+	 * @param width
+	 *            of the resized image
+	 * @param height
+	 *            of the resized image
+	 * @return the resized image
+	 */
 	public static BufferedImage resizeImage(BufferedImage image, int width, int height) {
 		BufferedImage resizedImage = new BufferedImage(width, height, resizeType);
 		Graphics2D g = resizedImage.createGraphics();
@@ -53,8 +78,9 @@ public class ImageUtil {
 	}
 
 	/**
-	 * Copy the pixel values of the image into a matrix. The method assumes that the image is grayscale, non-grayscale images will result in
-	 * undefined behavior.
+	 * Copy the pixel values of the image into a matrix. The method assumes that
+	 * the image is gray-scale, non-gray-scale images will result in undefined
+	 * behaviour.
 	 * 
 	 * @param grayscaleImage
 	 *            gray scale image
@@ -78,6 +104,17 @@ public class ImageUtil {
 		return (img.getRGB(x, y)) & 0xff;
 	}
 
+	/**
+	 * Read a image from a {@link InputStream}. This is a trivial wrapper around
+	 * {@link ImageIO#read(InputStream).
+	 * 
+	 * @param is
+	 *            stream containing the image to read
+	 * @return read image as a {@link BufferedImage}
+	 * 
+	 * @throws IOException
+	 *             if there is a issue reading the underling stream
+	 */
 	public static BufferedImage readImage(InputStream is) throws IOException {
 		return ImageIO.read(is);
 	}
