@@ -11,6 +11,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
+// TODO mark this class as deprecated 
+
 public abstract class DataProducer<I, O> {
 	protected LinkedBlockingQueue<I> input = new LinkedBlockingQueue<>();
 	protected LinkedBlockingQueue<O> output = new LinkedBlockingQueue<>();
