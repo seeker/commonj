@@ -37,6 +37,16 @@ public class Convert {
 		return new String(hexChars);
 	}
 
+	/**
+	 * Try to convert the given {@link String} to an Int. If the conversion
+	 * fails, the default value will be returned instead.
+	 * 
+	 * @param value
+	 *            to convert
+	 * @param defaultValue
+	 *            to return in case of a error
+	 * @return the converted {@link String} or the default value
+	 */
 	public static int stringToInt(String value, int defaultValue) {
 		int converted = defaultValue;
 
