@@ -19,6 +19,8 @@ import java.util.HashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+//TODO mark as deprecated
+
 /**
  * Class for loading HTML data from the Internet.
  */
