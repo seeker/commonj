@@ -12,10 +12,24 @@ package com.github.dozedoff.commonj.io;
 public class ResourceCreationException extends Exception {
 	private Exception e;
 
+	/**
+	 * Create a new {@link ResourceCreationException}, wrapping the given
+	 * {@link Exception}.
+	 * 
+	 * @param e
+	 *            underlying {@link Exception} that caused this exception to be
+	 *            thrown
+	 */
 	public ResourceCreationException(Exception e) {
 		this.e = e;
 	}
 
+	/**
+	 * Get the message for this {@link ResourceCreationException}, using the
+	 * message of the cause.
+	 * 
+	 * @return the message of the {@link ResourceCreationException}
+	 */
 	@Override
 	public String getMessage() {
 		return e.getMessage();
