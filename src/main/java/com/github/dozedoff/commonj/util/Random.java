@@ -5,7 +5,20 @@
  */
 package com.github.dozedoff.commonj.util;
 
+/**
+ * Util class for generating random data.
+ * 
+ * @author Nicholas Wright
+ *
+ */
 public class Random {
+	/**
+	 * Generate a byte array with random values.
+	 * 
+	 * @param arrayLength
+	 *            of the array to create
+	 * @return a array with specified length, containing random data
+	 */
 	public static byte[] createRandomByteArray(int arrayLength) {
 		byte[] array = new byte[arrayLength];
 

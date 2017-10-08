@@ -32,6 +32,14 @@ public class FileLoader {
 
 	private File workingDir;
 	
+	/**
+	 * Create a new {@link FileLoader} for downloading files.
+	 * 
+	 * @param workingDir directory where the downloaded files will be saved
+	 * @param fileQueueWorkers number of workers used for downloading
+	 * @param dataDownloader downloader implementation to use for downloading
+	 * @param actions actions for download events
+	 */
 	public FileLoader(File workingDir, int fileQueueWorkers, DataDownloader dataDownloader, FileLoaderAction actions) {
 		this.workingDir = workingDir;
 		this.fileQueueWorkers = fileQueueWorkers;
@@ -65,6 +73,11 @@ public class FileLoader {
 		actions.afterFileAdd(url, fileName);
 	}
 
+	/**
+	 * Add a file for downloading. If the {@link URL} is already queued, it will not be added to the queue.
+	 * @param url to download
+	 * @param fileName for the file to store the downloaded data
+	 */
 	public void add(URL url, String fileName) {
 		if (!beforeFileAdd(url, fileName)) {
 			return;
@@ -92,6 +105,9 @@ public class FileLoader {
 		this.downloadSleep = sleep;
 	}
 
+	/**
+	 * Clear the download queue of any pending downloads. Started downloads will not be interrupted.
+	 */
 	public void clearQueue() {
 		downloadList.clear();
 		logger.info("Download queue cleared");
@@ -181,6 +197,9 @@ public class FileLoader {
 		logger.debug("FileLoader setup complete");
 	}
 
+	/**
+	 * Shut down the {@link FileLoader}. Clears the download queue and cancels all active downloads.
+	 */
 	public void shutdown() {
 		logger.info("Shutting down FileLoader...");
 		clearQueue();
@@ -224,15 +243,27 @@ public class FileLoader {
 		return actions.beforeProcessItem(di);
 	}
 
+	/**
+	 * Worker thread for downloading files.
+	 * 
+	 * @author Nicholas Wright
+	 *
+	 */
 	class DownloadWorker extends Thread {
 		private boolean stopped = false;
 
+		/**
+		 * Create a new worker thread.
+		 */
 		public DownloadWorker() {
 			super("Download Worker");
 
 			Thread.currentThread().setPriority(2);
 		}
 
+		/**
+		 * Tell the worker to shutdown gracefully. It will finish the current download and then die.
+		 */
 		public void kill() {
 			this.stopped = true;
 		}

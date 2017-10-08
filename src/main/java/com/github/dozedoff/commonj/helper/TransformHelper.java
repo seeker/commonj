@@ -5,10 +5,22 @@
  */
 package com.github.dozedoff.commonj.helper;
 
+/**
+ * Helper class for performing DCT transformations on images.
+ * 
+ * @author Nicholas Wright
+ *
+ */
 public class TransformHelper {
 	private int matrixSize;
 	private double[] dctCoefficients;
 
+	/**
+	 * Create a new {@link TransformHelper} for a given matrix size.
+	 * 
+	 * @param matrixSize
+	 *            size of the square matrix
+	 */
 	public TransformHelper(int matrixSize) {
 		this.matrixSize = matrixSize;
 		initCoefficients();
@@ -24,8 +36,14 @@ public class TransformHelper {
 		dctCoefficients[0] = 1 / Math.sqrt(2.0);
 	}
 
-	// DCT function stolen from
-	// http://stackoverflow.com/questions/4240490/problems-with-dct-and-idct-algorithm-in-java
+	/**
+	 * Perform the DCT calculation on the provided matrix. Based on
+	 * http://stackoverflow.com/questions/4240490/problems-with-dct-and-idct-algorithm-in-java
+	 * 
+	 * @param matrix
+	 *            to use for the calculation
+	 * @return a matrix containing the calculated DCT
+	 */
 	public double[][] transformDCT(double[][] matrix) {
 		int N = matrixSize;
 

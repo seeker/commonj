@@ -23,6 +23,12 @@ import com.github.dozedoff.commonj.helper.TransformHelper;
 import com.github.dozedoff.commonj.util.Bits;
 import com.github.dozedoff.commonj.util.ImageUtil;
 
+/**
+ * Class for calculating a DCT based hash for images.
+ * 
+ * @author Nicholas Wright
+ *
+ */
 public class ImagePHash {
 	private static final int DEFAULT_RESIZED_IMAGE_SIZE = 32;
 	private static final int DEFAULT_DCT_MATRIX_SIZE = 8;
@@ -31,10 +37,21 @@ public class ImagePHash {
 	private int dctMatrixSize = 0;
 	private TransformHelper transformHelper;
 
+	/**
+	 * Create a default hasher for images with a size of 32x32.
+	 */
 	public ImagePHash() {
 		this(DEFAULT_RESIZED_IMAGE_SIZE, DEFAULT_DCT_MATRIX_SIZE);
 	}
 
+	/**
+	 * Create a new hasher for the given image size and DCT matrix
+	 * 
+	 * @param resizedImageSize
+	 *            size of the image
+	 * @param dctMatrixSize
+	 *            size of the top left portion of the DCT matrix to keep
+	 */
 	public ImagePHash(int resizedImageSize, int dctMatrixSize) {
 		this.resizedImageSize = resizedImageSize;
 		this.dctMatrixSize = dctMatrixSize;
@@ -51,11 +68,20 @@ public class ImagePHash {
 	 *            file to hash
 	 * @return hash in as long
 	 * @throws IOException
+	 *             if there is an error reading the stream
 	 */
 	public long getLongHash(InputStream is) throws IOException {
 		return getLongHash(ImageUtil.readImage(is));
 	}
 
+	/**
+	 * Calculate the hash for a image.
+	 * 
+	 * @param img
+	 *            image to calculate the hash for
+	 * @return hash for the image, encoded as a long
+	 * @throws IOException if there is a error 
+	 */
 	public long getLongHash(BufferedImage img) throws IOException {
 		double[][] dct = calculateDctMap(img);
 
@@ -79,7 +105,6 @@ public class ImagePHash {
 	 * @param is
 	 *            file to hash
 	 * @return a 'binary string' (like. 001010111011100010) which is easy to do a hamming distance on.
-	 * @throws Exception
 	 */
 	public String getStringHash(InputStream is) throws IOException {
 		/*
@@ -94,6 +119,13 @@ public class ImagePHash {
 		return Long.toBinaryString(hash);
 	}
 
+	/**
+	 * Calculates the DCT map of the image.
+	 * 
+	 * @param img
+	 *            image to use
+	 * @return the calculated DCT matrix
+	 */
 	public double[][] calculateDctMap(BufferedImage img) throws IOException {
 		/*
 		 * 1. Reduce size. Like Average Hash, pHash starts with a small image. However, the image is larger than 8x8; 32x32 is a good size.
@@ -103,6 +135,13 @@ public class ImagePHash {
 		return calculateDctMapScaledDown(img);
 	}
 
+	/**
+	 * Calculate the DCT map for a scaled down image.
+	 * 
+	 * @param img
+	 *            image resized to the image size specified for this hasher
+	 * @return a DCT matrix for the provided image
+	 */
 	public double[][] calculateDctMapScaledDown(BufferedImage img) throws IOException {
 		/*
 		 * 2. Reduce color. The image is reduced to a grayscale just to further simplify the number of computations.

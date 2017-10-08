@@ -14,19 +14,42 @@ public class DownloadItem {
 	private final URL imageUrl;
 	private final String imageName;
 
+	/**
+	 * Create a new {@link DownloadItem}.
+	 * 
+	 * @param imageUrl
+	 *            that points to the image
+	 * @param imageName
+	 *            the filename for the image
+	 */
 	public DownloadItem(URL imageUrl, String imageName) {
 		this.imageUrl = imageUrl;
 		this.imageName = imageName;
 	}
 
+	/**
+	 * Get the {@link URL} that points to the image.
+	 * 
+	 * @return the {@link URL} to the image
+	 */
 	public URL getImageUrl() {
 		return imageUrl;
 	}
 
+	/**
+	 * Get the filename for the image.
+	 * 
+	 * @return the filename for the image
+	 */
 	public String getImageName() {
 		return imageName;
 	}
 
+	/**
+	 * Calculate a hash code based on the image name and {@link URL}.
+	 * 
+	 * @return the calculated hash code for this object
+	 */
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -36,6 +59,15 @@ public class DownloadItem {
 		return result;
 	}
 
+	/**
+	 * Compare an object to check if they are equal. Comparison is based on the
+	 * image name and image {@link URL}.
+	 * 
+	 * @param obj
+	 *            object to compare
+	 * @return if the other object is of the type {@link DownloadItem} and the
+	 *         fields match
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)

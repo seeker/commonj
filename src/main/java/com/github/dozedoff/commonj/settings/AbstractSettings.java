@@ -5,7 +5,6 @@
  */
 package com.github.dozedoff.commonj.settings;
 
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Reader;
@@ -19,12 +18,25 @@ import org.slf4j.LoggerFactory;
 
 import com.github.dozedoff.commonj.file.FileUtil;
 
+/**
+ * Provides convenience functions for working with java property files. Requires
+ * a settings {@link ISettingsValidator} to validate the loaded settings.
+ * 
+ * @author Nicholas Wright
+ *
+ */
 public abstract class AbstractSettings {
 	protected static final Logger logger = LoggerFactory.getLogger(AbstractSettings.class);
 	protected ISettingsValidator validator = null;
 	protected Properties properties = new Properties();
 	protected Path settingsPath;
 
+	/**
+	 * Create a new {@link AbstractSettings} using the given validator.
+	 * 
+	 * @param validator
+	 *            to use when verifying the loaded settings
+	 */
 	public AbstractSettings(ISettingsValidator validator) {
 		this.validator = validator;
 	}
@@ -49,8 +61,7 @@ public abstract class AbstractSettings {
 	 * Load a property file from the working directory.
 	 * 
 	 * @param propertyFilename
-	 *            of the propery file to load
-	 * @return
+	 *            of the property file to load
 	 */
 	public final void loadPropertiesFromFile(String propertyFilename) {
 		Path workingDir = FileUtil.workingDir();
@@ -59,13 +70,13 @@ public abstract class AbstractSettings {
 	}
 
 	/**
-	 * Load a property file from a sub directory in the workingdirectory. config/ or data/ for example.
+	 * Load a property file from a sub directory in the working directory.
+	 * config/ or data/ for example.
 	 * 
 	 * @param subdirectory
-	 *            subdirectory path to the file
+	 *            sub-directory path to the file
 	 * @param propertyFilename
-	 *            of the propery file to load
-	 * @return
+	 *            of the property file to load
 	 */
 	public final void loadPropertiesFromFile(Path subdirectory, String propertyFilename) {
 		Path workingDir = FileUtil.workingDir();
@@ -76,9 +87,8 @@ public abstract class AbstractSettings {
 	/**
 	 * Load a property file from the given path.
 	 * 
-	 * @param propertyFilename
-	 *            of the propery file to load
-	 * @return
+	 * @param absolute
+	 *            of the property file to load
 	 */
 	public final void loadPropertiesFromFileAbsolute(Path absolute) {
 		loadPropertiesFromFile(absolute);
@@ -97,10 +107,16 @@ public abstract class AbstractSettings {
 		}
 	}
 
+	/**
+	 * Store the values to the file they were loaded from. Properties will not
+	 * be saved if there is a underling error. Attempts to close the file before
+	 * returning from the function.
+	 */
 	public void saveSettings() {
 		OutputStream os = null;
 		try {
 			os = Files.newOutputStream(settingsPath);
+			// TODO allow user to set a comment
 			properties.store(os, "Settings for SimilarImage");
 		} catch (IOException e) {
 			logger.warn("Failed to save settings - {}", e.getMessage());

@@ -16,9 +16,22 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Filter for filtering paths based on file extensions.
+ * 
+ * @author Nicholas Wright
+ *
+ */
 public class FileExtensionFilter implements Filter<Path> {
 	private final List<String> validExtensions;
 
+	/**
+	 * Create a new {@link FileExtensionFilter} that will accept any path with a file that ends in one of the provided
+	 * extensions. The extension matching is case insensitive.
+	 * 
+	 * @param validExtensions
+	 *            a list of file extensions to accept, without the leading dot
+	 */
 	public FileExtensionFilter(String... validExtensions) {
 		if (validExtensions == null) {
 			this.validExtensions = Collections.emptyList();
@@ -36,6 +49,12 @@ public class FileExtensionFilter implements Filter<Path> {
 		}
 	}
 
+	/**
+	 * Check if the path matches a extension. Only files will be checked, extension comparison is case insensitive.
+	 * 
+	 * @param pathname
+	 *            {@inheritDoc}
+	 */
 	@Override
 	public boolean accept(Path pathname) throws IOException {
 		if (!Files.isRegularFile(pathname)) {

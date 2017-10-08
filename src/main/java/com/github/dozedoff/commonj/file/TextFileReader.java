@@ -18,6 +18,15 @@ import java.nio.file.Files;
  * Convenience class for reading text files. Handles file opening, buffering and closing.
  */
 public class TextFileReader {
+	/**
+	 * Read the entire file into memory.
+	 * 
+	 * @param path
+	 *            to file to read
+	 * @return the contents of the file, decoded as UTF-8
+	 * @throws IOException
+	 *             if there is an error reading the file
+	 */
 	public String read(File path) throws IOException {
 		Reader reader = Files.newBufferedReader(path.toPath(), StandardCharsets.UTF_8);
 		String readData = readData(reader);
@@ -26,6 +35,15 @@ public class TextFileReader {
 		return readData;
 	}
 
+	/**
+	 * Read the entire stream into memory.
+	 * 
+	 * @param is
+	 *            stream to read
+	 * @return the contents of the file, decoded as UTF-8
+	 * @throws IOException
+	 *             if there is an error reading the file
+	 */
 	public String read(InputStream is) throws IOException {
 		Reader reader = new InputStreamReader(is, StandardCharsets.UTF_8);
 		String readData = readData(reader);
@@ -50,6 +68,15 @@ public class TextFileReader {
 		return readData.toString();
 	}
 
+	/**
+	 * Read the entire file into memory.
+	 * 
+	 * @param path
+	 *            to file to read
+	 * @return the contents of the file, decoded as UTF-8
+	 * @throws IOException
+	 *             if there is an error reading the file
+	 */
 	public String read(String path) throws IOException {
 		return read(new File(path));
 	}
