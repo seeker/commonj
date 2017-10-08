@@ -22,19 +22,40 @@ public class Log {
 	static private int logNr = 0;
 	static private final Logger logger = LoggerFactory.getLogger(Log.class);
 
+	/**
+	 * Set the {@link JTextArea} that will be used for logging.
+	 * 
+	 * @param logArea
+	 *            text area to use
+	 */
 	public static void setLogArea(JTextArea logArea) {
 		Log.logArea = logArea;
 	}
 
+	/**
+	 * Set the number of log lines.
+	 * 
+	 * @param nr
+	 *            number to set
+	 */
 	public static void setLogNr(int nr) {
 		Log.logNr = nr;
 	}
 
+	/**
+	 * Clear the log, removing all text from the {@link JTextArea} and setting
+	 * the line count to 0.
+	 */
 	public static void clear() {
 		Log.logArea.setText("");
 		Log.logNr = 0;
 	}
 
+	/**
+	 * Get the number of displayed log entries.
+	 * 
+	 * @return number of log entries
+	 */
 	public static int getLogNr() {
 		return logNr;
 	}
