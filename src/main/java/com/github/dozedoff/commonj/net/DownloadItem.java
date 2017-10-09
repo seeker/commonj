@@ -6,6 +6,7 @@
 package com.github.dozedoff.commonj.net;
 
 import java.net.URL;
+import java.util.Objects;
 
 /**
  * Storage class for an Image.
@@ -59,6 +60,8 @@ public class DownloadItem {
 		return result;
 	}
 
+	// TODO check Objects.equals handling of URL.equals (performance impact)
+
 	/**
 	 * Compare an object to check if they are equal. Comparison is based on the
 	 * image name and image {@link URL}.
@@ -70,23 +73,13 @@ public class DownloadItem {
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (! (obj instanceof DownloadItem))
-			return false;
-		DownloadItem other = (DownloadItem) obj;
-		if (imageName == null) {
-			if (other.imageName != null)
-				return false;
-		} else if (!imageName.equals(other.imageName))
-			return false;
-		if (imageUrl == null) {
-			if (other.imageUrl != null)
-				return false;
-		} else if (!imageUrl.equals(other.imageUrl))
-			return false;
-		return true;
+		if (obj instanceof DownloadItem) {
+			DownloadItem other = (DownloadItem) obj;
+		
+			
+			return Objects.equals(this.imageName, other.imageName) && Objects.equals(this.imageUrl, other.imageUrl);
+		}
+
+		return false;
 	}
 }
