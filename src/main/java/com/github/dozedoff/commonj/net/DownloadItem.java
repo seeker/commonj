@@ -46,6 +46,8 @@ public class DownloadItem {
 		return imageName;
 	}
 
+	// TODO check Objects.equals handling of URL.equals (performance impact)
+
 	/**
 	 * Calculate a hash code based on the image name and {@link URL}.
 	 * 
@@ -53,11 +55,7 @@ public class DownloadItem {
 	 */
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((imageName == null) ? 0 : imageName.hashCode());
-		result = prime * result + ((imageUrl == null) ? 0 : imageUrl.hashCode());
-		return result;
+		return Objects.hash(imageName, imageUrl);
 	}
 
 	// TODO check Objects.equals handling of URL.equals (performance impact)
