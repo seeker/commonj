@@ -13,6 +13,8 @@ import javax.swing.JPanel;
 import com.github.dozedoff.commonj.time.Ticker;
 import com.github.dozedoff.commonj.util.Sampler;
 
+// TODO mark as deprecated 
+
 /**
  * Component for displaying {@link Graph}s. Repaints itself and the
  * {@link Graph} at regular intervals.
