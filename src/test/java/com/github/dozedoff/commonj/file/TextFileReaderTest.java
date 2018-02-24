@@ -1,8 +1,8 @@
-/* The MIT License (MIT)
- * Copyright (c) 2014 Nicholas Wright
+/*
+ * The MIT License (MIT)
+ * Copyright (c) 2017 Nicholas Wright
  * http://opensource.org/licenses/MIT
  */
-
 package com.github.dozedoff.commonj.file;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -18,7 +18,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class TextFileReaderTest {
-	TextFileReader tfr;
+	private TextFileReader tfr;
 	private static final String TEST_STRING = "The red fox\nfoo bar";
 	private static final String TEST_FILE_PATH = "testdata.txt";
 

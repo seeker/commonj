@@ -1,5 +1,6 @@
-/* The MIT License (MIT)
- * Copyright (c) 2014 Nicholas Wright
+/*
+ * The MIT License (MIT)
+ * Copyright (c) 2017 Nicholas Wright
  * http://opensource.org/licenses/MIT
  */
 
@@ -41,7 +42,7 @@ public class FileUtilTest {
 	private Path simplePath;
 	
 	private static final String SIMPLE_PATH = "C:\\foo\\bar\\";
-	private static final Logger logger = LoggerFactory.getLogger(FileUtilTest.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(FileUtilTest.class);
 	
 	
 	@Before
@@ -61,21 +62,21 @@ public class FileUtilTest {
 	}
 
 	@Test
-	public void testPathTokenList_LocalFileName() {
+	public void testPathTokenListLocalFileName() {
 		LinkedList<String> result = (LinkedList<String>) FileUtil.pathTokenList("C:\\test\\me\\testfile.txt");
 		String mustContain[] = { "C:", "test", "me", "testfile", ".txt" };
 		assertThat(result, hasItems(mustContain));
 	}
 
 	@Test
-	public void testPathTokenList_LocalFileName_specialChar() {
+	public void testPathTokenListLocalFileNameSpecialChar() {
 		LinkedList<String> result = (LinkedList<String>) FileUtil.pathTokenList("C:\\test\\me\\test.me\\testfile.txt");
 		String mustContain[] = { "C:", "test", "me", "testfile", ".txt", "test.me" };
 		assertThat(result, hasItems(mustContain));
 	}
 
 	@Test
-	public void testPathTokenList_NetworkFileName() {
+	public void testPathTokenListNetworkFileName() {
 		LinkedList<String> result = (LinkedList<String>) FileUtil.pathTokenList("\\\\nas\\test\\me\\test.me\\testfile.txt");
 		String mustContain[] = { "\\\\nas", "test", "me", "testfile", ".txt", "test.me" };
 		assertThat(result, hasItems(mustContain));
@@ -149,14 +150,14 @@ public class FileUtilTest {
 
 	private void createFiles(LinkedList<Path> dirs, LinkedList<Path> files) throws IOException {
 		for (Path p : dirs) {
-			if(p.toFile().mkdirs() ==false) {
-				logger.error("Failed to create directory {}", p);
+			if (p.toFile().mkdirs()) {
+				LOGGER.error("Failed to create directory {}", p);
 			}
 		}
 
 		for (Path p : files) {
 			if (p.toFile().createNewFile()) {
-				logger.error("Failed to create file {}", p);
+				LOGGER.error("Failed to create file {}", p);
 			}
 		}
 	}
@@ -273,30 +274,6 @@ public class FileUtilTest {
 		assertThat(clean, is("foo_bar"));
 	}
 
-	@Ignore
-	@Test
-	public void testHasValidWindowsFilenameFileEmpty() {
-		assertThat(FileUtil.hasValidWindowsFilename(new File("")), is(false));
-	}
-
-	@Ignore("tests will fail on Linux systems")
-	@Test
-	public void testHasValidWindowsFilenameValidAbsolute() {
-		assertThat(FileUtil.hasValidWindowsFilename(new File("C:\\foobar")), is(true));
-	}
-
-	@Ignore
-	@Test
-	public void testHasValidWindowsFilenameValidRelative() {
-		assertThat(FileUtil.hasValidWindowsFilename(new File("baz\\foobar")), is(true));
-	}
-
-	@Ignore
-	@Test
-	public void testHasValidWindowsFilenameFileInvalid() {
-		assertThat(FileUtil.hasValidWindowsFilename(new File("foo:bar")), is(false));
-	}
-
 	@Ignore("tests will fail on Linux systems")
 	@Test
 	public void testHasValidWindowsFilenameString() {
@@ -306,13 +283,13 @@ public class FileUtilTest {
 	@Ignore("tests will fail on Linux systems")
 	@Test
 	public void testConvertDirPathToString() throws Exception {
-		assertThat(FileUtil.convertDirPathToString(simplePath), is(new String(SIMPLE_PATH).toLowerCase()));
+		assertThat(FileUtil.convertDirPathToString(simplePath), is(SIMPLE_PATH.toLowerCase()));
 	}
 	
 	@Test
 	public void testConvertDirPathToStringNoEndingSlashes() throws Exception {
 		String noSlashes = "c:\\foo\\bar";
-		assertThat(FileUtil.convertDirPathToString(Paths.get(noSlashes)), is(new String(SIMPLE_PATH).toLowerCase()));
+		assertThat(FileUtil.convertDirPathToString(Paths.get(noSlashes)), is(SIMPLE_PATH.toLowerCase()));
 	}
 	
 	@Test

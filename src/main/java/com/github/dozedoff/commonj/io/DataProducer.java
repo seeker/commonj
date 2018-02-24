@@ -1,8 +1,8 @@
-/* The MIT License (MIT)
- * Copyright (c) 2014 Nicholas Wright
+/*
+ * The MIT License (MIT)
+ * Copyright (c) 2017 Nicholas Wright
  * http://opensource.org/licenses/MIT
  */
-
 package com.github.dozedoff.commonj.io;
 
 import java.util.Arrays;
@@ -10,6 +10,8 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
+
+// TODO mark this class as deprecated 
 
 public abstract class DataProducer<I, O> {
 	protected LinkedBlockingQueue<I> input = new LinkedBlockingQueue<>();

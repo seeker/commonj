@@ -1,8 +1,8 @@
-/* The MIT License (MIT)
- * Copyright (c) 2014 Nicholas Wright
+/*
+ * The MIT License (MIT)
+ * Copyright (c) 2017 Nicholas Wright
  * http://opensource.org/licenses/MIT
  */
-
 package com.github.dozedoff.commonj.string;
 
 import org.slf4j.Logger;
@@ -37,6 +37,16 @@ public class Convert {
 		return new String(hexChars);
 	}
 
+	/**
+	 * Try to convert the given {@link String} to an Int. If the conversion
+	 * fails, the default value will be returned instead.
+	 * 
+	 * @param value
+	 *            to convert
+	 * @param defaultValue
+	 *            to return in case of a error
+	 * @return the converted {@link String} or the default value
+	 */
 	public static int stringToInt(String value, int defaultValue) {
 		int converted = defaultValue;
 

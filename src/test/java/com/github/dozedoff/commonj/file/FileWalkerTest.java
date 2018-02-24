@@ -1,8 +1,8 @@
-/* The MIT License (MIT)
- * Copyright (c) 2014 Nicholas Wright
+/*
+ * The MIT License (MIT)
+ * Copyright (c) 2017 Nicholas Wright
  * http://opensource.org/licenses/MIT
  */
-
 package com.github.dozedoff.commonj.file;
 
 import static org.hamcrest.CoreMatchers.hasItem;
@@ -31,12 +31,10 @@ import com.github.dozedoff.commonj.filefilter.FileFilter;
 
 public class FileWalkerTest {
 
-	File rootFolder;
-	Path rootPath;
-	List<File> files;
-	List<File> folders;
-
-	FileWalker fw;
+	private File rootFolder;
+	private Path rootPath;
+	private List<File> files;
+	private List<File> folders;
 
 	@Before
 	public void setUp() throws Exception {
@@ -64,15 +62,11 @@ public class FileWalkerTest {
 		for (File f : files) {
 			f.createNewFile();
 		}
-
-		fw = new FileWalker();
-
 	}
 
 	@After
 	public void tearDown() throws Exception {
 		rootFolder.delete();
-		fw = null;
 	}
 
 	@Test
@@ -118,7 +112,18 @@ public class FileWalkerTest {
 
 	@Test
 	public void testWalkFileTreeWithFilter() throws IOException {
-		assertThat(FileWalker.walkFileTreeWithFilter(rootPath, new FileFilter()), hasItems(convertFileToPath(files)));
+		assertThat(FileWalker.walkFileTreeWithFilter(rootPath, new java.io.FileFilter() {
+			private FileFilter ff = new FileFilter();
+
+			@Override
+			public boolean accept(File pathname) {
+				try {
+					return ff.accept(pathname.toPath());
+				} catch (IOException e) {
+					return false;
+				}
+			}
+		}), hasItems(convertFileToPath(files)));
 	}
 
 	@Test
@@ -134,12 +139,6 @@ public class FileWalkerTest {
 		sourceList.add(folders.get(1).toPath());
 
 		assertThat(FileWalker.walkFileTreePathList(sourceList), hasItems(convertFileToPath(files.get(1), files.get(2), files.get(3))));
-	}
-
-	@Test
-	public void testWalkFileTreeFileArray() throws IOException {
-		assertThat(FileWalker.walkFileTree(folders.get(0), folders.get(1)),
-				hasItems(convertFileToPath(files.get(1), files.get(2), files.get(3))));
 	}
 
 	@Test

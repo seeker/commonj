@@ -1,8 +1,8 @@
-/* The MIT License (MIT)
- * Copyright (c) 2014 Nicholas Wright
+/*
+ * The MIT License (MIT)
+ * Copyright (c) 2017 Nicholas Wright
  * http://opensource.org/licenses/MIT
  */
-
 package com.github.dozedoff.commonj.net;
 
 import static org.hamcrest.CoreMatchers.anyOf;
@@ -39,11 +39,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-public class JettyHttpClientTestNTS {
-	static final int SERVER_PORT = 5400;
-	static final int TEST_DATA_SIZE = 25;
-	static final int READ_TIMEOUT_CLASS = 100;
-	static final int READ_TIMEOUT_TEST = 1500;
+public class JettyHttpClientTest {
+	private static final int SERVER_PORT = 5500;
+	private static final int TEST_DATA_SIZE = 25;
+	private static final int READ_TIMEOUT_CLASS = 100;
+	private static final int READ_TIMEOUT_TEST = 1500;
 
 	private static final AtomicInteger PORT_OFFSET = new AtomicInteger();
 	private int testPort = SERVER_PORT + PORT_OFFSET.incrementAndGet();
@@ -55,10 +55,10 @@ public class JettyHttpClientTestNTS {
 	@Rule
 	public ExpectedException expected = ExpectedException.none();
 
-	JettyHttpClient cut;
-	static Server server;
-	static TestHandler testHandler;
-	HashMap<Pages, URL> pageURLs = new HashMap<>();
+	private JettyHttpClient cut;
+	private static Server server;
+	private static TestHandler testHandler;
+	private Map<Pages, URL> pageURLs = new HashMap<>();
 
 	/**
 	 * Workaround for testing on Windows 10. On Linux and Windows 7, a

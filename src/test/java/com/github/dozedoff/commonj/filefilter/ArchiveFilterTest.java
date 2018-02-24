@@ -1,8 +1,8 @@
-/* The MIT License (MIT)
- * Copyright (c) 2014 Nicholas Wright
+/*
+ * The MIT License (MIT)
+ * Copyright (c) 2017 Nicholas Wright
  * http://opensource.org/licenses/MIT
  */
-
 package com.github.dozedoff.commonj.filefilter;
 
 import static org.junit.Assert.assertTrue;
@@ -10,11 +10,11 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.junit.Before;
 import org.junit.Test;
 
-@SuppressWarnings("deprecation")
 public class ArchiveFilterTest {
 	private ArchiveFilter af;
 
@@ -30,13 +30,13 @@ public class ArchiveFilterTest {
 
 	@Test
 	public void test7zArchive() throws IOException {
-		File file = createTempFile("test.7z");
+		Path file = createTempFile("test.7z").toPath();
 		assertTrue(af.accept(file));
 	}
 
 	@Test
 	public void testZipArchive() throws IOException {
-		File file = createTempFile("test.zip");
+		Path file = createTempFile("test.zip").toPath();
 		assertTrue(af.accept(file));
 	}
 }

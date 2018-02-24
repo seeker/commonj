@@ -1,8 +1,8 @@
-/* The MIT License (MIT)
- * Copyright (c) 2014 Nicholas Wright
+/*
+ * The MIT License (MIT)
+ * Copyright (c) 2017 Nicholas Wright
  * http://opensource.org/licenses/MIT
  */
-
 package com.github.dozedoff.commonj.file;
 
 import static java.nio.file.StandardOpenOption.CREATE;
@@ -15,21 +15,25 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+/**
+ * Convenience class to write binary data to files.
+ * 
+ * @author Nicholas Wright
+ *
+ */
 public class BinaryFileWriter {
 	/**
-	 * Use {@link BinaryFileWriter#write(byte[], Path)} instead.
+	 * Write the given data to the specified path. Creates missing directories in the path.
+	 * 
+	 * @param byteData
+	 *            data to write
+	 * @param savePath
+	 *            path to save data to
+	 * @throws IllegalArgumentException
+	 *             if the provided data or path are invalid
+	 * @throws IOException
+	 *             if there is a error writing the file
 	 */
-	// TODO REMOVE after 0.1.1
-	@Deprecated
-	public void write(byte[] byteData, String savePath) throws IllegalArgumentException, IOException {
-
-		if (savePath == null || "".equals(savePath)) {
-			throw new IllegalArgumentException("Filepath is invalid");
-		}
-
-		write(byteData, Paths.get(savePath));
-	}
-
 	public void write(byte[] byteData, Path savePath) throws IllegalArgumentException, IOException {
 		if (savePath == null) {
 			throw new IllegalArgumentException("Path cannot be null");
@@ -39,8 +43,13 @@ public class BinaryFileWriter {
 			throw new IllegalArgumentException("Data cannot be null");
 		}
 
-		if (savePath != null && savePath.getParent() != null) {
-			Files.createDirectories(savePath.getParent());
+		if (savePath.equals(Paths.get(""))) {
+			throw new IllegalArgumentException("Filepath is invalid");
+		}
+
+		Path parent = savePath.getParent();
+		if (parent != null) {
+			Files.createDirectories(parent);
 		}
 
 		try (OutputStream os = new BufferedOutputStream(Files.newOutputStream(savePath, CREATE, TRUNCATE_EXISTING))) {

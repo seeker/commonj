@@ -1,8 +1,8 @@
-/* The MIT License (MIT)
- * Copyright (c) 2014 Nicholas Wright
+/*
+ * The MIT License (MIT)
+ * Copyright (c) 2017 Nicholas Wright
  * http://opensource.org/licenses/MIT
  */
-
 package com.github.dozedoff.commonj.net;
 
 import java.io.BufferedReader;
@@ -13,10 +13,13 @@ import java.net.ProtocolException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+//TODO mark as deprecated
 
 /**
  * Class for loading HTML data from the Internet.
@@ -163,7 +166,7 @@ public class GetHtml {
 				connection.disconnect();
 				throw new PageLoadException(String.valueOf(connection.getResponseCode()), connection.getResponseCode());
 			}
-			in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+			in = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
 			while ((inputLine = in.readLine()) != null)
 				classString.append(inputLine);
 

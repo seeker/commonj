@@ -1,8 +1,8 @@
-/* The MIT License (MIT)
- * Copyright (c) 2014 Nicholas Wright
+/*
+ * The MIT License (MIT)
+ * Copyright (c) 2017 Nicholas Wright
  * http://opensource.org/licenses/MIT
  */
-
 package com.github.dozedoff.commonj.filefilter;
 
 import static org.junit.Assert.assertFalse;
@@ -11,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -19,9 +20,8 @@ public class FileExtensionFilterTest {
 	private final String testExtensions[] = { "a", "foo", "bar" };
 	private FileExtensionFilter fef;
 
-	private File createTempFile(String suffix) throws IOException {
-		File file = Files.createTempFile("", suffix).toFile();
-		return file;
+	private Path createTempFile(String suffix) throws IOException {
+		return Files.createTempFile("", suffix);
 	}
 
 	@Before
@@ -29,11 +29,10 @@ public class FileExtensionFilterTest {
 		fef = new FileExtensionFilter(testExtensions);
 	}
 
-	@SuppressWarnings("all")
 	@Test
 	public void testNullParameter() throws IOException {
-		fef = new FileExtensionFilter(null);
-		File file = createTempFile(".tmp");
+		fef = new FileExtensionFilter((String[]) null);
+		Path file = createTempFile(".tmp");
 		assertFalse(fef.accept(file));
 	}
 
@@ -41,7 +40,7 @@ public class FileExtensionFilterTest {
 	public void testNullParameterCast() throws IOException {
 		fef = new FileExtensionFilter("foo", null, "bar");
 
-		File file = createTempFile("test.foo");
+		Path file = createTempFile("test.foo");
 		assertTrue(fef.accept(file));
 
 		file = createTempFile("test.bar");
@@ -49,74 +48,74 @@ public class FileExtensionFilterTest {
 	}
 
 	@Test
-	public void testNonExistingValidFile() {
-		File file = new File("test.a");
+	public void testNonExistingValidFile() throws Exception {
+		Path file = new File("test.a").toPath();
 		assertFalse(fef.accept(file));
 	}
 
 	@Test
 	public void testExistingFileWithInvalidExtension() throws IOException {
-		File file = createTempFile("test.dat");
+		Path file = createTempFile("test.dat");
 		assertFalse(fef.accept(file));
 	}
 
 	@Test
 	public void testExistingValidExtension() throws IOException {
-		File file = createTempFile("test.foo");
+		Path file = createTempFile("test.foo");
 		assertTrue(fef.accept(file));
 	}
 
 	@Test
 	public void testExistingDirectory() throws IOException {
-		File directory = Files.createTempDirectory("test").toFile();
+		Path directory = Files.createTempDirectory("test");
 		assertFalse(fef.accept(directory));
 	}
 
 	@Test
 	public void testExtensionLowerCase() throws IOException {
-		File file = createTempFile("test.a");
+		Path file = createTempFile("test.a");
 		assertTrue(fef.accept(file));
 	}
 
 	@Test
 	public void testExtensionUpperCase() throws IOException {
-		File file = createTempFile("test.A");
+		Path file = createTempFile("test.A");
 		assertTrue(fef.accept(file));
 	}
 
 	@Test
 	public void testExtensionMixedCase() throws IOException {
-		File file = createTempFile("test.fOo");
+		Path file = createTempFile("test.fOo");
 		assertTrue(fef.accept(file));
 	}
 
 	@Test
 	public void testNoDot() throws IOException {
-		File file = createTempFile("testfoo");
+		Path file = createTempFile("testfoo");
 		assertFalse(fef.accept(file));
 	}
 
 	@Test
 	public void testNameContainsExtensionWithDot() throws IOException {
-		File file = createTempFile("test.foo.img");
+		Path file = createTempFile("test.foo.img");
 		assertFalse(fef.accept(file));
 	}
 
 	@Test
 	public void testNameContainsExtensionWithoutDot() throws IOException {
-		File file = createTempFile("testfoo.img");
+		Path file = createTempFile("testfoo.img");
 		assertFalse(fef.accept(file));
 	}
 
 	@Test
 	public void testNameContainsExtensionWithDotAndExtensionWoDot() throws IOException {
-		File file = createTempFile("test.fooimg");
+		Path file = createTempFile("test.fooimg");
 		assertFalse(fef.accept(file));
 	}
 
 	@Test
 	public void testNoExtension() throws IOException {
-		File file = createTempFile("test");
+		Path file = createTempFile("test");
 		assertFalse(fef.accept(file));
 	}
 }

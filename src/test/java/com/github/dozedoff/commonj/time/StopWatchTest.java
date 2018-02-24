@@ -1,8 +1,8 @@
-/* The MIT License (MIT)
- * Copyright (c) 2014 Nicholas Wright
+/*
+ * The MIT License (MIT)
+ * Copyright (c) 2017 Nicholas Wright
  * http://opensource.org/licenses/MIT
  */
-
 package com.github.dozedoff.commonj.time;
 
 import java.util.Calendar;
@@ -22,9 +22,9 @@ public class StopWatchTest {
 	private static final long SHORT_DURATION = 1000L;
 	private static final long LONG_DURATION = 3000L;
 
-	Calendar calendar;
+	private Calendar calendar;
 
-	StopWatch stopWatch;
+	private StopWatch stopWatch;
 
 	private void setElapsedTime(long timeInMillis, Long... more) {
 		when(calendar.getTimeInMillis()).thenReturn(timeInMillis, more);

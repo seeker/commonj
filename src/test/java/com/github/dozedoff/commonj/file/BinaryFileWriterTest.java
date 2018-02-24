@@ -1,8 +1,8 @@
-/* The MIT License (MIT)
- * Copyright (c) 2014 Nicholas Wright
+/*
+ * The MIT License (MIT)
+ * Copyright (c) 2017 Nicholas Wright
  * http://opensource.org/licenses/MIT
  */
-
 package com.github.dozedoff.commonj.file;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -12,6 +12,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -24,13 +25,13 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 public class BinaryFileWriterTest {
 	private final int SAMPLE_SIZE = 16384;
 
-	private String testfile;
+	private Path testfile;
 	private byte[] testData;
 	private BinaryFileWriter bfw;
 
 	@Before
 	public void setUp() throws Exception {
-		testfile = Files.createTempFile("BinaryFileWriterTest", "").toString();
+		testfile = Files.createTempFile("BinaryFileWriterTest", "");
 		testData = Random.createRandomByteArray(SAMPLE_SIZE);
 		bfw = new BinaryFileWriter();
 	}
@@ -40,7 +41,7 @@ public class BinaryFileWriterTest {
 		bfw.write(testData, testfile);
 
 		byte[] data = new byte[SAMPLE_SIZE];
-		FileInputStream fis = new FileInputStream(new File(testfile));
+		FileInputStream fis = new FileInputStream(testfile.toFile());
 
 		fis.read(data);
 		fis.close();
@@ -55,7 +56,7 @@ public class BinaryFileWriterTest {
 		bfw.write(testData, testfile);
 
 		byte[] data = new byte[SMALL_SIZE];
-		FileInputStream fis = new FileInputStream(new File(testfile));
+		FileInputStream fis = new FileInputStream(testfile.toFile());
 
 		fis.read(data);
 		fis.close();
@@ -65,17 +66,12 @@ public class BinaryFileWriterTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testWriteInvalidFile() throws Exception {
-		bfw.write(testData, "");
+		bfw.write(testData, Paths.get(""));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testWriteNullPath() throws Exception {
 		bfw.write(testData, (Path) null);
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void testWriteNullString() throws Exception {
-		bfw.write(testData, (String) null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -85,7 +81,7 @@ public class BinaryFileWriterTest {
 
 	@Test(expected = IOException.class)
 	public void testWriteFolder() throws IOException {
-		String directory = Files.createTempDirectory("BinaryFileWriterTest").toString();
+		Path directory = Files.createTempDirectory("BinaryFileWriterTest");
 		bfw.write(testData, directory);
 	}
 }

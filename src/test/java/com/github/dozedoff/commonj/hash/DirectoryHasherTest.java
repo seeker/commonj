@@ -1,8 +1,8 @@
-/* The MIT License (MIT)
- * Copyright (c) 2014 Nicholas Wright
+/*
+ * The MIT License (MIT)
+ * Copyright (c) 2017 Nicholas Wright
  * http://opensource.org/licenses/MIT
  */
-
 package com.github.dozedoff.commonj.hash;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.junit.Before;
@@ -24,13 +25,13 @@ import com.github.dozedoff.commonj.file.FileInfo;
 public class DirectoryHasherTest {
 	private final static int TEST_TIMEOUT = 2000;
 
-	File tempDir;
-	BinaryFileWriter bfr = new BinaryFileWriter();
-	byte[] testData = { 12, 45, 6, 12, 99 }; // SHA-256: 95F6A79D2199FC2CFA8F73C315AA16B33BF3544C407B4F9B29889333CA0DB815
-	byte[] testData2 = { 99, 21, 6, 45, 12 }; // SHA-256: 20FC038E00E13585E68E7EBE50D79CBE7D476A74D8FDE71872627DA6CD8FC8BB
+	private File tempDir;
+	private BinaryFileWriter bfr = new BinaryFileWriter();
+	private byte[] testData = { 12, 45, 6, 12, 99 }; // SHA-256: 95F6A79D2199FC2CFA8F73C315AA16B33BF3544C407B4F9B29889333CA0DB815
+	private byte[] testData2 = { 99, 21, 6, 45, 12 }; // SHA-256: 20FC038E00E13585E68E7EBE50D79CBE7D476A74D8FDE71872627DA6CD8FC8BB
 
-	LinkedBlockingQueue<FileInfo> fileQueue;
-	DirectoryHasher dh;
+	private LinkedBlockingQueue<FileInfo> fileQueue;
+	private DirectoryHasher dh;
 
 	private void spinWaitForQueue(int queueSize) {
 		while (fileQueue.size() != queueSize) {
@@ -40,8 +41,8 @@ public class DirectoryHasherTest {
 	@Before
 	public void setUp() throws Exception {
 		tempDir = Files.createTempDirectory("DirectoryHasherTest").toFile();
-		bfr.write(testData, new File(tempDir, "testFile1.txt").toString());
-		bfr.write(testData2, new File(tempDir, "testFile2.txt").toString());
+		bfr.write(testData, new File(tempDir, "testFile1.txt").toPath());
+		bfr.write(testData2, new File(tempDir, "testFile2.txt").toPath());
 
 		fileQueue = new LinkedBlockingQueue<>();
 		dh = new DirectoryHasher(fileQueue);

@@ -1,8 +1,8 @@
-/* The MIT License (MIT)
- * Copyright (c) 2014 Nicholas Wright
+/*
+ * The MIT License (MIT)
+ * Copyright (c) 2017 Nicholas Wright
  * http://opensource.org/licenses/MIT
  */
-
 package com.github.dozedoff.commonj.io;
 
 import java.sql.Connection;
@@ -24,17 +24,37 @@ public class BoneConnectionPool implements ConnectionPool {
 	private Properties dbProps;
 
 	static final Logger LOGGER = LoggerFactory.getLogger(BoneConnectionPool.class);
-	BoneCP connectionPool = null;
-	BoneCPConfig config = null;
-	DataSourceConnectionSource bcpConnSource = null;
-	Properties sqlConfig;
-	int maxResources;
+	private BoneCP connectionPool;
+	private BoneCPConfig config;
+	private DataSourceConnectionSource bcpConnSource;
+	private Properties sqlConfig;
+	private int maxResources;
 
+	/**
+	 * Create a new connection pool. The pool will need to be started before it can be used.
+	 * 
+	 * @param dbProps
+	 *            database configuration to use for pool
+	 * @param maxResources
+	 *            maximum number of connections
+	 */
 	public BoneConnectionPool(Properties dbProps, int maxResources) {
 		this.dbProps = dbProps;
 		this.maxResources = maxResources;
 	}
 
+	/**
+	 * Create a new connection pool. The pool will need to be started before it can be used.
+	 * 
+	 * @param url
+	 *            of the database
+	 * @param username
+	 *            for the database
+	 * @param password
+	 *            for the database
+	 * @param maxResources
+	 *            maximum number of connections
+	 */
 	public BoneConnectionPool(String url, String username, String password, int maxResources) {
 		this.maxResources = maxResources;
 		Properties props = new Properties();
@@ -46,6 +66,9 @@ public class BoneConnectionPool implements ConnectionPool {
 		this.dbProps = props;
 	}
 
+	/**
+	 * Start the pool by initializing the configuration.
+	 */
 	public void startPool() throws Exception {
 		Class.forName("com.jolbox.bonecp.BoneCP");
 		Class.forName("com.jolbox.bonecp.BoneCPConfig");
@@ -66,6 +89,9 @@ public class BoneConnectionPool implements ConnectionPool {
 		bcpConnSource = new DataSourceConnectionSource(bcpDataSource, dbProps.getProperty("url"));
 	}
 
+	/**
+	 * Closes the pool and cleans up the resources.
+	 */
 	public void stopPool() {
 		LOGGER.info("Shutting down connection pool, closing all database connections...");
 		connectionPool.shutdown();
@@ -76,15 +102,30 @@ public class BoneConnectionPool implements ConnectionPool {
 	 * 
 	 * @return a database connection
 	 * @throws SQLException
+	 *             if there is an error getting a connection
 	 */
 	public Connection getConnection() throws SQLException {
 		return connectionPool.getConnection();
 	}
 
+	/**
+	 * Get a connection source from the pool.
+	 * 
+	 * @return a database connection
+	 * @throws SQLException
+	 *             if there is an error getting a connection
+	 * 
+	 */
 	public DataSourceConnectionSource getConnectionSource() throws SQLException {
 		return bcpConnSource;
 	}
 
+	/**
+	 * Return a connection to the pool.
+	 * 
+	 * @param cn
+	 *            connection to return
+	 */
 	public void returnConnection(Connection cn) {
 		try {
 			cn.close();

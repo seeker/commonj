@@ -1,8 +1,8 @@
-/* The MIT License (MIT)
- * Copyright (c) 2014 Nicholas Wright
+/*
+ * The MIT License (MIT)
+ * Copyright (c) 2017 Nicholas Wright
  * http://opensource.org/licenses/MIT
  */
-
 package com.github.dozedoff.commonj.util;
 
 import static org.hamcrest.Matchers.is;
@@ -37,20 +37,8 @@ public class PairTest {
 	}
 
 	@Test
-	public void testSetLeft() {
-		pair.setLeft(testStringC);
-		assertThat(pair.getLeft(), is(testStringC));
-	}
-
-	@Test
 	public void testGetRight() {
 		assertThat(pair.getRight(), is(testStringB));
-	}
-
-	@Test
-	public void testSetRight() {
-		pair.setRight(testStringC);
-		assertThat(pair.getRight(), is(testStringC));
 	}
 
 	@Test

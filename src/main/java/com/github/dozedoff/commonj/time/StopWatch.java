@@ -1,29 +1,23 @@
-/* The MIT License (MIT)
- * Copyright (c) 2014 Nicholas Wright
+/*
+ * The MIT License (MIT)
+ * Copyright (c) 2017 Nicholas Wright
  * http://opensource.org/licenses/MIT
  */
-
 package com.github.dozedoff.commonj.time;
 
 import java.util.Calendar;
 
+// TODO mark this calls as deprecated and point users to Guava
+
 public class StopWatch {
-	final String format = "%1$02d:%2$02d:%3$02d.%4$03d";
-	boolean isRunning = false;
-	long startTime, stopTime;
+	private final String format = "%1$02d:%2$02d:%3$02d.%4$03d";
+	private boolean isRunning = false;
+	private long startTime, stopTime;
 	private final Calendar calendar;
 
-	final long CONST_H = 3600000;
-	final long CONST_M = 60000;
-	final long CONST_S = 1000;
-
-	/**
-	 * Use {@link StopWatch#StopWatch(Calendar)} instead.
-	 */
-	@Deprecated
-	public StopWatch() {
-		calendar = Calendar.getInstance();
-	}
+	private final long CONST_H = 3600000;
+	private final long CONST_M = 60000;
+	private final long CONST_S = 1000;
 
 	public StopWatch(Calendar calendar) {
 		this.calendar = calendar;

@@ -1,12 +1,11 @@
-/* The MIT License (MIT)
- * Copyright (c) 2014 Nicholas Wright
+/*
+ * The MIT License (MIT)
+ * Copyright (c) 2017 Nicholas Wright
  * http://opensource.org/licenses/MIT
  */
-
 package com.github.dozedoff.commonj.hash;
 
 import java.io.BufferedInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -25,12 +24,21 @@ import com.github.dozedoff.commonj.string.Convert;
 public class HashMaker {
 	private static Logger logger = LoggerFactory.getLogger(HashMaker.class);
 	private static final String DEFAULT_ALGORITHM = "SHA-256";
-	MessageDigest md = null;
+	private MessageDigest md;
 
+	/**
+	 * Create a new {@link HashMaker} with the default (SHA-256) algorithm.
+	 */
 	public HashMaker() {
 		createDigest(DEFAULT_ALGORITHM);
 	}
 
+	/**
+	 * Create a new {@link HashMaker} with the specified algorithm.
+	 * 
+	 * @param algorithm
+	 *            to use for hashing
+	 */
 	public HashMaker(String algorithm) {
 		createDigest(algorithm);
 	}
@@ -45,7 +53,7 @@ public class HashMaker {
 	}
 
 	/**
-	 * Generate a Hash value for binary data.
+	 * Calculate the hash for the provided binary data, represented as a hex string.
 	 * 
 	 * @param data
 	 *            Binary data
@@ -63,6 +71,13 @@ public class HashMaker {
 		return Convert.byteToHex(rawHash);
 	}
 
+	/**
+	 * Calculate the hash for the provided path, represented as a hex string.
+	 * 
+	 * @param file
+	 *            to read and hash
+	 * @return the hash of the file or null if there was an error
+	 */
 	public String hashFile(Path file) {
 		byte[] rawHash;
 
@@ -89,22 +104,5 @@ public class HashMaker {
 		}
 
 		return null;
-	}
-
-	/**
-	 * Use {@link HashMaker#hashFile(Path)} instead.
-	 * 
-	 * @param file
-	 *            to hash
-	 * @return Hexadecimal encoded hash
-	 */
-	// TODO REMOVE after 0.1.1
-	@Deprecated
-	public String hashFile(File file) {
-		if (file == null) {
-			return null;
-		}
-
-		return hashFile(file.toPath());
 	}
 }

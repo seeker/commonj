@@ -1,8 +1,8 @@
-/* The MIT License (MIT)
- * Copyright (c) 2014 Nicholas Wright
+/*
+ * The MIT License (MIT)
+ * Copyright (c) 2017 Nicholas Wright
  * http://opensource.org/licenses/MIT
  */
-
 package com.github.dozedoff.commonj.hash;
 
 import static org.hamcrest.Matchers.is;
@@ -47,14 +47,6 @@ public class ImagePHashTest {
 	@Before
 	public void setUp() throws Exception {
 		iph = new ImagePHash();
-	}
-
-	@Test
-	public void testgetLongHashCompareScaledandUnscaled() throws Exception {
-		long normal = hashWithNoScale();
-		long scaled = hashWithScale();
-
-		assertThat(scaled, is(normal));
 	}
 
 	@Test
@@ -146,18 +138,6 @@ public class ImagePHashTest {
 
 	private long hashImage(Path path) throws IOException, Exception {
 		return iph.getLongHash(new BufferedInputStream(Files.newInputStream(path)));
-	}
-
-	private long hashWithNoScale() throws Exception {
-		return hashImage(testImageJPG);
-	}
-
-	@SuppressWarnings("deprecation")
-	private long hashWithScale() throws Exception {
-		BufferedImage bi = ImageIO.read(testImageJPG.toFile());
-		bi = ImageUtil.resizeImage(bi, imageSize, imageSize);
-
-		return iph.getLongHashScaledImage(bi);
 	}
 
 	private static Path findFilePath(String fileName) throws URISyntaxException {

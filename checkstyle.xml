@@ -5,7 +5,7 @@
     This configuration file was written by the eclipse-cs plugin configuration editor
 -->
 <!--
-    Checkstyle-Configuration: local
+    Checkstyle-Configuration: Project
     Description: none
 -->
 <module name="Checker">
@@ -119,9 +119,4 @@
   <module name="FileLength"/>
   <module name="NewlineAtEndOfFile"/>
   <module name="UniqueProperties"/>
-  <module name="Header">
-    <property name="headerFile" value="${config_loc}/licenseHeader"/>
-    <property name="ignoreLines" value="2"/>
-    <property name="fileExtensions" value="java"/>
-  </module>
 </module>

@@ -1,8 +1,8 @@
-/* The MIT License (MIT)
- * Copyright (c) 2014 Nicholas Wright
+/*
+ * The MIT License (MIT)
+ * Copyright (c) 2017 Nicholas Wright
  * http://opensource.org/licenses/MIT
  */
-
 package com.github.dozedoff.commonj.gui;
 
 import java.awt.Graphics;
@@ -13,10 +13,16 @@ import javax.swing.JPanel;
 import com.github.dozedoff.commonj.time.Ticker;
 import com.github.dozedoff.commonj.util.Sampler;
 
+// TODO mark as deprecated 
+
+/**
+ * Component for displaying {@link Graph}s. Repaints itself and the
+ * {@link Graph} at regular intervals.
+ * 
+ * @author Nicholas Wright
+ *
+ */
 public class DataGraph extends JPanel {
-	/**
-	 * Shows data over time
-	 */
 	private static final long serialVersionUID = 1L;
 	private int updateInterval = 1;
 	private TimeUnit timeUnit;
@@ -27,38 +33,28 @@ public class DataGraph extends JPanel {
 	private boolean autoscale;
 	private transient Graph graph;
 
-	// TODO DEPRECATED remove after 0.2.1
-	@Deprecated
-	public DataGraph(int hight, int width, int cNum, int cWidth, int interval, boolean autoscale) {
-		this.setSize(width, hight);
-		this.noOfColums = cNum;
-		this.columWidth = cWidth;
-		this.updateInterval = interval;
-		this.autoscale = autoscale;
-		this.timeUnit = TimeUnit.SECONDS;
-
-		sampler = new Sampler(noOfColums);
-		this.graph = new BarGraph(this, sampler);
-	}
-
-	// TODO DEPRECATED remove after 0.2.1
-	@Deprecated
-	public DataGraph(int hight, int width, int cNum, int cWidth, int interval) {
-		this(hight, width, cNum, cWidth, interval, false);
-	}
-
+	/**
+	 * Create a new {@link DataGraph} for the given {@link Graph}. The
+	 * {@link DataGraph} will update the {@link Graph} at the specified
+	 * interval.
+	 * 
+	 * @param graph
+	 *            to update
+	 * @param interval
+	 *            value of the interval
+	 * @param timeUnit
+	 *            unit of the interval
+	 */
 	public DataGraph(Graph graph, int interval, TimeUnit timeUnit) {
 		this.graph = graph;
 		this.updateInterval = interval;
 		this.timeUnit = timeUnit;
 	}
 
-	// TODO DEPRECATED remove after 0.2.1
-	@Deprecated
-	public void add(int delta) {
-		sampler.addDelta(delta);
-	}
-
+	/**
+	 * Start the {@link DataGraph}, refreshing the displayed data at the set
+	 * interval.
+	 */
 	public void start() {
 		if (updater != null) {
 			return;
@@ -72,6 +68,12 @@ public class DataGraph extends JPanel {
 		};
 	}
 
+	/**
+	 * Update the {@link DataGraph} and the underlying {@link Graph}.
+	 * 
+	 * @param g
+	 *            {@inheritDoc}
+	 */
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);

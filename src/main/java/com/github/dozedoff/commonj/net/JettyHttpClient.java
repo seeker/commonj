@@ -1,3 +1,8 @@
+/*
+ * The MIT License (MIT)
+ * Copyright (c) 2017 Nicholas Wright
+ * http://opensource.org/licenses/MIT
+ */
 package com.github.dozedoff.commonj.net;
 
 import java.net.URL;
@@ -17,6 +22,12 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * {@link IHttpClient} implentation based on the Jetty Http-Client.
+ * 
+ * @author Nicholas Wright
+ *
+ */
 public class JettyHttpClient implements IHttpClient {
 	private static final Logger logger = LoggerFactory.getLogger(JettyHttpClient.class);
 
@@ -28,6 +39,12 @@ public class JettyHttpClient implements IHttpClient {
 	private long timeoutInMilliseconds = 10000;
 	private String userAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.0";
 	
+	/**
+	 * Create a new client with 10 second timeout and Firefox user agent.
+	 * 
+	 * @throws Exception
+	 *             if there is a error starting the client
+	 */
 	public JettyHttpClient() throws Exception {
 		httpClient = new HttpClient();
 		httpClient.setIdleTimeout(timeoutInMilliseconds);
@@ -44,12 +61,18 @@ public class JettyHttpClient implements IHttpClient {
 				.timeout(timeoutInMilliseconds, TimeUnit.MILLISECONDS);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public long getLenght(URL url) throws InterruptedException, TimeoutException, ExecutionException {
 			ContentResponse response = getHeaderResponse(url);
 			return response.getHeaders().getLongField("content-length");
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Map<String, List<String>> getHeader(URL url) throws InterruptedException, TimeoutException, ExecutionException {
 		Map<String, List<String>> headers = new HashMap<String, List<String>>();
@@ -65,6 +88,9 @@ public class JettyHttpClient implements IHttpClient {
 		return headers;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public byte[] getDataRange(URL url, int start, long l) throws InterruptedException, TimeoutException, ExecutionException, PageLoadException {
 		ContentResponse response = getDefaultRequest(url).method(HttpMethod.GET).header("Range", "bytes=" + start + "-" + l).send();
@@ -76,6 +102,9 @@ public class JettyHttpClient implements IHttpClient {
 		return response.getContent();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public byte[] getData(URL url) throws PageLoadException, InterruptedException, TimeoutException, ExecutionException {
 		Request request = getDefaultRequest(url).method(HttpMethod.GET);
@@ -90,6 +119,9 @@ public class JettyHttpClient implements IHttpClient {
 		return response.getContent();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void setUserAgent(String userAgent) throws IllegalArgumentException {
 		if (userAgent == null) {
@@ -99,11 +131,17 @@ public class JettyHttpClient implements IHttpClient {
 		this.userAgent = userAgent;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String getUserAgent() {
 		return this.userAgent;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void setTimeout(long value, TimeUnit timeUnit) throws IllegalArgumentException{
 		if(value < 0){
@@ -115,6 +153,9 @@ public class JettyHttpClient implements IHttpClient {
 		httpClient.setConnectTimeout(timeoutInMilliseconds);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public long getTimeoutInMilliseconds() {
 		return this.timeoutInMilliseconds;

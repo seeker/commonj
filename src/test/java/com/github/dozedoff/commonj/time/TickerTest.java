@@ -1,70 +1,140 @@
+/*
+ * The MIT License (MIT)
+ * Copyright (c) 2017 Nicholas Wright
+ * http://opensource.org/licenses/MIT
+ */
 package com.github.dozedoff.commonj.time;
 
 import static org.awaitility.Awaitility.await;
-import static org.awaitility.proxy.AwaitilityClassProxy.to;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.not;
 
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
-import org.junit.Ignore;
+import org.awaitility.Duration;
+import org.hamcrest.Matcher;
+import org.junit.After;
 import org.junit.Test;
 
-// FIXME find a better way to test this, depending on timing is too unreliable
-@Ignore("This tests are flaky, needs to be reworked")
 public class TickerTest {
 	private DummyTicker dt;
 
-	@Test
-	public void testTickEventShort() throws Exception {
-		dt = new DummyTicker(10, TimeUnit.MILLISECONDS);
+	private static final int TICK_DURATION = 10;
+	private static final TimeUnit TICK_UNIT = TimeUnit.MILLISECONDS;
 
-		await().between(90, TimeUnit.MILLISECONDS, 150, TimeUnit.MILLISECONDS).untilCall(to(dt).getTickCount(),
-				is(greaterThanOrEqualTo(10)));
-	}
+	private static final Duration AWAIT_DURATION = new Duration(2, TimeUnit.SECONDS);
 
-	@Test
-	public void testTickEventLong() throws Exception {
-		dt = new DummyTicker(100, TimeUnit.MILLISECONDS);
+	private static final String THREAD_NAME = "Foobar";
+	private static final String DEFAULT_THREAD_NAME = "Timer";
 
-		await().between(190, TimeUnit.MILLISECONDS, 220, TimeUnit.MILLISECONDS).untilCall(to(dt).getTickCount(),
-				is(greaterThanOrEqualTo(3)));
-	}
-
-	@Test(timeout = 400)
-	public void testCancel() throws Exception {
-		dt = new DummyTicker(2, TimeUnit.SECONDS);
-		Thread.sleep(100);
+	@After
+	public void tearDown() {
 		dt.cancel();
-		assertThat(dt.getTickCount(), is(1));
 	}
 
-	@Test(timeout = 200)
+	private List<String> getThreadNames() {
+		Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
+		return threadSet.stream().map(thread -> thread.getName()).collect(Collectors.toList());
+	}
+
+	private void assertThreadNames(Matcher<Iterable<? super String>> matcher) {
+		await().atMost(AWAIT_DURATION).until(new Callable<List<String>>() {
+			@Override
+			public List<String> call() throws Exception {
+				return getThreadNames();
+			}
+		}, matcher);
+	}
+
+	@Test
+	public void testTickEvent() throws Exception {
+		dt = new DummyTicker(TICK_DURATION, TICK_UNIT);
+
+		await().atMost(AWAIT_DURATION).until(new Callable<Integer>() {
+
+			@Override
+			public Integer call() throws Exception {
+				return dt.getTickCount();
+			}
+		}, is(greaterThanOrEqualTo(1)));
+	}
+
+
+	@Test
+	public void testCancel() throws Exception {
+		dt = new DummyTicker(THREAD_NAME, TICK_DURATION, TICK_UNIT);
+
+		assertThreadNames(hasItem(THREAD_NAME));
+
+		dt.cancel();
+
+		assertThreadNames(not(hasItem(THREAD_NAME)));
+	}
+
+	@Test
 	public void testNamedTicker() throws Exception {
-		dt = new DummyTicker("Foobar", 10, TimeUnit.MILLISECONDS);
-		Thread.sleep(120);
-		assertThat(dt.getTickCount(), is(greaterThanOrEqualTo(10)));
+		dt = new DummyTicker(THREAD_NAME, TICK_DURATION, TICK_UNIT);
+
+		assertThreadNames(hasItem(THREAD_NAME));
 	}
 
-	class DummyTicker extends Ticker {
+	@Test
+	public void testDefaultNamedTicker() throws Exception {
+		dt = new DummyTicker(TICK_DURATION, TICK_UNIT);
+
+		assertThreadNames(hasItem(DEFAULT_THREAD_NAME));
+	}
+
+	static class DummyTicker extends Ticker {
 		private int tickCount;
 
-		public DummyTicker(long time, TimeUnit timeUnit) {
+		/**
+		 * Create a new {@link DummyTicker} for testing.
+		 * 
+		 * @param time
+		 *            {@inheritDoc}
+		 * @param timeUnit
+		 *            {@inheritDoc}
+		 */
+		DummyTicker(long time, TimeUnit timeUnit) {
 			super(time, timeUnit);
 			tickCount = 0;
 		}
 
-		public DummyTicker(String tickerName, long time, TimeUnit timeUnit) {
+		/**
+		 * Create a new {@link DummyTicker} for testing.
+		 * 
+		 * @param tickerName
+		 *            {@inheritDoc}
+		 * @param time
+		 *            {@inheritDoc}
+		 * @param timeUnit
+		 *            {@inheritDoc}
+		 */
+		DummyTicker(String tickerName, long time, TimeUnit timeUnit) {
 			super(tickerName, time, timeUnit);
 			tickCount = 0;
 		}
 
+		/**
+		 * Executed on each tick.
+		 */
 		@Override
 		public void tickEvent() {
 			tickCount++;
 		}
 
+		/**
+		 * Get the number of tick events.
+		 * 
+		 * @return count of tick events
+		 */
 		public int getTickCount() {
 			return tickCount;
 		}

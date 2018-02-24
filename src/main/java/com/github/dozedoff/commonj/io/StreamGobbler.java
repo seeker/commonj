@@ -1,44 +1,58 @@
+/*
+ * The MIT License (MIT)
+ * Copyright (c) 2017 Nicholas Wright
+ * http://opensource.org/licenses/MIT
+ */
 package com.github.dozedoff.commonj.io;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Class for consuming data provided by inputstreams.
- * 
+ * Class for consuming data provided by {@link InputStream}s.
  * Based on "When Runtime.exec() won't" from http://www.javaworld.com/javaworld/jw-12-2000/jw-1229-traps.html
  */
 public class StreamGobbler extends Thread {
-	InputStream is;
-	final static Logger logger = LoggerFactory.getLogger(StreamGobbler.class);
+	private InputStream is;
+	private final static Logger LOGGER = LoggerFactory.getLogger(StreamGobbler.class);
 	private StringBuilder messageBuffer;
 
+	/**
+	 * Create a new {@link StreamGobbler} to consume the {@link InputStream}.
+	 * 
+	 * @param is
+	 *            to consume
+	 */
 	public StreamGobbler(InputStream is) {
 		this.is = is;
+		this.messageBuffer = new StringBuilder();
 	}
 
+	/**
+	 * Get the currently buffered text from the {@link InputStream}.
+	 * 
+	 * @return all the text that has been buffered so far
+	 */
 	public String getBuffer() {
 		return messageBuffer.toString();
 	}
 
 	public void run() {
-		// FIXME this can cause a race condition, move to class field
-		messageBuffer = new StringBuilder();
-
 		try {
-			InputStreamReader isr = new InputStreamReader(is);
+			InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
 			BufferedReader br = new BufferedReader(isr);
 			String line = null;
 			while ((line = br.readLine()) != null) {
 				messageBuffer.append(line);
 			}
 		} catch (IOException ioe) {
-			ioe.printStackTrace();
+			LOGGER.error("", ioe);
 		}
 	}
 }

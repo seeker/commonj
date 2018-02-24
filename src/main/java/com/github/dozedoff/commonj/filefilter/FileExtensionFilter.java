@@ -1,12 +1,10 @@
-/* The MIT License (MIT)
- * Copyright (c) 2014 Nicholas Wright
+/*
+ * The MIT License (MIT)
+ * Copyright (c) 2017 Nicholas Wright
  * http://opensource.org/licenses/MIT
  */
-
 package com.github.dozedoff.commonj.filefilter;
 
-import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.nio.file.DirectoryStream.Filter;
 import java.nio.file.Files;
@@ -18,9 +16,22 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class FileExtensionFilter implements FileFilter, Filter<Path> {
+/**
+ * Filter for filtering paths based on file extensions.
+ * 
+ * @author Nicholas Wright
+ *
+ */
+public class FileExtensionFilter implements Filter<Path> {
 	private final List<String> validExtensions;
 
+	/**
+	 * Create a new {@link FileExtensionFilter} that will accept any path with a file that ends in one of the provided
+	 * extensions. The extension matching is case insensitive.
+	 * 
+	 * @param validExtensions
+	 *            a list of file extensions to accept, without the leading dot
+	 */
 	public FileExtensionFilter(String... validExtensions) {
 		if (validExtensions == null) {
 			this.validExtensions = Collections.emptyList();
@@ -39,20 +50,11 @@ public class FileExtensionFilter implements FileFilter, Filter<Path> {
 	}
 
 	/**
-	 * Use {@link FileExtensionFilter#accept(Path) instead.}
+	 * Check if the path matches a extension. Only files will be checked, extension comparison is case insensitive.
+	 * 
+	 * @param pathname
+	 *            {@inheritDoc}
 	 */
-	// TODO REMOVE after 0.1.1
-	@Deprecated
-	@Override
-	public boolean accept(File pathname) {
-		try {
-			return accept(pathname.toPath());
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
-		}
-	}
-
 	@Override
 	public boolean accept(Path pathname) throws IOException {
 		if (!Files.isRegularFile(pathname)) {
