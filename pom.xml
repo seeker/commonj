@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.dozedoff.commonj</groupId>
 	<artifactId>commonj</artifactId>
-	<version>0.3.2</version>
+	<version>0.3.3</version>
 	<name>commonj</name>
 	<description>Contains common java classes used in other projects</description>
 	<packaging>jar</packaging>
@@ -19,7 +19,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<jetty-version>9.4.9.v20180320</jetty-version>
+		<jetty-version>9.4.11.v20180605</jetty-version>
 	</properties>
 
 	<build>
