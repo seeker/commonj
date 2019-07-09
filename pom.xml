@@ -70,16 +70,6 @@
 				</executions>
 			</plugin>
 			<plugin>
-				<groupId>org.eluder.coveralls</groupId>
-				<artifactId>coveralls-maven-plugin</artifactId>
-				<version>4.3.0</version>
-				<configuration>
-					<jacocoReports>
-						<jacocoReport>${project.basedir}/target/site/jacoco/jacoco.xml</jacocoReport>
-					</jacocoReports>
-				</configuration>
-			</plugin>
-			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>findbugs-maven-plugin</artifactId>
 				<version>3.0.5</version>
