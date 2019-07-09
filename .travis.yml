@@ -2,8 +2,11 @@ sudo: false
 language: java
 jdk:
   - openjdk8
+  - openjdk11
+  - openjdk12
   - oraclejdk8
-  - oraclejdk9
+  - oraclejdk11
+  - oraclejdk12
 after_success:
   - mvn jacoco:report coveralls:report
   - bash <(curl -s https://codecov.io/bash)
