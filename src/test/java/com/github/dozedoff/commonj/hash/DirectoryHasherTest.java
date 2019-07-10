@@ -23,7 +23,7 @@ import com.github.dozedoff.commonj.file.BinaryFileWriter;
 import com.github.dozedoff.commonj.file.FileInfo;
 
 public class DirectoryHasherTest {
-	private final static int TEST_TIMEOUT = 2000;
+	private final static int TEST_TIMEOUT = 4000;
 
 	private File tempDir;
 	private BinaryFileWriter bfr = new BinaryFileWriter();
