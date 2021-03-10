@@ -33,7 +33,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<jetty-version>9.4.18.v20190429</jetty-version>
+		<jetty-version>11.0.1</jetty-version>
 	</properties>
 
 	<distributionManagement>
