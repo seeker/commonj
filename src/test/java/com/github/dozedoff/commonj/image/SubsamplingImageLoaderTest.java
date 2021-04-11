@@ -13,14 +13,12 @@ import java.awt.Dimension;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import javax.imageio.IIOException;
 import javax.swing.JLabel;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import sun.awt.image.ImageFormatException;
-
-@SuppressWarnings("restriction")
 public class SubsamplingImageLoaderTest {
 	private static Path imagePath, textpath;
 
@@ -67,7 +65,7 @@ public class SubsamplingImageLoaderTest {
 		SubsamplingImageLoader.loadAsLabel(imagePath, dim);
 	}
 
-	@Test(expected = ImageFormatException.class)
+	@Test(expected = IIOException.class)
 	public void testLoadNotAnImage() throws Exception {
 		Dimension dim = new Dimension(100, 100);
 		SubsamplingImageLoader.loadAsLabel(textpath, dim);

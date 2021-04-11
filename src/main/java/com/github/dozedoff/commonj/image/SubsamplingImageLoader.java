@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Iterator;
 
+import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReadParam;
 import javax.imageio.ImageReader;
@@ -20,15 +21,12 @@ import javax.imageio.stream.ImageInputStream;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
-import sun.awt.image.ImageFormatException;
-
 /**
  * Class for loading images in a resized form by only reading a subset of pixels from the original image.
  * 
  * @author Nicholas Wright
  *
  */
-@SuppressWarnings("restriction")
 public class SubsamplingImageLoader {
 	// TODO throw exception for negative dimensions
 
@@ -45,13 +43,13 @@ public class SubsamplingImageLoader {
 	 * @throws IOException
 	 *             if there is a error reading the image
 	 */
-	public static Image loadAsImage(Path imagepath, Dimension targetDimension) throws ImageFormatException, IOException {
+	public static Image loadAsImage(Path imagepath, Dimension targetDimension) throws IOException {
 		ImageInputStream iis = getImageInputStream(imagepath);
 		ImageReader reader = getImageReader(iis);
 
 		if (reader == null) {
 			iis.close();
-			throw new ImageFormatException("Could not decode file");
+			throw new IIOException("Could not decode file");
 		}
 
 		Image image = subsampleRead(iis, reader, targetDimension);
@@ -73,7 +71,7 @@ public class SubsamplingImageLoader {
 	 * @throws IOException
 	 *             if there is a error reading the image
 	 */
-	public static JLabel loadAsLabel(Path imagepath, Dimension targetDimension) throws ImageFormatException, IOException {
+	public static JLabel loadAsLabel(Path imagepath, Dimension targetDimension) throws IOException {
 		Image image = loadAsImage(imagepath, targetDimension);
 		ImageIcon imageicon = new ImageIcon(image);
 		JLabel imageLabel = new JLabel(imageicon, JLabel.CENTER);
