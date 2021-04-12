@@ -1,6 +1,6 @@
 commonj
 =======
-![Build Status](https://github.com/seeker/commonj/actions/workflows/maven.yml/badge.svg?branch=develop)
+[![Build Status](https://github.com/seeker/commonj/actions/workflows/maven.yml/badge.svg?branch=develop)](https://github.com/seeker/commonj/actions/workflows/maven.yml)
 [![codecov](https://codecov.io/gh/seeker/commonj/branch/master/graph/badge.svg)](https://codecov.io/gh/seeker/commonj)
 [![](https://jitpack.io/v/seeker/commonj.svg)](https://jitpack.io/#seeker/commonj)
 
