@@ -1,6 +1,6 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2017 Nicholas Wright
+ * Copyright (c) 2022 Nicholas Wright
  * http://opensource.org/licenses/MIT
  */
 package com.github.dozedoff.commonj.filefilter;
