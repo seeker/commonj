@@ -189,34 +189,35 @@
         </executions>
       </plugin>
                 <plugin>
-                    <groupId>com.mycila.maven-license-plugin</groupId>
-                    <artifactId>maven-license-plugin</artifactId>
-                    <version>1.10.b1</version>
+				    <groupId>com.mycila</groupId>
+				    <artifactId>license-maven-plugin</artifactId>
+				    <version>4.1</version>
                     <configuration>
-                        <header>HEADER</header>
-                        <strictCheck>true</strictCheck>
-                        <aggregate>true</aggregate>
+						<licenseSets>
+							<licenseSet>
+								<header>HEADER</header>
+								<excludes>
+									<exclude>src/test/resources/**</exclude>
+									<exclude>tools/release/**</exclude>
+									<exclude>bin/**</exclude>
+									<exclude>bin_test/**</exclude>
+									<exclude>HEADER</exclude>
+									<exclude>**/*.sh</exclude>
+									<exclude>**/*.xml</exclude>
+									<exclude>**/*.yml</exclude>
+									<exclude>**/*.properties</exclude>
+								</excludes>
+							</licenseSet>
+						</licenseSets>
                         <encoding>UTF-8</encoding>
                         <failIfMissing>true</failIfMissing>
                         <skipExistingHeaders>false</skipExistingHeaders>
-                        <includes>
-                            <include>**/src/main/java/**</include>
-                            <include>**/src/test/java/**</include>
-                        </includes>
                     </configuration>
-					<executions>
-						<execution>
-							<phase>process-sources</phase>
-							<goals>
-								<goal>format</goal>
-							</goals>
-							<configuration>
-								<mapping>
-									<java>SLASHSTAR_STYLE</java>
-								</mapping>
-							</configuration>
-						</execution>
-					</executions>
+				<executions>
+				<execution>
+				<goals><goal>check</goal></goals>
+				</execution>
+				</executions>
                 </plugin>
                 <plugin>
 				  <groupId>org.apache.maven.plugins</groupId>
