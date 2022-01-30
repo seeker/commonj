@@ -34,6 +34,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<jetty-version>9.4.39.v20210325</jetty-version>
+		<logback-version>1.2.10</logback-version>
 	</properties>
 
 	<distributionManagement>
@@ -313,12 +314,12 @@
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-core</artifactId>
-			<version>1.2.3</version>
+			<version>${logback-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
-			<version>1.2.3</version>
+			<version>${logback-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.guava</groupId>
