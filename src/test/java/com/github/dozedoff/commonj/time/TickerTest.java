@@ -11,13 +11,13 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.not;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import org.awaitility.Duration;
 import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Test;
@@ -28,7 +28,7 @@ public class TickerTest {
 	private static final int TICK_DURATION = 10;
 	private static final TimeUnit TICK_UNIT = TimeUnit.MILLISECONDS;
 
-	private static final Duration AWAIT_DURATION = new Duration(2, TimeUnit.SECONDS);
+	private static final Duration AWAIT_DURATION = Duration.ofSeconds(2);
 
 	private static final String THREAD_NAME = "Foobar";
 	private static final String DEFAULT_THREAD_NAME = "Timer";

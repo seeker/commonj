@@ -15,9 +15,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 
-import org.awaitility.Duration;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -25,7 +24,7 @@ import org.mockito.Mockito;
 public class StreamGobblerTest {
 	private StreamGobbler cut;
 	private static final String TEST_TEXT = "This is a test.";
-	private static final Duration DURATION = new Duration(1000, TimeUnit.MILLISECONDS);
+	private static final Duration DURATION = Duration.ofSeconds(1);
 
 	private InputStream failingIO;
 

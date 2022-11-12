@@ -5,8 +5,8 @@
  */
 package com.github.dozedoff.commonj.gui;
 
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -17,18 +17,21 @@ import java.util.Arrays;
 import javax.swing.JComponent;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 
 import com.github.dozedoff.commonj.util.Sampler;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-@RunWith(MockitoJUnitRunner.class)
 public class BarGraphTest {
+	public @Rule MockitoRule mockito = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+
 	private static final Integer test_values[] = { 1, 2, 3 };
 
 	@Mock
@@ -46,7 +49,6 @@ public class BarGraphTest {
 	@SuppressFBWarnings("PRMC_POSSIBLY_REDUNDANT_METHOD_CALLS")
 	@Before
 	public void setUp() throws Exception {
-		when(component.getGraphics()).thenReturn(g);
 		when(component.getHeight()).thenReturn(10);
 		when(component.getWidth()).thenReturn(10);
 		
