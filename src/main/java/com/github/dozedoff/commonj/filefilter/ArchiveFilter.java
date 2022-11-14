@@ -24,7 +24,7 @@ public class ArchiveFilter implements Filter<Path> {
 	/**
 	 * Accept the file if it's extension matches a known archive extension.
 	 * 
-	 * @param {@inheritDoc}
+	 * @param arg0 {@inheritDoc}
 	 */
 	@Override
 	public boolean accept(Path arg0) throws IOException {

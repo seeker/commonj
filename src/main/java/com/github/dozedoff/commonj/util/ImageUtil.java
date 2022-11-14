@@ -106,14 +106,12 @@ public class ImageUtil {
 
 	/**
 	 * Read a image from a {@link InputStream}. This is a trivial wrapper around
-	 * {@link ImageIO#read(InputStream).
+	 * {@link ImageIO#read(InputStream)}.
 	 * 
-	 * @param is
-	 *            stream containing the image to read
+	 * @param is stream containing the image to read
 	 * @return read image as a {@link BufferedImage}
 	 * 
-	 * @throws IOException
-	 *             if there is a issue reading the underling stream
+	 * @throws IOException if there is a issue reading the underling stream
 	 */
 	public static BufferedImage readImage(InputStream is) throws IOException {
 		return ImageIO.read(is);

@@ -38,8 +38,6 @@ public class SubsamplingImageLoader {
 	 * @param targetDimension
 	 *            the resized images maximum size
 	 * @return he resized image
-	 * @throws ImageFormatException
-	 *             if the image could not be decoded
 	 * @throws IOException
 	 *             if there is a error reading the image
 	 */
@@ -66,8 +64,6 @@ public class SubsamplingImageLoader {
 	 * @param targetDimension
 	 *            the resized images maximum size
 	 * @return he resized image as a {@link JLabel}
-	 * @throws ImageFormatException
-	 *             if the image could not be decoded
 	 * @throws IOException
 	 *             if there is a error reading the image
 	 */
