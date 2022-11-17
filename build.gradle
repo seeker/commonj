@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'maven-publish'
+    id 'jacoco'
 }
 
 configurations {
@@ -53,6 +54,16 @@ test {
 		excludeTestsMatching("*IT")
 		excludeTestsMatching("AllUnitTests*")
 	}
+}
+
+jacocoTestReport {
+    dependsOn test
+}
+
+jacocoTestReport {
+    reports {
+        xml.required = true
+    }
 }
 
 publishing {
