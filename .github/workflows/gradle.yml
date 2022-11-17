@@ -1,0 +1,30 @@
+name: Java CI with Gradle
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        jdk: [11, 17]
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up JDK ${{ matrix.jdk }}
+      uses: actions/setup-java@v2
+      with:
+        java-version: '${{ matrix.jdk }}'
+        distribution: 'adopt'
+    - uses: actions/cache@v2
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+    - name: Build with Gradle
+      run: gradle build
+    - name: Run code coverage
+      run: gradle jacocoTestReport
+    - uses: codecov/codecov-action@v1
