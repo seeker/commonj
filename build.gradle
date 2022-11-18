@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'maven-publish'
     id 'jacoco'
+    id "com.github.spotbugs" version "5.+"
 }
 
 configurations {
@@ -63,6 +64,26 @@ jacocoTestReport {
 jacocoTestReport {
     reports {
         xml.required = true
+    }
+}
+
+spotbugs {
+    ignoreFailures = true
+    reportLevel = 'default'
+    effort = 'max'
+}
+
+spotbugsMain {
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
+}
+
+spotbugsTest {
+    reports {
+        xml.enabled = false
+        html.enabled = true
     }
 }
 
