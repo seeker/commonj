@@ -3,6 +3,7 @@ plugins {
     id 'maven-publish'
     id 'jacoco'
     id "com.github.spotbugs" version "5.+"
+    id 'checkstyle'
 }
 
 configurations {
@@ -85,6 +86,10 @@ spotbugsTest {
         xml.enabled = false
         html.enabled = true
     }
+}
+
+checkstyle {
+    configFile = file("${rootProject.projectDir}/checkstyle.xml")
 }
 
 publishing {

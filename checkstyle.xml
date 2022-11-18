@@ -14,8 +14,6 @@
     <module name="JavadocMethod">
       <property name="allowedAnnotations" value="Test,Before,BeforeClass,After,AfterClass"/>
       <property name="validateThrows" value="true"/>
-      <property name="scope" value="package"/>
-      <property name="excludeScope" value="private"/>
     </module>
     <module name="MissingDeprecated"/>
     <module name="MissingOverride"/>
