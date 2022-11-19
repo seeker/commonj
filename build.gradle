@@ -45,9 +45,10 @@ dependencies {
 group = 'com.github.seeker.commonj'
 version = '0.3.3'
 description = 'commonj'
-java.sourceCompatibility = JavaVersion.VERSION_1_8
 
 java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+
     withSourcesJar()
     withJavadocJar()
 }
