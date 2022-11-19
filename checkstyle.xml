@@ -115,4 +115,8 @@
   <module name="FileLength"/>
   <module name="NewlineAtEndOfFile"/>
   <module name="UniqueProperties"/>
+  <module name="Header">
+    <property name="headerFile" value="${checkstyle.header.file}"/>
+    <property name="fileExtensions" value="java"/>
+  </module>
 </module>
