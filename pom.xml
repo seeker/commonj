@@ -200,11 +200,15 @@
 								<exclude>tools/release/**</exclude>
 								<exclude>bin/**</exclude>
 								<exclude>bin_test/**</exclude>
+								<exclude>.gradle/**</exclude>
+								<exclude>build/**</exclude>
 								<exclude>HEADER</exclude>
+								<exclude>HEADER-checkstyle</exclude>
 								<exclude>**/*.sh</exclude>
 								<exclude>**/*.xml</exclude>
 								<exclude>**/*.yml</exclude>
 								<exclude>**/*.properties</exclude>
+								<exclude>**/*.gradle</exclude>
 							</excludes>
 						</licenseSet>
 					</licenseSets>
