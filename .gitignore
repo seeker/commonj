@@ -2,6 +2,13 @@ bin/
 bin_test/
 /target
 
+# Gradle
+.gradle
+**/build/
+!src/**/build/
+!gradle-wrapper.jar
+!gradle-wrapper.properties
+
 #Eclipse IDE files
 /.settings/
 .project
