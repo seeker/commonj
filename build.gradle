@@ -90,6 +90,17 @@ spotbugsTest {
     }
 }
 
+def isNonStable = { String version ->
+  def unstableKeyword = ['alpha'].any { it -> version.toLowerCase().contains(it) }
+  return unstableKeyword
+}
+
+tasks.named("dependencyUpdates").configure {
+  rejectVersionIf {
+    isNonStable(it.candidate.version)
+  }
+}
+
 dependencyUpdates {
     gradleReleaseChannel = "current"
 }
