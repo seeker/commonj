@@ -24,7 +24,7 @@ dependencies {
     implementation 'com.jolbox:bonecp:0.8.0.RELEASE'
     implementation 'com.j256.ormlite:ormlite-core:6.+'
     implementation 'com.j256.ormlite:ormlite-jdbc:6.+'
-    implementation 'mysql:mysql-connector-java:8.+'
+    implementation 'com.mysql:mysql-connector-j:8.+'
     implementation 'org.slf4j:slf4j-api:2.+'
     implementation 'ch.qos.logback:logback-core:1.+'
     implementation 'ch.qos.logback:logback-classic:1.+'
