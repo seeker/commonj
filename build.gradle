@@ -90,6 +90,10 @@ spotbugsTest {
     }
 }
 
+dependencyUpdates {
+    gradleReleaseChannel = "current"
+}
+
 checkstyle {
     configFile = file("${rootProject.projectDir}/checkstyle.xml")
     configProperties 'checkstyle.header.file': file('HEADER-checkstyle')
