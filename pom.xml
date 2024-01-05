@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.seeker.commonj</groupId>
 	<artifactId>commonj</artifactId>
-	<version>0.3.3</version>
+	<version>0.3.4</version>
 	<name>commonj</name>
 	<description>Contains common java classes used in other projects</description>
 	<url>https://github.com/seeker/commonj</url>

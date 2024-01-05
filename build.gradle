@@ -43,7 +43,7 @@ dependencies {
 }
 
 group = 'com.github.seeker.commonj'
-version = '0.3.3'
+version = '0.3.4'
 description = 'commonj'
 
 java {
